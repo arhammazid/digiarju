@@ -1,29 +1,5 @@
 const apiKey = ""; 
-// ===== INITIALIZE DASHBOARD =====
-function initializeDashboard() {
-    const nama = localStorage.getItem('as_nama') || 'Guru';
-    const sekolah = localStorage.getItem('as_sekolah') || '';
-    
-    updateUserDisplay(nama);
-    
-    const currentDate = new Date();
-    const formattedDate = currentDate.toLocaleDateString('id-ID', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-    });
-    
-    if (document.getElementById('dash-date')) {
-        document.getElementById('dash-date').innerText = formattedDate;
-    }
-    if (document.getElementById('p-sekolah')) {
-        document.getElementById('p-sekolah').value = sekolah;
-    }
-    if (document.getElementById('out-sekolah')) {
-        document.getElementById('out-sekolah').innerText = sekolah.toUpperCase();
-    }
-} 
-
+ 
 // --- UTILS ---
 function showToast(message) {
     const container = document.getElementById('toast-container');
