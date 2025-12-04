@@ -1,18 +1,4 @@
 const apiKey = ""; 
-
-// ===== UPDATE USER DISPLAY =====
-function updateUserDisplay(nama) {
-    if (document.getElementById('user-name-display')) {
-        document.getElementById('user-name-display').innerText = nama;
-    }
-    if (document.getElementById('dash-name')) {
-        document.getElementById('dash-name').innerText = nama;
-    }
-    if (document.getElementById('user-initial')) {
-        document.getElementById('user-initial').innerText = nama.charAt(0).toUpperCase();
-    }
-}
-
 // ===== INITIALIZE DASHBOARD =====
 function initializeDashboard() {
     const nama = localStorage.getItem('as_nama') || 'Guru';
