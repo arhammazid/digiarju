@@ -220,3 +220,15 @@ async function handleLoginSubmit(e) {
         submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Masuk';
     }
 }
+// ===== UPDATE USER DISPLAY =====
+function updateUserDisplay(nama) {
+    if (document.getElementById('user-name-display')) {
+        document.getElementById('user-name-display').innerText = nama;
+    }
+    if (document.getElementById('dash-name')) {
+        document.getElementById('dash-name').innerText = nama;
+    }
+    if (document.getElementById('user-initial')) {
+        document.getElementById('user-initial').innerText = nama.charAt(0).toUpperCase();
+    }
+}
