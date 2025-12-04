@@ -1,5 +1,273 @@
 const apiKey = ""; 
 
+// ===== GOOGLE SHEETS LOGIN CONFIGURATION =====
+// INSTRUKSI SETUP:
+// 1. Buat Google Sheet dengan kolom: Username | Password | Sekolah | Nama | NIP | Email
+// 2. Publish sheet "DATA_GURU" as CSV: File > Share > Publish to the web > Entire document > CSV > Copy link
+// 3. Ganti GOOGLE_SHEET_CSV_URL dengan URL yang didapat (hapus /export?format=csv, biarkan share link)
+// 4. Format URL: https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv&gid=0
+
+const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSiXz_QISnbz4kN48qlxhAWMvuLzBBmpkDoHgE9PrxLOgUEyalcgD8M24dB0CueENex0lWDUCclJ6aZ/pub?gid=0&single=true&output=csv"; // Ganti dengan URL Sheet Anda
+
+// Cache untuk data guru
+let gurDataCache = null;
+let sekolahSet = new Set();
+
+// ===== FETCH & PARSE GOOGLE SHEETS DATA =====
+async function loadGuruDataFromSheets() {
+    try {
+        if (gurDataCache) return gurDataCache;
+        
+        const response = await fetch(GOOGLE_SHEET_CSV_URL);
+        if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
+        
+        const csvText = await response.text();
+        const lines = csvText.trim().split('\n');
+        
+        // Parse CSV
+        const data = [];
+        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+        
+        for (let i = 1; i < lines.length; i++) {
+            const values = lines[i].split(',').map(v => v.trim());
+            if (values.length < 3) continue; // Skip invalid rows
+            
+            const row = {};
+            headers.forEach((header, idx) => {
+                row[header] = values[idx] || '';
+            });
+            
+            data.push(row);
+            if (row.sekolah) sekolahSet.add(row.sekolah);
+        }
+        
+        gurDataCache = data;
+        return data;
+    } catch (error) {
+        console.error('Error loading guru data:', error);
+        showToast('⚠️ Gagal memuat data dari Google Sheets. Periksa URL Sheet Anda.');
+        return [];
+    }
+}
+
+// ===== POPULATE SEKOLAH DROPDOWN =====
+async function populateSekolahDropdown() {
+    const selectEl = document.getElementById('login-sekolah');
+    const data = await loadGuruDataFromSheets();
+    
+    if (data.length === 0) {
+        selectEl.innerHTML = '<option value="">Gagal memuat data sekolah</option>';
+        return;
+    }
+    
+    // Clear dan tambah option
+    selectEl.innerHTML = '<option value="">Pilih Sekolah...</option>';
+    Array.from(sekolahSet)
+        .sort()
+        .forEach(sekolah => {
+            const option = document.createElement('option');
+            option.value = sekolah;
+            option.textContent = sekolah;
+            selectEl.appendChild(option);
+        });
+}
+
+// ===== LOGIN VALIDATION =====
+async function validateLogin(username, sekolah, password) {
+    const data = await loadGuruDataFromSheets();
+    
+    const guru = data.find(row => 
+        row.username?.toLowerCase().trim() === username.toLowerCase().trim() &&
+        row.sekolah?.trim() === sekolah &&
+        row.password?.trim() === password
+    );
+    
+    if (!guru) {
+        return { success: false, message: 'Username, sekolah, atau password salah' };
+    }
+    
+    return { 
+        success: true, 
+        guru: {
+            username: guru.username,
+            sekolah: guru.sekolah,
+            nama: guru.nama || guru.username,
+            nip: guru.nip || '',
+            email: guru.email || ''
+        }
+    };
+}
+
+// ===== SESSION MANAGEMENT =====
+function saveLoginSession(guru) {
+    localStorage.setItem('login_username', guru.username);
+    localStorage.setItem('as_nama', guru.nama);
+    localStorage.setItem('as_nip', guru.nip);
+    localStorage.setItem('as_sekolah', guru.sekolah);
+    localStorage.setItem('login_email', guru.email);
+    localStorage.setItem('login_timestamp', new Date().toISOString());
+}
+
+function loadLoginSession() {
+    const username = localStorage.getItem('login_username');
+    if (username) {
+        return {
+            username,
+            nama: localStorage.getItem('as_nama'),
+            nip: localStorage.getItem('as_nip'),
+            sekolah: localStorage.getItem('as_sekolah'),
+            email: localStorage.getItem('login_email')
+        };
+    }
+    return null;
+}
+
+function clearLoginSession() {
+    localStorage.removeItem('login_username');
+    localStorage.removeItem('login_email');
+    localStorage.removeItem('login_timestamp');
+}
+
+// ===== LOGOUT FUNCTION =====
+function logoutUser() {
+    clearLoginSession();
+    document.getElementById('login-page').classList.remove('hidden');
+    document.querySelector('.app-container').style.display = 'none';
+    document.getElementById('login-form').reset();
+    populateSekolahDropdown();
+    showToast('✓ Logout berhasil');
+}
+
+// ===== AUTO-LOGIN ON PAGE LOAD =====
+window.addEventListener('DOMContentLoaded', async function() {
+    // Check if user already logged in
+    const session = loadLoginSession();
+    
+    if (session) {
+        // Auto-login
+        document.getElementById('login-page').classList.add('hidden');
+        document.querySelector('.app-container').style.display = 'flex';
+        updateUserDisplay(session.nama);
+        initializeDashboard();
+    } else {
+        // Show login page
+        document.getElementById('login-page').classList.remove('hidden');
+        document.querySelector('.app-container').style.display = 'none';
+        await populateSekolahDropdown();
+    }
+    
+    // Setup login form handler
+    document.getElementById('login-form').addEventListener('submit', handleLoginSubmit);
+});
+
+// ===== LOGIN FORM HANDLER =====
+async function handleLoginSubmit(e) {
+    e.preventDefault();
+    
+    const username = document.getElementById('login-username').value.trim();
+    const sekolah = document.getElementById('login-sekolah').value;
+    const password = document.getElementById('login-password').value;
+    const submitBtn = document.getElementById('login-submit-btn');
+    
+    // Clear previous errors
+    document.querySelectorAll('.login-form-group.error').forEach(el => {
+        el.classList.remove('error');
+    });
+    
+    // Validate inputs
+    let hasError = false;
+    
+    if (!username) {
+        document.getElementById('login-username').parentElement.classList.add('error');
+        hasError = true;
+    }
+    
+    if (!sekolah) {
+        document.getElementById('login-sekolah').parentElement.classList.add('error');
+        hasError = true;
+    }
+    
+    if (!password) {
+        document.getElementById('login-password').parentElement.classList.add('error');
+        hasError = true;
+    }
+    
+    if (hasError) return;
+    
+    // Show loading state
+    submitBtn.classList.add('loading');
+    submitBtn.innerHTML = '<span class="login-loading-spinner"></span> Memverifikasi...';
+    
+    try {
+        const result = await validateLogin(username, sekolah, password);
+        
+        if (result.success) {
+            saveLoginSession(result.guru);
+            showToast(`✓ Selamat datang, ${result.guru.nama}!`);
+            
+            // Update user display
+            updateUserDisplay(result.guru.nama);
+            
+            // Hide login, show app
+            document.getElementById('login-page').classList.add('hidden');
+            document.querySelector('.app-container').style.display = 'flex';
+            
+            // Reset form
+            document.getElementById('login-form').reset();
+            
+            // Initialize dashboard
+            initializeDashboard();
+        } else {
+            showToast('❌ ' + result.message);
+            document.getElementById('login-password').parentElement.classList.add('error');
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        showToast('❌ Terjadi kesalahan saat login');
+    } finally {
+        submitBtn.classList.remove('loading');
+        submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Masuk';
+    }
+}
+
+// ===== UPDATE USER DISPLAY =====
+function updateUserDisplay(nama) {
+    if (document.getElementById('user-name-display')) {
+        document.getElementById('user-name-display').innerText = nama;
+    }
+    if (document.getElementById('dash-name')) {
+        document.getElementById('dash-name').innerText = nama;
+    }
+    if (document.getElementById('user-initial')) {
+        document.getElementById('user-initial').innerText = nama.charAt(0).toUpperCase();
+    }
+}
+
+// ===== INITIALIZE DASHBOARD =====
+function initializeDashboard() {
+    const nama = localStorage.getItem('as_nama') || 'Guru';
+    const sekolah = localStorage.getItem('as_sekolah') || '';
+    
+    updateUserDisplay(nama);
+    
+    const currentDate = new Date();
+    const formattedDate = currentDate.toLocaleDateString('id-ID', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    });
+    
+    if (document.getElementById('dash-date')) {
+        document.getElementById('dash-date').innerText = formattedDate;
+    }
+    if (document.getElementById('p-sekolah')) {
+        document.getElementById('p-sekolah').value = sekolah;
+    }
+    if (document.getElementById('out-sekolah')) {
+        document.getElementById('out-sekolah').innerText = sekolah.toUpperCase();
+    }
+} 
+
 // --- UTILS ---
 function showToast(message) {
     const container = document.getElementById('toast-container');
@@ -24,6 +292,281 @@ function cleanAndParseJSON(str) {
         console.error("JSON Parse Error:", e);
         return null;
     }
+}
+
+// ===== PERFORMANCE OPTIMIZATION UTILITIES =====
+
+/**
+ * Debounce function - mencegah function dijalankan terlalu sering
+ * Cocok untuk: input events, resize, scroll handlers
+ * @param {Function} func - Function yang akan di-debounce
+ * @param {Number} delay - Delay dalam ms (default: 300ms)
+ * @returns {Function} - Debounced function
+ */
+function debounce(func, delay = 300) {
+    let timeoutId = null;
+    return function debounced(...args) {
+        if (timeoutId) clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+            func.apply(this, args);
+            timeoutId = null;
+        }, delay);
+    };
+}
+
+/**
+ * Throttle function - membatasi eksekusi function dalam interval tertentu
+ * Cocok untuk: scroll, mousemove, resize events
+ * @param {Function} func - Function yang akan di-throttle
+ * @param {Number} limit - Time limit dalam ms (default: 300ms)
+ * @returns {Function} - Throttled function
+ */
+function throttle(func, limit = 300) {
+    let inThrottle = false;
+    return function throttled(...args) {
+        if (!inThrottle) {
+            func.apply(this, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    };
+}
+
+/**
+ * RequestAnimationFrame debounce - untuk operasi visual yang frequent
+ * @param {Function} func - Function yang akan di-optimize
+ * @returns {Function} - RAF-optimized function
+ */
+function rafDebounce(func) {
+    let frameId = null;
+    return function debounced(...args) {
+        if (frameId) cancelAnimationFrame(frameId);
+        frameId = requestAnimationFrame(() => {
+            func.apply(this, args);
+            frameId = null;
+        });
+    };
+}
+
+/**
+ * Batch DOM updates - minimize reflow/repaint
+ * @param {Function} callback - Function yang contains DOM updates
+ */
+function batchDOMUpdates(callback) {
+    requestAnimationFrame(callback);
+}
+
+/**
+ * Element visibility check - lazy loading optimization
+ * @param {Element} element - Element yang dicek
+ * @returns {Boolean} - True jika element visible dalam viewport
+ */
+function isElementInViewport(element) {
+    const rect = element.getBoundingClientRect();
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= window.innerHeight &&
+        rect.right <= window.innerWidth
+    );
+}
+
+/**
+ * Memoization cache untuk expensive computations
+ * @param {Function} func - Function yang akan di-cache
+ * @returns {Function} - Memoized function
+ */
+function memoize(func) {
+    const cache = new Map();
+    return function memoized(...args) {
+        const key = JSON.stringify(args);
+        if (cache.has(key)) {
+            return cache.get(key);
+        }
+        const result = func.apply(this, args);
+        cache.set(key, result);
+        return result;
+    };
+}
+
+// ===== BATCH PROCESSING STATE MANAGEMENT =====
+
+/**
+ * Global state untuk batch processing (Preview Semua & Download Semua)
+ */
+const batchProcessState = {
+    isRunning: false,
+    isPaused: false,
+    startTime: 0,
+    processedCount: 0,
+    successCount: 0,
+    failedCount: 0,
+    totalCount: 0,
+    failedList: [],
+    currentSiswaName: '',
+    abortRequested: false
+};
+
+/**
+ * Update progress bar dan status display
+ */
+function updateBatchProgress() {
+    const { processedCount, totalCount, successCount, failedCount, startTime } = batchProcessState;
+    const percentage = totalCount > 0 ? (processedCount / totalCount) * 100 : 0;
+    const elapsedTime = (Date.now() - startTime) / 1000;
+    const speed = elapsedTime > 0 ? processedCount / elapsedTime : 0;
+    const remainingCount = totalCount - processedCount;
+    const etaSeconds = speed > 0 ? remainingCount / speed : 0;
+    
+    // Format ETA
+    const etaMinutes = Math.floor(etaSeconds / 60);
+    const etaSecs = Math.floor(etaSeconds % 60);
+    const etaStr = `${etaMinutes}:${etaSecs.toString().padStart(2, '0')}`;
+    
+    // Update DOM
+    document.getElementById('rapor-progress-text').textContent = `${processedCount}/${totalCount}`;
+    document.getElementById('rapor-progress-bar').style.width = percentage.toFixed(1) + '%';
+    document.getElementById('rapor-progress-bar').textContent = percentage > 10 ? percentage.toFixed(0) + '%' : '';
+    document.getElementById('rapor-progress-speed').textContent = speed.toFixed(2);
+    document.getElementById('rapor-progress-success').textContent = successCount;
+    document.getElementById('rapor-progress-current').textContent = batchProcessState.currentSiswaName;
+    document.getElementById('rapor-progress-failed').textContent = failedCount;
+    document.getElementById('rapor-progress-eta').textContent = `ETA: ${etaStr}`;
+}
+
+/**
+ * Show progress container
+ */
+function showBatchProgress(total) {
+    batchProcessState.totalCount = total;
+    batchProcessState.processedCount = 0;
+    batchProcessState.successCount = 0;
+    batchProcessState.failedCount = 0;
+    batchProcessState.startTime = Date.now();
+    batchProcessState.isRunning = true;
+    batchProcessState.isPaused = false;
+    batchProcessState.abortRequested = false;
+    batchProcessState.failedList = [];
+    
+    document.getElementById('rapor-batch-progress-container').style.display = 'block';
+    document.getElementById('rapor-excel-generate-all').style.display = 'none';
+    document.getElementById('rapor-batch-pause').style.display = 'inline-flex';
+    document.getElementById('rapor-batch-stop').style.display = 'inline-flex';
+    
+    updateBatchProgress();
+}
+
+/**
+ * Hide progress container & reset state
+ */
+function hideBatchProgress() {
+    batchProcessState.isRunning = false;
+    batchProcessState.isPaused = false;
+    
+    document.getElementById('rapor-batch-pause').style.display = 'none';
+    document.getElementById('rapor-batch-stop').style.display = 'none';
+    document.getElementById('rapor-excel-generate-all').style.display = 'inline-flex';
+    
+    // Show failed siswa modal if ada yang gagal
+    if(batchProcessState.failedList.length > 0) {
+        showFailedSiswaModal();
+    }
+}
+
+/**
+ * Display daftar siswa yang gagal dalam modal
+ */
+function showFailedSiswaModal() {
+    const listContainer = document.getElementById('rapor-failed-siswa-list');
+    listContainer.innerHTML = '';
+    
+    batchProcessState.failedList.forEach(item => {
+        const failedItem = document.createElement('div');
+        failedItem.style.cssText = 'padding:10px; margin-bottom:8px; background:#fff5f5; border-left:3px solid #f44336; border-radius:3px; font-size:0.9rem;';
+        failedItem.innerHTML = `
+            <div style="font-weight:600; color:#d32f2f;">#${item.index} - ${item.nama}</div>
+            <div style="color:#666; margin-top:3px; font-family:monospace; font-size:0.85rem;">❌ ${item.error}</div>
+        `;
+        listContainer.appendChild(failedItem);
+    });
+    
+    // Show modal
+    document.getElementById('rapor-failed-siswa-modal').style.display = 'flex';
+}
+
+/**
+ * Throttle function - membatasi eksekusi function dalam interval tertentu
+ * Cocok untuk: scroll, mousemove, resize events
+ * @param {Function} func - Function yang akan di-throttle
+ * @param {Number} limit - Time limit dalam ms (default: 300ms)
+ * @returns {Function} - Throttled function
+ */
+function throttle(func, limit = 300) {
+    let inThrottle = false;
+    return function throttled(...args) {
+        if (!inThrottle) {
+            func.apply(this, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    };
+}
+
+/**
+ * RequestAnimationFrame debounce - untuk operasi visual yang frequent
+ * @param {Function} func - Function yang akan di-optimize
+ * @returns {Function} - RAF-optimized function
+ */
+function rafDebounce(func) {
+    let frameId = null;
+    return function debounced(...args) {
+        if (frameId) cancelAnimationFrame(frameId);
+        frameId = requestAnimationFrame(() => {
+            func.apply(this, args);
+            frameId = null;
+        });
+    };
+}
+
+/**
+ * Batch DOM updates - minimize reflow/repaint
+ * @param {Function} callback - Function yang contains DOM updates
+ */
+function batchDOMUpdates(callback) {
+    requestAnimationFrame(callback);
+}
+
+/**
+ * Element visibility check - lazy loading optimization
+ * @param {Element} element - Element yang dicek
+ * @returns {Boolean} - True jika element visible dalam viewport
+ */
+function isElementInViewport(element) {
+    const rect = element.getBoundingClientRect();
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= window.innerHeight &&
+        rect.right <= window.innerWidth
+    );
+}
+
+/**
+ * Memoization cache untuk expensive computations
+ * @param {Function} func - Function yang akan di-cache
+ * @returns {Function} - Memoized function
+ */
+function memoize(func) {
+    const cache = new Map();
+    return function memoized(...args) {
+        const key = JSON.stringify(args);
+        if (cache.has(key)) {
+            return cache.get(key);
+        }
+        const result = func.apply(this, args);
+        cache.set(key, result);
+        return result;
+    };
 }
 
 async function callGemini(prompt, systemInstruction = "Anda adalah asisten pengajaran yang membantu dan menggunakan Bahasa Indonesia. Jawab dalam Bahasa Indonesia.") {
@@ -66,6 +609,9 @@ async function callImagen(prompt) {
         return null;
     }
 }
+
+// Alias untuk Media Ajar image generation
+const callImageGenerator = callImagen;
 
 async function callTTS(text, voice, style, speed, pitch, volume) {
     try {
@@ -175,9 +721,32 @@ function switchSection(targetId) {
         document.getElementById('page-title').innerText = titleMap[targetId] || 'DigiArju APP';
     }
 
+    // Auto-load profile to E-Rapor when opened
+    if (targetId === 'rapor-siswa' && typeof window.loadDataFromProfil === 'function') {
+        try { 
+            window.loadDataFromProfil(); 
+            // Initialize modal dialogs untuk E-Rapor
+            if (typeof initAddItemModals === 'function') {
+                initAddItemModals();
+            }
+        } catch (e) { console.error('Error auto-loading profil into E-Rapor:', e); }
+    }
+
+    // Load bank items when Bank Soal section is opened
+    if (targetId === 'bank-soal' && typeof window.loadBankItems === 'function') {
+        try {
+            window.loadBankItems();
+        } catch (e) { console.error('Error loading bank items:', e); }
+    }
+
     // Close mobile sidebar
     document.getElementById('sidebar').classList.remove('open');
 }
+
+// Alias for switchTab (used in dashboard quick-access buttons)
+window.switchTab = function(tabId) {
+    switchSection(tabId);
+};
 
 // Sidebar Toggle
 const sidebar = document.getElementById('sidebar');
@@ -219,15 +788,30 @@ function loadProfile() {
     if(document.getElementById('p-nip')) document.getElementById('p-nip').value = localStorage.getItem('as_nip') || '';
     if(document.getElementById('p-sekolah')) document.getElementById('p-sekolah').value = sekolah;
     if(document.getElementById('out-sekolah')) document.getElementById('out-sekolah').innerText = sekolah.toUpperCase();
+    
+    // Dashboard date, role, and last update
+    const currentDate = new Date();
+    const formattedDate = currentDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+    if(document.getElementById('dash-date')) document.getElementById('dash-date').innerText = formattedDate;
+    if(document.getElementById('dash-role')) document.getElementById('dash-role').innerText = 'Guru';
+    if(document.getElementById('last-update')) document.getElementById('last-update').innerText = 'Dec 4, 2025';
 }
 document.getElementById('btn-save-profile').addEventListener('click', () => {
     localStorage.setItem('as_nama', document.getElementById('p-nama').value);
     localStorage.setItem('as_nip', document.getElementById('p-nip').value);
     localStorage.setItem('as_sekolah', document.getElementById('p-sekolah').value);
+    localStorage.setItem('as_alamat', document.getElementById('p-alamat').value);
+    localStorage.setItem('as_kepsek', document.getElementById('p-kepsek').value);
+    localStorage.setItem('as_nip_kepsek', document.getElementById('p-nip-kepsek').value);
     showToast('Profil berhasil disimpan');
     loadProfile();
 });
 loadProfile();
+
+// Initialize bank items on page load
+if (typeof window.loadBankItems === 'function') {
+    window.loadBankItems();
+}
 
 // File Upload UI Interaction
 document.querySelectorAll('.upload-box').forEach(box => {
@@ -979,13 +1563,18 @@ document.getElementById('btn-gen-modul').addEventListener('click', async functio
     btn.classList.add('loading');
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sedang Membuat...';
     
+    // Get Profile Data
+    const namaGuru = localStorage.getItem('as_nama') || 'Guru';
+    const namaSekolah = localStorage.getItem('as_sekolah') || 'Sekolah';
+    const nipGuru = localStorage.getItem('as_nip') || '';
+    
     // Collect Data
     const profilLulusan = Array.from(document.querySelectorAll('.check-profil:checked')).map(c => c.value).join(", ");
     const components = {
-        pendekatan: document.getElementById('check-pendekatan').checked,
         lkpd: document.getElementById('check-lkpd').checked,
         glosarium: document.getElementById('check-glosarium').checked,
-        media: document.getElementById('check-media').checked
+        media: document.getElementById('check-media').checked,
+        pustaka: document.getElementById('check-pustaka').checked
     };
     
     const activeBtn = document.querySelector('#modul-kurikulum-group .btn-toggle.active');
@@ -996,8 +1585,12 @@ document.getElementById('btn-gen-modul').addEventListener('click', async functio
     const modulSelectedTopicEl = document.getElementById('modul-topik-select');
     const modulSelectedTopic = modulSelectedTopicEl && modulSelectedTopicEl.value && modulSelectedTopicEl.value !== 'Lainnya' ? modulSelectedTopicEl.value : (document.getElementById('modul-mapel').value || '');
 
+    const includeKKA = document.getElementById('include-modul-kka').checked;
+
     const prompt = `
     Buatkan Modul Ajar Lengkap untuk:
+    Nama Guru: ${namaGuru}${nipGuru ? ' (' + nipGuru + ')' : ''}
+    Nama Sekolah: ${namaSekolah}
     Mata Pelajaran: ${mapel}
     Topik / Rincian: ${modulSelectedTopic}
     Kurikulum: ${kurikulumVal}
@@ -1009,13 +1602,15 @@ document.getElementById('btn-gen-modul').addEventListener('click', async functio
     Catatan Khusus: ${document.getElementById('modul-catatan').value}
     
     Struktur Modul harus mencakup:
-    1. Informasi Umum
+    1. Informasi Umum (untuk sekolah ${namaSekolah})
     2. Komponen Inti (Tujuan, Pemahaman Bermakna, Pertanyaan Pemantik)
     3. Kegiatan Pembelajaran (Pendahuluan, Inti, Penutup)
     ${components.lkpd ? '4. Lampiran LKPD (Lembar Kerja Peserta Didik)' : ''}
     ${components.glosarium ? '5. Glosarium' : ''}
+    ${components.pustaka ? '6. Daftar Pustaka (dengan format APA/MLA)' : ''}
+    ${includeKKA ? '7. Integrasi Kurikulum Kemandirian & Akhlak (KKA)' : ''}
     
-    Format output dalam Markdown yang rapi. Gunakan tabel jika perlu.
+    Format output dalam Markdown yang rapi. Gunakan tabel jika perlu. Sesuaikan materi dengan konteks sekolah ${namaSekolah}.
     `;
 
     const result = await callGemini(prompt, "Anda adalah asisten pendidikan ahli yang membuat modul ajar profesional.");
@@ -1044,9 +1639,13 @@ document.getElementById('btn-gen-bahan').addEventListener('click', async functio
     btn.classList.add('loading');
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
     
+    // Get Profile Data
+    const namaGuru = localStorage.getItem('as_nama') || 'Guru';
+    const namaSekolah = localStorage.getItem('as_sekolah') || 'Sekolah';
+    
     const audioStyle = document.getElementById('audio-voice-style').value;
     const prompt = `
-    Buatkan Media Ajar Kreatif untuk topik: "${bahanSelectedTopic}".
+    Buatkan Media Ajar Kreatif untuk topik: "${bahanSelectedTopic}" oleh guru ${namaGuru} dari ${namaSekolah}.
     OUTPUT HARUS DALAM FORMAT JSON yang Valid dengan keys berikut:
     {
         "infografis": "Deskripsi visual infografis yang menarik (Markdown)",
@@ -1056,11 +1655,12 @@ document.getElementById('btn-gen-bahan').addEventListener('click', async functio
         "kuis": "5 soal kuis pilihan ganda sederhana (Markdown)",
         "analogi": "Penjelasan materi menggunakan analogi sederhana (ELI5) (Markdown)",
         "ppt": "Outline Slide PowerPoint 1-5 slide (Markdown)",
+        "ppt_images": "Array JSON berisi 5 deskripsi gambar detail untuk setiap slide (untuk kebutuhan ilustrasi). Format: [{\"slide\": 1, \"title\": \"Judul Slide\", \"image_prompt\": \"Deskripsi detail gambar yang akan ditampilkan\"}, ...]. Deskripsi HARUS detail dan spesifik untuk AI image generator.",
         "video": "Skrip video pendek pembelajaran (Durasi 1 menit) (Markdown)",
         "visual": "5 Deskripsi adegan (scene) detail untuk ilustrasi/animasi (Markdown)",
         "audio": "Naskah audio 5 segmen dengan gaya ${audioStyle} (Markdown)"
     }
-    Pastikan JSON valid tanpa markdown block code.
+    Pastikan JSON valid tanpa markdown block code. Sesuaikan dengan konteks sekolah ${namaSekolah}.
     `;
 
     try {
@@ -1079,7 +1679,44 @@ document.getElementById('btn-gen-bahan').addEventListener('click', async functio
             setContent('bahan-pemantik', data.pemantik);
             setContent('bahan-kuis', data.kuis);
             setContent('bahan-analogi', data.analogi);
-            setContent('bahan-ppt', data.ppt);
+            
+            // Handle PPT with images
+            let pptContent = data.ppt || "";
+            if (data.ppt_images && Array.isArray(data.ppt_images) && data.ppt_images.length > 0) {
+                pptContent += '<hr style="margin:20px 0; border:none; border-top:2px solid #ddd;"><h3 style="margin-top:20px; color:#333;">📸 Gambar Presentasi untuk Setiap Slide</h3>';
+                pptContent += '<p style="color:#666; font-size:0.9em; margin-bottom:20px;">Generating gambar untuk presentasi Anda...</p>';
+                
+                for (let img of data.ppt_images) {
+                    pptContent += `<div style="margin:20px 0; padding:15px; background:#f9f9f9; border-left:4px solid #007bff; border-radius:4px;">`;
+                    pptContent += `<h4 style="margin:0 0 10px 0; color:#007bff;">Slide ${img.slide}: ${img.title}</h4>`;
+                    pptContent += `<p style="margin:0 0 10px 0; color:#555; font-size:0.95em; line-height:1.6;"><strong>Deskripsi:</strong> ${img.image_prompt}</p>`;
+                    pptContent += `<div id="ppt-image-${img.slide}" style="margin-top:10px; min-height:150px; background:#e9ecef; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#999;">⏳ Generating gambar...</div>`;
+                    pptContent += `</div>`;
+                }
+            }
+            document.getElementById('bahan-ppt').querySelector('.content-body').innerHTML = marked.parse(pptContent);
+            
+            // Generate images for each slide asynchronously
+            if (data.ppt_images && Array.isArray(data.ppt_images) && data.ppt_images.length > 0) {
+                for (let img of data.ppt_images) {
+                    (async () => {
+                        try {
+                            const imageUrl = await callImageGenerator(img.image_prompt);
+                            const imgContainer = document.getElementById(`ppt-image-${img.slide}`);
+                            if (imgContainer && imageUrl) {
+                                imgContainer.innerHTML = `<img src="${imageUrl}" style="max-width:100%; max-height:400px; border-radius:4px; object-fit:cover;" alt="Slide ${img.slide}">`;
+                            }
+                        } catch (e) {
+                            console.error(`Error generating image for slide ${img.slide}:`, e);
+                            const imgContainer = document.getElementById(`ppt-image-${img.slide}`);
+                            if (imgContainer) {
+                                imgContainer.innerHTML = `<div style="color:#dc3545; padding:20px; text-align:center;">❌ Gagal generate gambar</div>`;
+                            }
+                        }
+                    })();
+                }
+            }
+            
             setContent('bahan-video', data.video);
             setContent('bahan-visual', data.visual);
             setContent('bahan-audio', data.audio);
@@ -1117,6 +1754,12 @@ document.getElementById('btn-gen-kokul').addEventListener('click', async functio
     btn.classList.add('loading');
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Merancang Projek...';
 
+    // Get Profile Data
+    const namaGuru = localStorage.getItem('as_nama') || 'Guru';
+    const namaSekolah = localStorage.getItem('as_sekolah') || 'Sekolah';
+    const nipGuru = localStorage.getItem('as_nip') || '';
+    const alamatSekolah = localStorage.getItem('as_alamat') || '';
+
     // Mengambil profil yang dicentang
     const profilChecked = Array.from(document.querySelectorAll('.check-kokul-profil:checked'))
         .map(el => el.value)
@@ -1129,7 +1772,11 @@ document.getElementById('btn-gen-kokul').addEventListener('click', async functio
     const prompt = `
     Buatkan dokumen lengkap Program Kokurikuler dan PKo sesuai format standar sekolah, dengan acuan Kemendikdasmen Nomor 058/H/KR/2025.
 
-    Detail input:
+    Detail Satuan Pendidikan:
+    - Nama Guru: ${namaGuru}${nipGuru ? ' (' + nipGuru + ')' : ''}
+    - Sekolah: ${namaSekolah}${alamatSekolah ? ', ' + alamatSekolah : ''}
+    
+    Detail Program:
     - Tema/Topik: ${tema}
     - Kurikulum: ${kurikulumVal}
     - Jenjang: ${jenjang}
@@ -1595,8 +2242,15 @@ document.getElementById('btn-gen-soal').addEventListener('click', async function
         return html;
     }
 
+    // Get Profile Data
+    const namaGuru = localStorage.getItem('as_nama') || 'Guru';
+    const namaSekolah = localStorage.getItem('as_sekolah') || 'Sekolah';
+    const nipGuru = localStorage.getItem('as_nip') || '';
+    
     const prompt = `
     Buatkan Paket Soal Ujian (${mode}) untuk:
+    Nama Guru: ${namaGuru}${nipGuru ? ' (' + nipGuru + ')' : ''}
+    Sekolah: ${namaSekolah}
     Mapel: ${mapel}
     Topik / Rincian: ${soalSelectedTopic}
     Kurikulum: ${kurikulumVal}
@@ -2539,22 +3193,113 @@ window.clearOutput = function(elementId) {
 // Bank Soal Utils
 window.openSaveModal = function() { document.getElementById('modal-save-confirm').style.display = 'flex'; };
 window.closeSaveModal = function() { document.getElementById('modal-save-confirm').style.display = 'none'; };
+
+// Load and display saved bank items on page load
+window.loadBankItems = function() {
+    const list = document.getElementById('bank-list-container');
+    const bank = JSON.parse(localStorage.getItem('bankSoal') || '{}');
+    
+    if(Object.keys(bank).length === 0) {
+        list.innerHTML = '<p style="text-align:center; color:var(--text-muted);">Belum ada soal tersimpan.</p>';
+        return;
+    }
+    
+    list.innerHTML = '';
+    Object.keys(bank).forEach(key => {
+        const item = bank[key];
+        const itemDiv = document.createElement('div');
+        itemDiv.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--bg-body); border-radius:8px; margin-bottom:10px; cursor:pointer; transition:0.3s; border:1px solid var(--border-color);';
+        itemDiv.onmouseover = function() { this.style.background = 'var(--bg-hover)'; };
+        itemDiv.onmouseout = function() { this.style.background = 'var(--bg-body)'; };
+        
+        itemDiv.innerHTML = `
+            <div style="flex:1;">
+                <div onclick="openBankItem('${key}')" style="cursor:pointer; font-weight:500; color:var(--primary); text-decoration:underline;">
+                    <i class="fas fa-file-alt"></i> ${item.name}
+                </div>
+                <small style="color:var(--text-muted); display:block; margin-top:4px;">Disimpan: ${new Date(item.date).toLocaleString('id-ID')}</small>
+            </div>
+            <button class="btn btn-danger btn-xs" onclick="deleteBankItem('${key}')" style="padding:4px 8px; font-size:0.75rem;">
+                <i class="fas fa-trash"></i> Hapus
+            </button>
+        `;
+        list.appendChild(itemDiv);
+    });
+    document.getElementById('bank-count').innerText = Object.keys(bank).length;
+};
+
 window.confirmSaveToBank = function() {
     const name = document.getElementById('save-set-name').value;
     if(!name) return showToast("Isi nama paket!");
-    const list = document.getElementById('bank-list-container');
-    if(list.querySelector('p')) list.innerHTML = '';
-    const item = document.createElement('div');
-    item.className = 'menu-item';
-    item.innerHTML = `<i class="fas fa-file-alt"></i> <span>${name}</span>`;
-    list.appendChild(item);
-    document.getElementById('bank-count').innerText = parseInt(document.getElementById('bank-count').innerText) + 1;
-    closeSaveModal();
-    showToast("Tersimpan!");
+    
+    // Get the current soal content
+    const kisiContent = document.getElementById('content-kisi')?.innerHTML || '';
+    const naskahContent = document.getElementById('content-naskah')?.innerHTML || '';
+    const ljkContent = document.getElementById('content-ljk')?.innerHTML || '';
+    const bahasContent = document.getElementById('content-bahas')?.innerHTML || '';
+    
+    if(!kisiContent && !naskahContent) return showToast("Tidak ada soal untuk disimpan!");
+    
+    // Save to localStorage
+    const bank = JSON.parse(localStorage.getItem('bankSoal') || '{}');
+    const key = Date.now().toString();
+    bank[key] = {
+        name: name,
+        date: new Date().toISOString(),
+        kisi: kisiContent,
+        naskah: naskahContent,
+        ljk: ljkContent,
+        bahas: bahasContent
+    };
+    localStorage.setItem('bankSoal', JSON.stringify(bank));
+    
+    document.getElementById('bank-count').innerText = Object.keys(bank).length;
+    window.closeSaveModal();
+    showToast("Soal berhasil disimpan ke Bank!")
+    document.getElementById('save-set-name').value = '';
+    window.loadBankItems();
 };
+
+window.openBankItem = function(key) {
+    const bank = JSON.parse(localStorage.getItem('bankSoal') || '{}');
+    const item = bank[key];
+    
+    if(!item) {
+        showToast("Soal tidak ditemukan!");
+        return;
+    }
+    
+    // Restore content to res-soal tabs
+    document.getElementById('content-kisi').innerHTML = item.kisi || '<p style="color:var(--text-muted);">Tidak ada data</p>';
+    document.getElementById('content-naskah').innerHTML = item.naskah || '<p style="color:var(--text-muted);">Tidak ada data</p>';
+    document.getElementById('content-ljk').innerHTML = item.ljk || '<p style="color:var(--text-muted);">Tidak ada data</p>';
+    document.getElementById('content-bahas').innerHTML = item.bahas || '<p style="color:var(--text-muted);">Tidak ada data</p>';
+    
+    // Show res-soal and scroll
+    document.getElementById('res-soal').style.display = 'block';
+    document.getElementById('res-soal').scrollIntoView({ behavior: 'smooth' });
+    
+    showToast(`Membuka: ${item.name}`);
+};
+
+window.deleteBankItem = function(key) {
+    if(!confirm('Hapus soal ini?')) return;
+    
+    const bank = JSON.parse(localStorage.getItem('bankSoal') || '{}');
+    delete bank[key];
+    localStorage.setItem('bankSoal', JSON.stringify(bank));
+    
+    document.getElementById('bank-count').innerText = Object.keys(bank).length;
+    showToast("Soal dihapus!");
+    window.loadBankItems();
+};
+
 window.clearBank = function() {
-    document.getElementById('bank-list-container').innerHTML = '<p style="text-align:center; color:var(--text-muted);">Belum ada soal tersimpan.</p>';
+    if(!confirm('Hapus semua soal di bank?')) return;
+    localStorage.removeItem('bankSoal');
     document.getElementById('bank-count').innerText = '0';
+    showToast("Bank soal dikosongkan!");
+    window.loadBankItems();
 };
 
 // --- INTEGRASI SPREADSHEET (EXCEL) ---
@@ -2625,62 +3370,10 @@ window.exportToExcel = function(divId, filename) {
     showToast("Excel berhasil diunduh!");
 };
 
-// Insert per-panel orientation select into each .output-actions toolbar
-document.addEventListener('DOMContentLoaded', function() {
-    try {
-        const toolbars = document.querySelectorAll('.output-actions');
-        toolbars.forEach(tb => {
-            if(tb.querySelector('select.export-orientation-select')) return;
-            const span = document.createElement('span');
-            span.style.marginRight = '8px';
-            span.style.fontSize = '13px';
-            span.style.verticalAlign = 'middle';
-            span.style.color = 'var(--text)';
-            span.innerText = 'Orientasi:';
-            const sel = document.createElement('select');
-            sel.className = 'export-orientation-select';
-            sel.style.marginLeft = '6px';
-            sel.style.marginRight = '10px';
-            sel.style.padding = '3px';
-            const o1 = document.createElement('option'); o1.value = 'Portrait'; o1.text = 'Portrait';
-            const o2 = document.createElement('option'); o2.value = 'Landscape'; o2.text = 'Landscape';
-            sel.appendChild(o1); sel.appendChild(o2);
-            // insert at the start of toolbar
-            tb.insertBefore(span, tb.firstChild);
-            tb.insertBefore(sel, tb.firstChild.nextSibling);
-        });
-    } catch(e) { console.error('Gagal menambahkan kontrol orientasi per-panel:', e); }
-});
-
 // ===== E-RAPOR FUNCTIONS =====
 // Helper: File upload preview and kelas->fase mapping
 document.addEventListener('DOMContentLoaded', function() {
-    // File upload preview
-    const uploadEl = document.getElementById('rapor-upload-file');
-    const previewEl = document.getElementById('rapor-upload-preview');
-    if (uploadEl) {
-        uploadEl.addEventListener('change', function(e) {
-            const f = this.files && this.files[0];
-            if (!f) {
-                previewEl.innerHTML = '';
-                window.raporUploadedData = null;
-                return;
-            }
-            const name = f.name;
-            if (f.type && f.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function(ev) {
-                    previewEl.innerHTML = `<img src="${ev.target.result}" style="max-height:80px; display:block; margin-bottom:6px;" alt="preview">${name}`;
-                    // store uploaded data for later embedding into the generated rapor
-                    window.raporUploadedData = { name: name, type: f.type, dataUrl: ev.target.result };
-                };
-                reader.readAsDataURL(f);
-            } else {
-                previewEl.innerHTML = `${name} (${f.type || 'file'})`;
-                window.raporUploadedData = { name: name, type: f.type || '', dataUrl: null };
-            }
-        });
-    }
+    // Photo upload removed: rapor-upload-file / rapor-upload-preview logic eliminated
 
     // Kelas -> Fase mapping
     function romanToNumber(r) {
@@ -2702,11 +3395,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if(mr) num = romanToNumber(mr[1]);
         }
         if(!num) return '';
-        if(num <= 2) return 'Fase A (I-II)';
-        if(num <= 4) return 'Fase B (III-IV)';
-        if(num <= 6) return 'Fase C (V-VI)';
-        if(num <= 8) return 'Fase D (VII-VIII)';
-        if(num === 9) return 'Fase E (IX)';
+        if(num <= 2) return 'A';
+        if(num <= 4) return 'B';
+        if(num <= 6) return 'C';
+        if(num <= 8) return 'D';
+        if(num === 9) return 'E';
         return '';
     }
 
@@ -2723,28 +3416,312 @@ document.addEventListener('DOMContentLoaded', function() {
         // initialize
         syncFase();
     }
+    
+    // Sync Muatan Lokal names with Capaian Kompetensi Muatan Lokal
+    function initMuatanLokalSync() {
+        const container = document.getElementById('rapor-muatan-lokal-container');
+        const capContainer = document.getElementById('rapor-capaian-kompetensi-mulok-container');
+        if(!container || !capContainer) return;
+
+        // Assign ids for existing pairs and add listeners
+        const itemDivs = Array.from(container.querySelectorAll(':scope > div'));
+        itemDivs.forEach(div => {
+            const nameInput = div.querySelector('.rapor-muatan-lokal-nama');
+            const nilaiInput = div.querySelector('.rapor-muatan-lokal-nilai');
+
+            // Determine muatan name
+            let muatanName = '';
+            if(nameInput) muatanName = (nameInput.value || '').trim();
+            if(!muatanName && nilaiInput) muatanName = nilaiInput.getAttribute('data-muatan') || '';
+            if(!muatanName) return; // skip malformed
+
+            // Ensure there's a stable id linking the value and capaian
+            let id = nilaiInput.getAttribute('data-muatan-id');
+            if(!id) {
+                id = __genMuatanId();
+                if(nilaiInput) nilaiInput.setAttribute('data-muatan-id', id);
+                if(nameInput) nameInput.setAttribute('data-muatan-id', id);
+            }
+
+            // Find matching capaian element by existing data-muatan-id or by data-muatan
+            let capTextarea = capContainer.querySelector(`.rapor-capaian-kompetensi-mulok-input[data-muatan-id="${id}"]`)
+                || capContainer.querySelector(`.rapor-capaian-kompetensi-mulok-input[data-muatan="${muatanName}"]`);
+
+            if(capTextarea) {
+                // set its id and label
+                capTextarea.setAttribute('data-muatan-id', id);
+                capTextarea.setAttribute('data-muatan', muatanName);
+                const capLabel = capTextarea.parentElement && capTextarea.parentElement.querySelector('label');
+                if(capLabel) capLabel.textContent = muatanName;
+            }
+
+            // Add listener to nameInput to update linked elements
+            if(nameInput && nilaiInput) {
+                nameInput.addEventListener('input', function() {
+                    const newName = this.value.trim();
+                    if(!newName) return;
+                    nilaiInput.setAttribute('data-muatan', newName);
+                    // update cap textarea by id
+                    const capById = capContainer.querySelector(`.rapor-capaian-kompetensi-mulok-input[data-muatan-id="${id}"]`);
+                    if(capById) {
+                        capById.setAttribute('data-muatan', newName);
+                        const lbl = capById.parentElement && capById.parentElement.querySelector('label');
+                        if(lbl) lbl.textContent = newName;
+                    }
+                });
+            }
+        });
+    }
+
+    // Initialize on page load
+    initMuatanLokalSync();
+    syncMapelCapaian();  // Sinkronisasi Capaian Kompetensi dengan Mapel pada page load
 });
 
-// Helper: Tambah field mata pelajaran
-window.addMapelField = function() {
-    const container = document.getElementById('rapor-nilai-container');
-    const mapelName = prompt('Nama Mata Pelajaran:');
-    if (!mapelName) return;
+// Global Muatan Lokal ID counter dan generator (untuk diakses dari fungsi global saveAddMulok)
+let __muatanIdCounter = Date.now();
+function __genMuatanId() { return 'mulok-' + (__muatanIdCounter++); }
+
+// Fungsi untuk sinkronisasi Mata Pelajaran dengan Capaian Kompetensi
+window.syncMapelCapaian = function() {
+    const nilaiContainer = document.getElementById('rapor-nilai-container');
+    const capContainer = document.getElementById('rapor-capaian-kompetensi-container');
     
-    const div = document.createElement('div');
-    div.style.padding = '12px';
-    div.style.background = 'var(--bg-body)';
-    div.style.borderRadius = '8px';
-    div.style.border = '1px solid var(--border)';
-    div.innerHTML = `
-        <label style="font-size:0.85rem; font-weight:600;">${mapelName}</label>
-        <div style="display:flex; gap:5px; margin-top:5px;">
-            <input type="number" class="rapor-nilai-input form-control" data-mapel="${mapelName}" min="0" max="100" value="75" style="flex:1;">
-            <button class="btn btn-danger btn-sm" onclick="this.parentElement.parentElement.remove()"><i class="fas fa-trash"></i></button>
-        </div>
-    `;
-    container.appendChild(div);
+    if(!nilaiContainer || !capContainer) return;
+    
+    // Get all mapel dari nilai container
+    const nilaiInputs = Array.from(nilaiContainer.querySelectorAll('.rapor-nilai-input'));
+    const mapelNames = new Set(nilaiInputs.map(input => input.getAttribute('data-mapel')));
+    
+    // Get existing capaian mapel
+    const existingCapaian = new Set(
+        Array.from(capContainer.querySelectorAll('.rapor-capaian-kompetensi-input')).map(ta => ta.getAttribute('data-mapel'))
+    );
+    
+    // Tambah capaian untuk mapel yang tidak ada
+    mapelNames.forEach(mapel => {
+        if(!existingCapaian.has(mapel)) {
+            const div = document.createElement('div');
+            div.style.padding = '12px';
+            div.style.background = 'var(--bg-body)';
+            div.style.borderRadius = '8px';
+            div.style.border = '1px solid var(--border)';
+            div.setAttribute('data-mapel-capaian', mapel);
+            div.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <label style="font-size:0.85rem; font-weight:600; margin: 0;">${mapel}</label>
+                    <label class="switch" style="margin: 0;">
+                        <input type="checkbox" class="rapor-mapel-switch" data-mapel="${mapel}" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <textarea class="rapor-capaian-kompetensi-input form-control" data-mapel="${mapel}" rows="2" placeholder="Capaian kompetensi..." style="margin-top:5px; font-size:0.85rem;"></textarea>
+            `;
+            capContainer.appendChild(div);
+        }
+    });
+    
+    // Hapus capaian untuk mapel yang sudah dihapus
+    Array.from(capContainer.querySelectorAll('[data-mapel-capaian]')).forEach(div => {
+        const mapel = div.getAttribute('data-mapel-capaian');
+        if(!mapelNames.has(mapel)) {
+            div.remove();
+        }
+    });
 };
+
+// Helper function untuk menghapus mapel dan capaian kompetensinya
+window.removeMapelAndCapaian = function(mapelName, buttonEl) {
+    buttonEl.parentElement.parentElement.remove();
+    const capContainer = document.getElementById('rapor-capaian-kompetensi-container');
+    const capDiv = capContainer.querySelector(`[data-mapel-capaian="${mapelName}"]`);
+    if(capDiv) capDiv.remove();
+};
+
+// Helper: Tambah field mata pelajaran (Updated - menggunakan Modal)
+window.addMapelField = function() {
+    openAddMapelModal();
+};
+
+// Helper: Tambah field muatan lokal (Updated - menggunakan Modal)
+window.addMuatanLokalField = function() {
+    openAddMulokModal();
+};
+
+// Helpers: Ekstrakurikuler dynamic fields
+window.addEkstraField = function() {
+    const list = document.getElementById('rapor-ekstrakurikuler-list');
+    if (!list) return;
+    const div = document.createElement('div');
+    div.className = 'ekstra-item';
+    div.innerHTML = `
+        <input type="text" class="form-control ekstra-name" placeholder="Nama Kegiatan (mis. Pramuka)">
+        <input type="text" class="form-control ekstra-role" placeholder="Peran (mis. Anggota / Ketua)">
+        <select class="form-control ekstra-freq">
+            <option value="">Frekuensi</option>
+            <option value="Harian">Harian</option>
+            <option value="Mingguan">Mingguan</option>
+            <option value="Bulanan">Bulanan</option>
+            <option value="Tahunan">Tahunan</option>
+        </select>
+        <button class="btn btn-danger btn-sm" type="button"><i class="fas fa-trash"></i></button>
+    `;
+    // remove handler
+    div.querySelector('button').addEventListener('click', function() { div.remove(); updateEkstraSummary(); });
+    // update summary when inputs change
+    div.querySelectorAll('input, select').forEach(i => i.addEventListener('input', updateEkstraSummary));
+    list.appendChild(div);
+    setTimeout(() => { const f = div.querySelector('.ekstra-name'); if(f) f.focus(); }, 10);
+    updateEkstraSummary();
+};
+
+function updateEkstraSummary() {
+    const list = document.getElementById('rapor-ekstrakurikuler-list');
+    const summary = document.getElementById('rapor-ekstrakurikuler');
+    if(!summary) return;
+    if(!list) { summary.value = ''; return; }
+    const items = Array.from(list.querySelectorAll('.ekstra-item'));
+    const lines = items.map(it => {
+        const name = (it.querySelector('.ekstra-name') || {}).value || '';
+        const role = (it.querySelector('.ekstra-role') || {}).value || '';
+        const freq = (it.querySelector('.ekstra-freq') || {}).value || '';
+        const parts = [];
+        if(name.trim()) parts.push(name.trim());
+        if(role.trim()) parts.push('(' + role.trim() + ')');
+        if(freq) parts.push('[' + freq + ']');
+        return parts.join(' ');
+    }).filter(l => l.trim());
+    summary.value = lines.join('\n');
+}
+
+// --- Kokurikuler: generate catatan otomatis berdasarkan Tema + Dimensi (switch)
+function updateKokulNote() {
+    const temaEl = document.getElementById('rapor-tema-kokul');
+    const noteEl = document.getElementById('rapor-catatan-kokul');
+    const switches = Array.from(document.querySelectorAll('.rapor-profil-switch'));
+    if(!noteEl) return;
+    const tema = temaEl ? (temaEl.value || '').trim() : '';
+    const selected = switches.filter(s => s.checked).map(s => s.getAttribute('data-profil'));
+
+    if(!tema && selected.length === 0) return; // nothing to auto-fill
+
+    // contoh khusus yang diminta oleh pengguna
+    const sampleNote = 'Ananda sudah cakap dalam penalaran kritis saat mencari solusi terhadap permasalahan terkait lingkungan dan masih perlu berlatih dalam mengomunikasikan gagasan';
+
+    // jika tema mengandung kata 'lingkung' atau Penalaran Kritis dipilih, gunakan contoh persis
+    const temaLower = tema ? tema.toLowerCase() : '';
+    if (temaLower.includes('lingkung') || selected.includes('Penalaran Kritis')) {
+        noteEl.value = sampleNote;
+        return;
+    }
+    const phraseMap = {
+        'Keimanan dan Ketakwaan terhadap Tuhan Yang Maha Esa': 'menunjukkan sikap keimanan dan ketakwaan terhadap Tuhan Yang Maha Esa',
+        'Kewargaan': 'bersikap sebagai warga negara yang baik',
+        'Penalaran Kritis': 'menggunakan penalaran kritis dalam pemecahan masalah',
+        'Kreativitas': 'menunjukkan kreativitas dan inisiatif',
+        'Kolaborasi': 'bekerja sama secara efektif dalam tim',
+        'Kemandirian': 'memperlihatkan kemandirian dalam tugas',
+        'Kesehatan': 'menjaga kesehatan dan kebugaran diri',
+        'Komunikasi': 'mengomunikasikan gagasan dengan jelas dan percaya diri'
+    };
+
+    const descriptors = selected.map(p => phraseMap[p] || p);
+    let note = '';
+    if(tema) note += `Tema proyek: ${tema}. `;
+    if(descriptors.length) {
+        note += 'Dalam kegiatan kokurikuler, siswa ' + descriptors.join('; ') + '.';
+    }
+
+    noteEl.value = note;
+}
+
+// Hook events: tema input and switches
+function initKokulAutoNote() {
+    const temaEl = document.getElementById('rapor-tema-kokul');
+    if(temaEl) temaEl.addEventListener('input', updateKokulNote);
+    document.querySelectorAll('.rapor-profil-switch').forEach(s => s.addEventListener('change', updateKokulNote));
+    // initial run
+    updateKokulNote();
+}
+
+// Initialize kokul note handlers after DOM ready (script is at end of body but ensure)
+try { initKokulAutoNote(); } catch(e){ /* ignore if elements not yet present */ }
+
+// ===== OPTIMIZED EVENT DELEGATION FOR RAPOR =====
+// Cache untuk selectors yang sering diquery
+const selectorCache = {
+    nilaiInputs: null,
+    mapelSwitches: null,
+    profilSwitches: null,
+    mulokSwitches: null,
+    lastCacheTime: 0,
+    CACHE_DURATION: 500 // Cache selama 500ms
+};
+
+/**
+ * Invalidate cache jika ada perubahan DOM
+ */
+function invalidateSelectorCache() {
+    selectorCache.lastCacheTime = 0;
+    selectorCache.nilaiInputs = null;
+    selectorCache.mapelSwitches = null;
+}
+
+/**
+ * Get cached selector dengan auto-invalidate
+ */
+function getCachedSelector(selectorType) {
+    const now = Date.now();
+    if (now - selectorCache.lastCacheTime > selectorCache.CACHE_DURATION) {
+        selectorCache.lastCacheTime = now;
+        selectorCache.nilaiInputs = null;
+        selectorCache.mapelSwitches = null;
+    }
+    
+    switch(selectorType) {
+        case 'nilaiInputs':
+            if (!selectorCache.nilaiInputs) {
+                selectorCache.nilaiInputs = document.querySelectorAll('.rapor-nilai-input');
+            }
+            return selectorCache.nilaiInputs;
+        case 'mapelSwitches':
+            if (!selectorCache.mapelSwitches) {
+                selectorCache.mapelSwitches = document.querySelectorAll('.rapor-mapel-switch');
+            }
+            return selectorCache.mapelSwitches;
+        case 'profilSwitches':
+            if (!selectorCache.profilSwitches) {
+                selectorCache.profilSwitches = document.querySelectorAll('.rapor-profil-switch');
+            }
+            return selectorCache.profilSwitches;
+        default:
+            return [];
+    }
+}
+
+/**
+ * Event delegation untuk capaian kompetensi input
+ * Meminimalkan jumlah event listeners dengan delegation
+ */
+function setupRaporEventDelegation() {
+    const capaianContainer = document.getElementById('rapor-capaian-kompetensi-container');
+    
+    if (capaianContainer) {
+        // Debounced input handler untuk textareas
+        const debouncedCapaianChange = debounce(function(e) {
+            if (e.target.classList.contains('rapor-capaian-kompetensi-input')) {
+                invalidateSelectorCache();
+            }
+        }, 500);
+        
+        capaianContainer.addEventListener('input', debouncedCapaianChange, true);
+    }
+}
+
+// Setup event delegation saat DOM ready
+setupRaporEventDelegation();
+
+// ===== END PERFORMANCE OPTIMIZATIONS =====
 
 // Helper: Convert nilai to predicate (description)
 function nilaiToPredicate(nilai) {
@@ -2756,83 +3733,139 @@ function nilaiToPredicate(nilai) {
     return 'Sangat Kurang';
 }
 
+// Helper: Load data from Profil Guru
+window.loadDataFromProfil = function() {
+    // Ambil data dari Profil Guru (localStorage)
+    const nama_guru = localStorage.getItem('as_nama') || '';
+    const nip_guru = localStorage.getItem('as_nip') || '';
+    const alamat_sekolah = localStorage.getItem('as_alamat') || localStorage.getItem('as_sekolah') || '';
+    const kepsek = localStorage.getItem('as_kepsek') || '';
+    const nip_kepsek = localStorage.getItem('as_nip_kepsek') || '';
+    
+    // Set ke form E-Rapor
+    document.getElementById('rapor-walikelas').value = nama_guru;
+    document.getElementById('rapor-nip').value = nip_guru;
+    document.getElementById('rapor-alamat-sekolah').value = alamat_sekolah;
+    document.getElementById('rapor-kepsek').value = kepsek;
+    document.getElementById('rapor-nip-kepsek').value = nip_kepsek;
+    
+    showToast('Data dari Profil Guru berhasil dimuat!');
+};
+
 // Generate E-Rapor (2025 Kurikulum Merdeka)
 document.getElementById('btn-gen-rapor').addEventListener('click', function() {
-    const profilInputs = document.querySelectorAll('.rapor-profil-select');
+    // Collect student identity data from form inputs
+    const nama = document.getElementById('rapor-nama').value || 'Siswa';
+    const nisn = document.getElementById('rapor-nisn').value || '';
+    const kelas = document.getElementById('rapor-kelas').value || '';
+    const fase = document.getElementById('rapor-fase').value || '';
+    const semester = document.getElementById('rapor-semester').value || 'Ganjil';
+    const tahunAjaran = document.getElementById('rapor-tahun').value || '';
+    
+    // Attendance data
+    const sakit = document.getElementById('rapor-sakit').value || 0;
+    const izin = document.getElementById('rapor-izin').value || 0;
+    const alfa = document.getElementById('rapor-alfa').value || 0;
+    
+    // Additional info
+    const ekstrakurikuler = document.getElementById('rapor-ekstrakurikuler').value || '';
+    const catatan = document.getElementById('rapor-catatan').value || '';
+    const walikelas = document.getElementById('rapor-walikelas').value || 'Wali Kelas';
+    const nip = document.getElementById('rapor-nip').value || '';
+    const alamatSekolah = document.getElementById('rapor-alamat-sekolah').value || localStorage.getItem('as_alamat') || '';
+    const kepsek = document.getElementById('rapor-kepsek').value || localStorage.getItem('as_kepsek') || '';
+    const nipKepsek = document.getElementById('rapor-nip-kepsek').value || localStorage.getItem('as_nip_kepsek') || '';
+    
+    // Tanggal laporan (use current date if not set)
+    const tglLaporanValue = document.getElementById('rapor-tanggal-laporan').value;
+    const tglLaporan = tglLaporanValue ? new Date(tglLaporanValue) : new Date();
+    
+    const profilSwitches = document.querySelectorAll('.rapor-profil-switch');
     const profil = {};
-    profilInputs.forEach(input => {
-        const profilName = input.getAttribute('data-profil');
-        const valueText = input.options[input.selectedIndex].text;
-        profil[profilName] = valueText;
+    profilSwitches.forEach(s => {
+        const profilName = s.getAttribute('data-profil');
+        profil[profilName] = s.checked ? 'Terpenuhi' : 'Belum';
     });
     
-    // Get nilai mapel
-    const nilaiInputs = document.querySelectorAll('.rapor-nilai-input');
+    // Get nilai mapel - only include active subjects (with checked switch)
+    // OPTIMIZATION: Use cached selectors untuk mengurangi DOM queries
+    const nilaiInputs = getCachedSelector('nilaiInputs');
+    const mapelSwitches = getCachedSelector('mapelSwitches');
     const mapelNilai = [];
     let totalNilai = 0;
+    
+    // Build map untuk faster lookup
+    const switchMap = new Map();
+    mapelSwitches.forEach(s => {
+        switchMap.set(s.getAttribute('data-mapel'), s.checked);
+    });
+    
     nilaiInputs.forEach(input => {
         const mapel = input.getAttribute('data-mapel');
-        const nilai = parseInt(input.value) || 0;
-        mapelNilai.push({ mapel, nilai });
-        totalNilai += nilai;
+        // Check if switch is active (default true jika tidak ada switch)
+        const isActive = switchMap.has(mapel) ? switchMap.get(mapel) : true;
+        if (isActive) {
+            const nilai = parseInt(input.value) || 0;
+            mapelNilai.push({ mapel, nilai });
+            totalNilai += nilai;
+        }
     });
     
     if (mapelNilai.length === 0) {
-        showToast('Tambahkan minimal satu mata pelajaran!');
+        showToast('Pilih minimal satu mata pelajaran yang aktif!');
         return;
     }
     
     const rataRata = Math.round(totalNilai / mapelNilai.length);
     
-    // Get sikap & perilaku
-    const sikapInputs = document.querySelectorAll('.rapor-sikap-select');
-    const sikap = {};
-    sikapInputs.forEach(input => {
-        const sikapName = input.getAttribute('data-sikap');
-        const valueText = input.options[input.selectedIndex].text;
-        sikap[sikapName] = valueText;
+    // Get muatan lokal - hanya include yang switch-nya aktif
+    const muatanLocalInputs = document.querySelectorAll('.rapor-muatan-lokal-nilai');
+    const muatanLokal = [];
+    muatanLocalInputs.forEach(input => {
+        const muatan = input.getAttribute('data-muatan');
+        const mulokSwitch = Array.from(document.querySelectorAll('.rapor-mulok-switch')).find(
+            s => s.getAttribute('data-muatan') === muatan
+        );
+        if (mulokSwitch && mulokSwitch.checked) {
+            const nilai = parseInt(input.value) || 0;
+            muatanLokal.push({ muatan, nilai });
+        }
+    });
+    
+    // Get tema kokurikuler
+    const catatKokul = document.getElementById('rapor-catatan-kokul').value || '';
+    
+    // Get capaian kompetensi per mapel
+    const capaianKompetensiMap = {};
+    const capaianInputs = document.querySelectorAll('.rapor-capaian-kompetensi-input');
+    capaianInputs.forEach(input => {
+        const mapel = input.getAttribute('data-mapel');
+        const value = input.value || '';
+        capaianKompetensiMap[mapel] = value;
+    });
+    
+    // Get capaian kompetensi per muatan lokal
+    const capaianInputsMulok = document.querySelectorAll('.rapor-capaian-kompetensi-mulok-input');
+    capaianInputsMulok.forEach(input => {
+        const muatan = input.getAttribute('data-muatan');
+        const value = input.value || '';
+        capaianKompetensiMap[muatan] = value;
     });
     
     // Format tanggal laporan
     const tglLaporanObj = new Date(tglLaporan);
     const tglFormat = tglLaporanObj.toLocaleDateString('id-ID', {year: 'numeric', month: 'long', day: 'numeric'});
-    // Prepare uploaded file HTML (if any)
-    let uploadedHtml = '';
-    try {
-        const u = window.raporUploadedData;
-        if (u) {
-            if (u.dataUrl) {
-                uploadedHtml = `<div style="position:absolute; right:10px; top:6px; text-align:center;"><img src="${u.dataUrl}" style="max-height:90px; border:1px solid #000; display:block; margin-bottom:4px;"><div style="font-size:9pt;">${u.name}</div></div>`;
-            } else if (u.name) {
-                uploadedHtml = `<div style="position:absolute; right:10px; top:10px; font-size:9pt;">${u.name}</div>`;
-            }
-        }
-    } catch (e) { console.warn('Gagal menyiapkan uploadedHtml', e); }
-    // Prepare inline photo for Identitas (left side)
-    let photoInlineHtml = '';
-    try {
-        const u = window.raporUploadedData;
-        if (u) {
-            if (u.dataUrl) {
-                photoInlineHtml = `
-                    <div style="width:120px; text-align:center; padding:6px; background:#fff;"> 
-                        <div style="width:100px; height:100px; overflow:hidden; border-radius:50%; border:1px solid #ccc; margin:0 auto;">
-                            <img src="${u.dataUrl}" style="width:100%; height:100%; object-fit:cover; display:block;" alt="foto siswa" />
-                        </div>
-                        <div style="font-size:9pt; margin-top:6px; word-break:break-word; max-width:110px;">${u.name}</div>
-                    </div>`;
-            } else if (u.name) {
-                photoInlineHtml = `<div style="width:120px; text-align:center; padding:8px; font-size:9pt;">${u.name}</div>`;
-            }
-        }
-    } catch (e) { console.warn('Gagal menyiapkan photoInlineHtml', e); }
+    // Lokasi laporan (optional) - combine with tanggal when displayed
+    const lokasiLaporan = (document.getElementById('rapor-lokasi-laporan') && document.getElementById('rapor-lokasi-laporan').value) ? document.getElementById('rapor-lokasi-laporan').value.trim() : '';
+    const tglWithLokasi = lokasiLaporan ? `${lokasiLaporan}, ${tglFormat}` : tglFormat;
+    // Photo logic removed: no uploadedHtml or photoInlineHtml
     
     // Build HTML Report (2025 Kurikulum Merdeka Format)
     let html = `
         <style>
-            body { font-family: 'Calibri', 'Arial', sans-serif; }
-            .rapor-header { position: relative; text-align: center; margin-bottom: 20px; border-bottom: 2px solid black; padding-bottom: 10px; }
-            .rapor-header h2 { margin: 0; font-size: 14pt; font-weight: bold; }
+            body { font-family: 'Times New Roman', serif; }
+            .rapor-header { position: relative; text-align: center; margin-bottom: 20px; }
+            .rapor-header h2 { margin: 0; font-size: 16pt; font-weight: bold; }
             .rapor-header p { margin: 2px 0; font-size: 10pt; }
             .rapor-section { margin-bottom: 20px; }
             .rapor-section h3 { margin: 10px 0 8px 0; font-size: 11pt; font-weight: bold; border-bottom: 1px solid #000; padding-bottom: 4px; background: #f5f5f5; padding: 5px; }
@@ -2857,193 +3890,244 @@ document.getElementById('btn-gen-rapor').addEventListener('click', function() {
         </style>
         
         <div class="rapor-header">
-            ${uploadedHtml}
-            <h2>${localStorage.getItem('as_sekolah') || 'SEKOLAH'}</h2>
-            <p style="font-weight: bold;">LAPORAN PENILAIAN PEMBELAJARAN (RAPOR)</p>
-            <p style="font-size: 9pt;">Berdasarkan Kurikulum Merdeka 2024-2025</p>
-            <p>${semester} | Tahun Ajaran ${tahunAjaran}</p>
+            <p style="font-weight: bold;">LAPORAN HASIL BELAJAR</p>
+            <p style="font-weight: bold;">(RAPOR)</p>
         </div>
         
         <!-- A. IDENTITAS SISWA -->
         <div class="rapor-section">
-            <h3>A. IDENTITAS SISWA</h3>
-            ${photoInlineHtml ? `<div style="float:left; margin-right:10px;">${photoInlineHtml}</div>` : ''}
             <div style="overflow:hidden;">
             <table style="width:100%; border:none;">
-                <tr><td style="border:none; padding:4px;"><div class="rapor-row"><span style="width:200px; font-weight:bold;">Nama Lengkap</span><span>: ${nama}</span></div></td><td style="border:none; padding:4px;"><div class="rapor-row"><span style="width:150px; font-weight:bold;">NIS</span><span>: ${nis}</span></div></td></tr>
-                <tr><td style="border:none; padding:4px;"><div class="rapor-row"><span style="width:200px; font-weight:bold;">NISN</span><span>: ${nisn}</span></div></td><td style="border:none; padding:4px;"><div class="rapor-row"><span style="width:150px; font-weight:bold;">Jenis Kelamin</span><span>: ${jk}</span></div></td></tr>
-                <tr><td style="border:none; padding:4px;"><div class="rapor-row"><span style="width:200px; font-weight:bold;">Tempat Lahir</span><span>: ${tmpLahir}</span></div></td><td style="border:none; padding:4px;"><div class="rapor-row"><span style="width:150px; font-weight:bold;">Tanggal Lahir</span><span>: ${tglLahir}</span></div></td></tr>
-                <tr><td style="border:none; padding:4px;"><div class="rapor-row"><span style="width:200px; font-weight:bold;">Kelas / Rombel</span><span>: ${kelas}</span></div></td><td style="border:none; padding:4px;"><div class="rapor-row"><span style="width:150px; font-weight:bold;">Fase</span><span>: ${fase}</span></div></td></tr>
+                <tr><td style="border:none; padding:4px;"><div class="rapor-row"><span style="width:200px; font-weight:bold;">Nama Peserta Didik</span><span>: ${nama}</span></div></td><td style="border:none; padding:4px;"><div class="rapor-row"><span style="width:150px; font-weight:bold;">Kelas</span><span>: ${kelas}</span></div></td></tr>
+                <tr><td style="border:none; padding:4px;"><div class="rapor-row"><span style="width:200px; font-weight:bold;">NIS/NISN</span><span>: ${nisn}</span></div></td><td style="border:none; padding:4px;"><div class="rapor-row"><span style="width:150px; font-weight:bold;">Fase</span><span>: ${fase}</span></div></td></tr>
+                <tr><td style="border:none; padding:4px;"><div class="rapor-row"><span style="width:200px; font-weight:bold;">Sekolah</span><span>: ${localStorage.getItem('as_sekolah') || 'SEKOLAH'}</span></div></td><td style="border:none; padding:4px;"><div class="rapor-row"><span style="width:150px; font-weight:bold;">Semester</span><span>: ${semester}</span></div></td></tr>
+                <tr><td style="border:none; padding:4px;"><div class="rapor-row"><span style="width:200px; font-weight:bold;">Alamat</span><span>: ${alamatSekolah || 'ALAMAT SEKOLAH'}</span></div></td><td style="border:none; padding:4px;"><div class="rapor-row"><span style="width:150px; font-weight:bold;">Tahun Ajaran</span><span>: ${tahunAjaran}</span></div></td></tr>
             </table>
             </div>
         </div>
-        
-        <!-- B. PROFIL PELAJAR PANCASILA -->
+
+        <!-- Separator moved: line placed before Mata Pelajaran table -->
+        <div style="border-bottom: 2px solid black; margin: 12px 0;"></div>
+
         <div class="rapor-section">
-            <h3>B. CAPAIAN PROFIL PELAJAR PANCASILA</h3>
-            <p style="font-size: 9pt; margin: 5px 0; color: #666;">Penilaian terhadap karakter dan nilai-nilai Pancasila yang dikembangkan melalui pembelajaran di sekolah</p>
-            <table class="rapor-table">
-                <thead>
-                    <tr>
-                        <th style="width: 30px;">No.</th>
-                        <th>Dimensi Profil Pelajar Pancasila</th>
-                        <th style="width: 120px;">Capaian</th>
-                    </tr>
-                </thead>
-                <tbody>
-    `;
-    
-    let profilIdx = 1;
-    Object.keys(profil).forEach(profilName => {
-        html += `
-            <tr>
-                <td>${profilIdx}</td>
-                <td style="text-align: left;">${profilName}</td>
-                <td>${profil[profilName]}</td>
-            </tr>
-        `;
-        profilIdx++;
-    });
-    
-    html += `
-                </tbody>
-            </table>
-        </div>
-        
-        <!-- C. HASIL PENILAIAN PEMBELAJARAN MATA PELAJARAN -->
-        <div class="rapor-section">
-            <h3>C. HASIL PENILAIAN PEMBELAJARAN MATA PELAJARAN</h3>
-            <p style="font-size: 9pt; margin: 5px 0; color: #666;">Penilaian pembelajaran untuk setiap mata pelajaran yang mencakup pengetahuan, keterampilan, dan sikap</p>
             <table class="rapor-table">
                 <thead>
                     <tr>
                         <th style="width: 30px;">No.</th>
                         <th>Mata Pelajaran</th>
-                        <th style="width: 70px;">Nilai</th>
-                        <th style="width: 100px;">Predikat</th>
-                        <th style="width: 200px;">Capaian Pembelajaran</th>
+                        <th style="width: 100px;">Nilai Akhir</th>
+                        <th style="width: 300px;">Capaian Kompetensi</th>
                     </tr>
                 </thead>
                 <tbody>
     `;
     
     mapelNilai.forEach((item, idx) => {
-        const pred = nilaiToPredicate(item.nilai);
+        const capaian = capaianKompetensiMap[item.mapel] || 'Siswa telah menguasai kompetensi dengan hasil ' + item.nilai + '/100';
+        const capaianLines = capaian.split('\n').slice(0, 2).join('<br>');
         html += `
             <tr>
                 <td>${idx + 1}</td>
                 <td style="text-align: left;">${item.mapel}</td>
                 <td>${item.nilai}</td>
-                <td>${pred}</td>
-                <td style="text-align: left; font-size: 8pt;">Siswa telah menguasai kompetensi pada level ${pred.toLowerCase()}</td>
+                <td style="text-align: left; font-size: 8pt; white-space: pre-wrap; word-break: break-word; max-height: 60px; overflow: hidden;">${capaianLines}</td>
             </tr>
         `;
     });
     
     html += `
-                    <tr style="font-weight: bold; background: #f0f0f0;">
-                        <td colspan="2">RATA-RATA NILAI MAPEL</td>
-                        <td>${rataRata}</td>
-                        <td>${nilaiToPredicate(rataRata)}</td>
-                        <td style="font-size: 8pt;">Prestasi akademik ${nilaiToPredicate(rataRata).toLowerCase()}</td>
-                    </tr>
                 </tbody>
             </table>
         </div>
         
-        <!-- D. PENILAIAN PERILAKU DAN SIKAP -->
+        <!-- MUATAN LOKAL -->
+        ${muatanLokal.length > 0 ? `
         <div class="rapor-section">
-            <h3>D. PENILAIAN PERILAKU DAN SIKAP</h3>
             <table class="rapor-table">
                 <thead>
                     <tr>
                         <th style="width: 30px;">No.</th>
-                        <th>Dimensi Perilaku</th>
-                        <th style="width: 120px;">Predikat</th>
+                        <th>Muatan Lokal</th>
+                        <th style="width: 100px;">Nilai</th>
+                        <th style="width: 300px;">Capaian Kompetensi</th>
+                    </tr>
+                </thead>
+                <tbody>
+        ` : ''}
+        ${muatanLokal.map((item, idx) => {
+            const capaian = capaianKompetensiMap[item.muatan] || 'Siswa telah menguasai kompetensi dengan hasil ' + item.nilai + '/100';
+            const capaianLines = capaian.split('\n').slice(0, 2).join('<br>');
+            return `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td style="text-align: left;">${item.muatan}</td>
+                        <td style="text-align: center;">${item.nilai}</td>
+                        <td style="text-align: left; font-size: 8pt; white-space: pre-wrap; word-break: break-word; max-height: 60px; overflow: hidden;">${capaianLines}</td>
+                    </tr>
+            `;
+        }).join('')}
+        ${muatanLokal.length > 0 ? `
+                </tbody>
+            </table>
+        </div>
+        ` : ''}
+        
+        <!-- KOKURIKULER -->
+        <div class="rapor-section">
+            <table class="rapor-table">
+                <thead>
+                    <tr>
+                        <th>Kokurikuler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align: left; font-size: 9pt;">${catatKokul || 'Ananda sudah cakap dalam penalaran kritis saat mencari solusi terhadap permasalahan terkait lingkungan dan masih perlu berlatih dalam mengomunikasikan gagasan'}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+           
+        <!-- E. EKSTRAKURIKULER -->
+        <div class="rapor-section">
+            <table class="rapor-table">
+                <thead>
+                    <tr>
+                        <th style="width: 30px;">No.</th>
+                        <th>Ekstrakurikuler</th>
+                        <th>Keterangan</th>
                     </tr>
                 </thead>
                 <tbody>
     `;
     
-    let sikapIdx = 1;
-    Object.keys(sikap).forEach(sikapName => {
+    const ekskul = ekstrakurikuler ? ekstrakurikuler.split('\n').map(e => e.trim()).filter(e => e) : [];
+    if(ekskul.length === 0) {
         html += `
-            <tr>
-                <td>${sikapIdx}</td>
-                <td style="text-align: left;">${sikapName}</td>
-                <td>${sikap[sikapName]}</td>
-            </tr>
+                    <tr>
+                        <td colspan="3" style="text-align: center; color: #999; font-size: 9pt;">--</td>
+                    </tr>
         `;
-        sikapIdx++;
-    });
+    } else {
+        ekskul.forEach((e, idx) => {
+            html += `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td style="text-align: left;">${e}</td>
+                        <td style="text-align: center;">Aktif</td>
+                    </tr>
+            `;
+        });
+    }
     
     html += `
                 </tbody>
             </table>
         </div>
         
-        <!-- E. DATA KEHADIRAN -->
-        <div class="rapor-section">
-            <h3>E. DATA KEHADIRAN</h3>
-            <table style="width: 100%; border: none;">
-                <tr>
-                    <td style="border: 1px solid #999; padding: 6px; width: 33%; text-align: center;"><strong>Sakit</strong><br><span style="font-size: 16pt; font-weight: bold;">${sakit}</span> hari</td>
-                    <td style="border: 1px solid #999; padding: 6px; width: 33%; text-align: center;"><strong>Izin</strong><br><span style="font-size: 16pt; font-weight: bold;">${izin}</span> hari</td>
-                    <td style="border: 1px solid #999; padding: 6px; width: 33%; text-align: center;"><strong>Tanpa Keterangan</strong><br><span style="font-size: 16pt; font-weight: bold;">${alfa}</span> hari</td>
-                </tr>
-            </table>
-        </div>
-        
-        <!-- F. KEGIATAN EKSTRAKURIKULER -->
-        ${ekstrakurikuler ? `
-        <div class="rapor-section">
-            <h3>F. KEGIATAN EKSTRAKURIKULER</h3>
-            <div class="info-box" style="border-left: 3px solid #4caf50;">
-                ${ekstrakurikuler.split('\n').map(e => e.trim()).filter(e => e).map(e => `• ${e}`).join('<br>')}
-            </div>
-        </div>
-        ` : ''}
-        
-        <!-- G. PRESTASI DAN PENGHARGAAN -->
-        ${prestasi ? `
-        <div class="rapor-section">
-            <h3>G. PRESTASI DAN PENGHARGAAN</h3>
-            <div class="info-box" style="border-left: 3px solid #ff9800;">
-                ${prestasi.split('\n').map(p => p.trim()).filter(p => p).map(p => `• ${p}`).join('<br>')}
-            </div>
-        </div>
-        ` : ''}
-        
-        <!-- H. CATATAN WALI KELAS -->
-        <div class="rapor-section">
-            <h3>H. CATATAN WALI KELAS</h3>
-            <div style="padding: 10px; background: #fafafa; border: 1px solid #ddd; min-height: 40px; font-size: 10pt; line-height: 1.5;">
-                ${catatan || 'Siswa menunjukkan perkembangan yang baik dalam pembelajaran. Terus tingkatkan prestasi dan sikap positif.'}
-            </div>
-        </div>
-        
-        <!-- I. PENANDATANGANAN -->
-        <div class="rapor-section">
-            <h3>I. PENANDATANGANAN</h3>
-            <div style="margin-top: 30px;">
-                <div class="rapor-footer">
-                    <div class="signature-box">
-                        <div style="margin-bottom: 50px;">Orang Tua/Wali</div>
-                        <div style="border-top: 1px solid #000; padding-top: 5px;">_________________</div>
-                    </div>
-                    <div class="signature-box">
-                        <p style="margin: 0; font-size: 8pt; color: #666;">${localStorage.getItem('as_sekolah') || 'Sekolah'}</p>
-                        <p style="margin: 5px 0 0 0; font-size: 8pt; color: #666;">${tglFormat}</p>
-                    </div>
-                    <div class="signature-box">
-                        <div style="margin-bottom: 10px;">Wali Kelas</div>
-                        <div style="margin-bottom: 40px;"></div>
-                        <div style="border-top: 1px solid #000; padding-top: 5px;">${walikelas}</div>
-                        <div style="font-size: 8pt; margin-top: 3px;">NIP: ${nip || '_______________'}</div>
+        <!-- H. KEHADIRAN & CATATAN GURU -->
+        <div class="rapor-section" style="margin-top: 20px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <!-- Kehadiran -->
+                <div>
+                    <h3 style="margin: 0 0 8px 0; font-size: 10pt; font-weight: bold; border-bottom: 1px solid #000; padding-bottom: 3px;">Kehadiran</h3>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 9pt;">
+                        <tr>
+                            <td style="border: 1px solid #999; padding: 4px; font-weight: bold; width: 50%;">Sakit</td>
+                            <td style="border: 1px solid #999; padding: 4px; text-align: center;">: ${sakit} hari</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #999; padding: 4px; font-weight: bold;">Izin</td>
+                            <td style="border: 1px solid #999; padding: 4px; text-align: center;">: ${izin} hari</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #999; padding: 4px; font-weight: bold;">Tanpa Keterangan</td>
+                            <td style="border: 1px solid #999; padding: 4px; text-align: center;">: ${alfa} hari</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <!-- Catatan Guru Kelas -->
+                <div>
+                    <h3 style="margin: 0 0 8px 0; font-size: 10pt; font-weight: bold; border-bottom: 1px solid #000; padding-bottom: 3px;">Catatan Guru Kelas</h3>
+                    <div style="padding: 6px; background: #fafafa; border: 1px solid #ddd; min-height: 60px; font-size: 9pt; line-height: 1.4; text-align: justify;">
+                        ${catatan || 'Siswa menunjukkan perkembangan yang baik dalam pembelajaran. Terus tingkatkan prestasi dan sikap positif.'}
                     </div>
                 </div>
             </div>
-            <p style="text-align: center; font-size: 8pt; margin-top: 20px; color: #999;">Laporan Penilaian Pembelajaran ini didasarkan pada Kurikulum Merdeka 2024/2025</p>
+        </div>
+		
+        <div class="rapor-section">
+            <table class="rapor-table">
+                <thead>
+                    <tr>
+                        <th>Tanggapan Orang Tua / Wali Murid</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+    
+    html += `
+                    <tr>
+                        <td colspan="3" style="text-align: center; color: #999; font-size: 9pt;">--</td>
+                    </tr>
+        `;
+    
+    html += `
+                </tbody>
+            </table>
+        </div>		
+		
+        <div class="rapor-section" style="margin-top: 30px;">
+            <!-- Baris 1: Orang Tua/Wali - Guru Kelas -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 30px; font-size: 10pt; margin-bottom: 60px;">
+                <!-- Orang Tua/Wali -->
+                <div style="text-align: center;">
+                    <div style="height: 18px; font-size:9pt; margin-bottom: 6px;"></div>
+                    <div style="margin-bottom: 60px; font-weight: bold;">Orang Tua/Wali Murid</div>
+                    <div style="margin-top: 10px; height: 50px;"></div>
+                    <div style="padding-top: 4px;">
+                        <div style="font-weight: bold;">_____________________</div>
+                        <div style="font-size: 8pt; margin-top: 2px; color: #666;">Tanda tangan</div>
+                    </div>
+                </div>
+                
+                <!-- Kolom 2 Kosong -->
+                <div></div>
+                
+                <!-- Guru Kelas -->
+                <div style="text-align: center;">
+                    <div style="height: 18px; font-size:9pt; margin-bottom: 6px; overflow: hidden;">${tglWithLokasi}</div>
+                    <div style="margin-bottom: 60px; font-weight: bold;">Guru Kelas</div>
+                    <div style="margin-top: 10px; height: 50px;"></div>
+                    <div style="padding-top: 4px;">
+                        <div style="font-weight: bold;">${walikelas}</div>
+                        <div style="font-size: 8pt; margin-top: 2px; color: #666;">NIP: ${nip || '_____________________'}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Spacer -->
+            <div style="margin-top: 30px;"></div>
+            
+            <!-- Baris 2: Kepala Sekolah  -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; font-size: 10pt;">
+                <!-- Kolom 1 Kosong -->
+                <div></div>
+                
+                <!-- Mengetahui, Kepala Sekolah -->
+                <div style="text-align: center;">
+                    <div style="margin-bottom: 60px; font-weight: bold;">Mengetahui,<br>Kepala Sekolah</div>
+                    <div style="margin-top: 10px; height: 50px;"></div>
+                    <div style="padding-top: 4px;">
+                        <div style="font-weight: bold;">${kepsek || '_____________________'}</div>
+                        <div style="font-size: 8pt; margin-top: 2px; color: #666;">NIP: ${nipKepsek || '_____________________'}</div>
+                    </div>
+                </div>
+                
+                <!-- Kolom 3 Kosong -->
+                <div></div>
+            </div>
         </div>
     `;
     
@@ -3058,6 +4142,441 @@ document.getElementById('btn-gen-rapor').addEventListener('click', function() {
     }, 100);
 });
 
+// --- IMPORT EXCEL (MULTI E-RAPOR) HANDLERS ---
+// Uses SheetJS (XLSX) already included in the page.
+    try {
+    const raporExcelInput = document.getElementById('rapor-multi-excel-input');
+    const raporExcelSelectBtn = document.getElementById('rapor-excel-select-btn');
+    const raporExcelTemplateBtn = document.getElementById('rapor-excel-download-template-btn');
+    const raporExcelClearBtn = document.getElementById('rapor-excel-clear-btn');
+    const raporExcelFilename = document.getElementById('rapor-excel-filename');
+    const raporExcelList = document.getElementById('rapor-excel-list');
+    const raporExcelGenerateAllBtn = document.getElementById('rapor-excel-generate-all');
+    const raporExcelNote = document.getElementById('rapor-excel-note');
+    window.raporExcelRows = window.raporExcelRows || [];
+
+    if(raporExcelSelectBtn && raporExcelInput) {
+        raporExcelSelectBtn.addEventListener('click', () => raporExcelInput.click());
+    }
+    if(raporExcelClearBtn) {
+        raporExcelClearBtn.addEventListener('click', () => {
+            window.raporExcelRows = [];
+            if(raporExcelList) { raporExcelList.innerHTML = ''; raporExcelList.style.display = 'none'; }
+            if(raporExcelFilename) raporExcelFilename.innerText = '';
+            if(raporExcelClearBtn) raporExcelClearBtn.style.display = 'none';
+            if(raporExcelGenerateAllBtn) raporExcelGenerateAllBtn.style.display = 'none';
+            if(raporExcelNote) raporExcelNote.style.display = 'none';
+            showToast('Data Excel dihapus');
+        });
+    }
+
+    if(raporExcelInput) {
+        raporExcelInput.addEventListener('change', function(e) {
+            const f = e.target.files[0];
+            if(!f) return;
+            if(raporExcelFilename) raporExcelFilename.innerText = f.name;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                try {
+                    const data = ev.target.result;
+                    const workbook = XLSX.read(data, { type: 'binary' });
+                    const sheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[sheetName];
+                    const json = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+                    if(!json || json.length === 0) { showToast('Sheet kosong atau tidak terbaca'); return; }
+                    window.raporExcelRows = json;
+                    renderRaporExcelList();
+                    if(raporExcelClearBtn) raporExcelClearBtn.style.display = 'inline-flex';
+                    if(raporExcelGenerateAllBtn) raporExcelGenerateAllBtn.style.display = 'inline-flex';
+                    if(raporExcelNote) raporExcelNote.style.display = 'inline-block';
+                } catch(err) { console.error(err); showToast('Gagal membaca file Excel'); }
+            };
+            reader.readAsBinaryString(f);
+        });
+    }
+
+    // Template download: generate a sample .xlsx with headers and instructions
+    if(raporExcelTemplateBtn) {
+        raporExcelTemplateBtn.addEventListener('click', function() {
+            try {
+                const wb = XLSX.utils.book_new();
+                // Comprehensive header row aligned to report form fields - URUTAN SESUAI 12 SECTION E-RAPOR
+                const headers = [
+                    // 1. Identitas Siswa
+                    'Nama','NISN','Kelas','Fase','Semester','Tahun',
+                    // 2. Hasil Penilaian Mata Pelajaran (Nilai saja)
+                    'Mapel_PendidikanAgama_Nilai',
+                    'Mapel_PendidikanPancasila_Nilai',
+                    'Mapel_BahasaIndonesia_Nilai',
+                    'Mapel_Matematika_Nilai',
+                    'Mapel_IPAS_Nilai',
+                    'Mapel_PJOK_Nilai',
+                    'Mapel_SeniBudaya_Nilai',
+                    'Mapel_BahasaInggris_Nilai',
+                    // 3. Capaian Kompetensi Mata Pelajaran (Capaian saja)
+                    'Mapel_PendidikanAgama_Capaian',
+                    'Mapel_PendidikanPancasila_Capaian',
+                    'Mapel_BahasaIndonesia_Capaian',
+                    'Mapel_Matematika_Capaian',
+                    'Mapel_IPAS_Capaian',
+                    'Mapel_PJOK_Capaian',
+                    'Mapel_SeniBudaya_Capaian',
+                    'Mapel_BahasaInggris_Capaian',
+                    // 4. Nilai Muatan Lokal
+                    'MuatanLocal1_Name','MuatanLocal1_Nilai',
+                    'MuatanLocal2_Name','MuatanLocal2_Nilai',
+                    // 5. Capaian Kompetensi Muatan Lokal
+                    'MuatanLocal1_Capaian',
+                    'MuatanLocal2_Capaian',
+                    // 6. Tema Kokurikuler & Dimensi Profil Lulusan
+                    'TemaKokul',
+                    'Profil_Keimanan','Profil_Kewargaan','Profil_PenalaranKritis','Profil_Kreativitas','Profil_Kolaborasi','Profil_Kemandirian','Profil_Kesehatan','Profil_Komunikasi',
+                    // 7. Catatan Proses Kokurikuler
+                    'CatatanKokul',
+                    // 8. Ekstrakurikuler
+                    'Ekstrakurikuler',
+                    // 9. Data Ketidakhadiran
+                    'Sakit','Izin','Alfa',
+                    // 10. Catatan Wali Kelas
+                    'Catatan',
+                    // 11. Penandatanganan
+                    'Walikelas','NIP_Walikelas','AlamatSekolah','Kepsek','NIP_Kepsek','LokasiLaporan','TanggalLaporan'
+                ];
+
+                const example = [
+                    // 1. Identitas Siswa
+                    'Budi Santoso','1234567890','VI A','C','Ganjil','2025/2026',
+                    // 2. Hasil Penilaian (Nilai)
+                    '85','85','88','90','85','92','88','86',
+                    // 3. Capaian Kompetensi (Capaian)
+                    'Ananda menunjukkan pemahaman yang kuat tentang nilai-nilai keagamaan dan mampu mengintegrasikannya dalam kehidupan sehari-hari.',
+                    'Ananda mampu menganalisis isu-isu nasional dengan kritis dan memberikan solusi yang konstruktif.',
+                    'Ananda mampu menguasai tata bahasa dan menciptakan karya tulis yang kohesif dan komunikatif.',
+                    'Ananda menguasai konsep matematika dengan baik dan mampu menerapkannya dalam pemecahan masalah kontekstual.',
+                    'Ananda memahami fenomena alam dan sosial dengan sudut pandang yang holistik dan sistematis.',
+                    'Ananda menunjukkan kebugaran jasmani yang optimal dan memiliki pemahaman mendalam tentang gaya hidup sehat.',
+                    'Ananda mampu mengekspresikan ide-ide kreatif melalui berbagai medium seni dengan teknik yang baik.',
+                    'Ananda mampu berkomunikasi dalam bahasa Inggris dengan baik meskipun masih perlu peningkatan dalam vocabulary.',
+                    // 4. Nilai Muatan Lokal
+                    'Budaya Lokal','85',
+                    'Bahasa Daerah','80',
+                    // 5. Capaian Muatan Lokal
+                    'Ananda menunjukkan apresiasi yang tinggi terhadap warisan budaya lokal dan mampu melestarikannya.',
+                    'Ananda mampu menggunakan bahasa daerah dalam komunikasi sehari-hari dengan baik.',
+                    // 6. Tema Kokul & Profil
+                    'Aku Cinta Tanaman',
+                    'Terpenuhi','Terpenuhi','Terpenuhi','Terpenuhi','Terpenuhi','Terpenuhi','Terpenuhi','Terpenuhi',
+                    // 7. Catatan Kokurikuler
+                    'Ananda sangat aktif dalam kegiatan proyek dan menunjukkan dedikasi yang tinggi.',
+                    // 8. Ekstrakurikuler
+                    'Pramuka;Robotika',
+                    // 9. Ketidakhadiran
+                    '0','0','0',
+                    // 10. Catatan Wali
+                    'Siswa menunjukkan potensi akademik yang baik terutama dalam mata pelajaran Matematika dan Bahasa Indonesia. Disarankan untuk lebih fokus pada pengembangan keterampilan kolaborasi.',
+                    // 11. Penandatanganan
+                    'Ibu Siti Nurhaliza','198765432','Jl. Merdeka No.1','Drs. Kepala Sekolah','987654321','Kab. Tangerang','2025-12-03'
+                ];
+                const sheetData = [headers, example];
+                const ws = XLSX.utils.aoa_to_sheet(sheetData);
+                
+                // Auto width columns
+                ws['!cols'] = headers.map(() => ({ wch: 20 }));
+                
+                XLSX.utils.book_append_sheet(wb, ws, 'DATA SISWA');
+
+                // INSTRUKSI sheet
+                const instr = [
+                    ['PETUNJUK PENGISIAN TEMPLATE IMPORT E-RAPOR'],
+                    ['Urutan kolom sesuai dengan struktur form E-Rapor 12 Section'],
+                    [],
+                    ['SECTION 1 - IDENTITAS SISWA:'],
+                    ['Nama        : Nama lengkap peserta didik'],
+                    ['NISN        : Nomor Induk Siswa Nasional (9 digit)'],
+                    ['Kelas       : Kelas siswa (misal: VI A, VI B, dll)'],
+                    ['Fase        : Fase Kurikulum Merdeka (A, B, C, D, E, F, atau P untuk PAUD)'],
+                    ['Semester    : Ganjil atau Genap'],
+                    ['Tahun       : Tahun ajaran (format: 2025/2026)'],
+                    [],
+                    ['SECTION 2 - HASIL PENILAIAN MATA PELAJARAN (Skala 0-100):'],
+                    ['Mapel_*_Nilai : Nilai setiap mata pelajaran (angka 0-100)'],
+                    ['Kolom: Mapel_PendidikanAgama_Nilai, Mapel_PendidikanPancasila_Nilai, Mapel_BahasaIndonesia_Nilai,'],
+                    ['       Mapel_Matematika_Nilai, Mapel_IPAS_Nilai, Mapel_PJOK_Nilai, Mapel_SeniBudaya_Nilai, Mapel_BahasaInggris_Nilai'],
+                    [],
+                    ['SECTION 3 - CAPAIAN KOMPETENSI MATA PELAJARAN:'],
+                    ['Mapel_*_Capaian : Deskripsi pencapaian kompetensi untuk setiap mata pelajaran'],
+                    ['Kolom: Mapel_PendidikanAgama_Capaian, Mapel_PendidikanPancasila_Capaian, dst...'],
+                    [],
+                    ['SECTION 4 - NILAI MUATAN LOKAL:'],
+                    ['MuatanLocal<No>_Name : Nama muatan lokal (misal: Budaya Lokal, Bahasa Daerah)'],
+                    ['MuatanLocal<No>_Nilai : Nilai muatan lokal (angka 0-100)'],
+                    [],
+                    ['SECTION 5 - CAPAIAN KOMPETENSI MUATAN LOKAL:'],
+                    ['MuatanLocal<No>_Capaian : Deskripsi pencapaian kompetensi muatan lokal'],
+                    [],
+                    ['SECTION 6 - TEMA KOKURIKULER & DIMENSI PROFIL LULUSAN:'],
+                    ['TemaKokul    : Tema proyek/kokurikuler (misal: Aku Cinta Tanaman)'],
+                    ['Profil_*     : 8 dimensi profil lulusan - isi dengan "Terpenuhi" atau "Belum Terpenuhi"'],
+                    ['Kolom: Profil_Keimanan, Profil_Kewargaan, Profil_PenalaranKritis, Profil_Kreativitas,'],
+                    ['       Profil_Kolaborasi, Profil_Kemandirian, Profil_Kesehatan, Profil_Komunikasi'],
+                    [],
+                    ['SECTION 7 - CATATAN PROSES KOKURIKULER:'],
+                    ['CatatanKokul : Deskripsi proses dan pencapaian siswa dalam kegiatan kokurikuler'],
+                    [],
+                    ['SECTION 8 - EKSTRAKURIKULER:'],
+                    ['Ekstrakurikuler : Daftar kegiatan ekstrakurikuler, pisahkan dengan titik koma (;)'],
+                    ['                  Contoh: Pramuka;Robotika;Klub Seni'],
+                    [],
+                    ['SECTION 9 - DATA KETIDAKHADIRAN:'],
+                    ['Sakit        : Jumlah hari sakit (angka: 0, 1, 2, dst)'],
+                    ['Izin         : Jumlah hari izin'],
+                    ['Alfa         : Jumlah hari tanpa keterangan'],
+                    [],
+                    ['SECTION 10 - CATATAN WALI KELAS:'],
+                    ['Catatan      : Catatan/rekomendasi dari wali kelas'],
+                    [],
+                    ['SECTION 11 - PENANDATANGANAN:'],
+                    ['Walikelas     : Nama wali kelas/guru kelas'],
+                    ['NIP_Walikelas : NIP wali kelas'],
+                    ['AlamatSekolah : Alamat lengkap sekolah'],
+                    ['Kepsek        : Nama Kepala Sekolah'],
+                    ['NIP_Kepsek    : NIP Kepala Sekolah'],
+                    ['LokasiLaporan : Kota/Kabupaten tempat membuat laporan'],
+                    ['TanggalLaporan: Format ISO (YYYY-MM-DD), misal: 2025-12-03'],
+                    [],
+                    ['CATATAN PENTING:'],
+                    ['1. Jangan ubah nama kolom header - harus persis seperti di baris pertama.'],
+                    ['2. Baris contoh (baris ke-2) menunjukkan format isian yang benar.'],
+                    ['3. Urutan kolom harus sesuai dengan struktur form E-Rapor (12 section).'],
+                    ['4. Anda dapat menambah baris data untuk multi-siswa tanpa mengubah header.'],
+                    ['5. Untuk mata pelajaran atau muatan lokal tambahan, ikuti pola yang sama.'],
+                    ['6. Pastikan tidak ada spasi di awal/akhir setiap nilai yang diisi.'],
+                    ['7. Tanggal gunakan format ISO (YYYY-MM-DD) atau biarkan kosong untuk tanggal otomatis.']
+                ];
+                const ws2 = XLSX.utils.aoa_to_sheet(instr);
+                ws2['!cols'] = [{ wch: 100 }];
+                XLSX.utils.book_append_sheet(wb, ws2, 'INSTRUKSI');
+
+                XLSX.writeFile(wb, 'template_import_rapor.xlsx');
+                showToast('Template Excel diunduh. Ikuti instruksi di sheet "INSTRUKSI".');
+            } catch(err) { console.error('Gagal membuat template', err); showToast('Gagal membuat template'); }
+        });
+    }
+
+    function renderRaporExcelList() {
+        if(!window.raporExcelRows || window.raporExcelRows.length === 0) { if(raporExcelList) raporExcelList.style.display = 'none'; return; }
+        if(!raporExcelList) return;
+        raporExcelList.style.display = 'block';
+        
+        // OPTIMIZATION: Batch render untuk large datasets
+        // Hanya render 50 items pertama, biar UI responsive
+        const BATCH_SIZE = 50;
+        const totalRows = window.raporExcelRows.length;
+        const displayRows = Math.min(totalRows, BATCH_SIZE);
+        
+        let html = '<table style="width:100%; border-collapse:collapse; font-size:0.9rem;">';
+        html += '<thead><tr><th style="text-align:left; padding:6px; border-bottom:1px solid var(--border);">#</th><th style="text-align:left; padding:6px; border-bottom:1px solid var(--border);">Nama</th><th style="text-align:left; padding:6px; border-bottom:1px solid var(--border);">NISN</th><th style="text-align:left; padding:6px; border-bottom:1px solid var(--border);">Kelas</th><th style="text-align:left; padding:6px; border-bottom:1px solid var(--border);">Aksi</th></tr></thead><tbody>';
+        
+        // Render hanya batch pertama secara synchronous
+        for(let i = 0; i < displayRows; i++) {
+            const r = window.raporExcelRows[i];
+            const nama = r['Nama'] || r['name'] || r['NAMA'] || r['nama'] || '';
+            const nisn = r['NISN'] || r['nisn'] || '';
+            const kelas = r['Kelas'] || r['kelas'] || r['Class'] || r['class'] || '';
+            html += `<tr><td style="padding:6px; border-bottom:1px solid var(--border);">${i+1}</td><td style="padding:6px; border-bottom:1px solid var(--border);">${nama}</td><td style="padding:6px; border-bottom:1px solid var(--border);">${nisn}</td><td style="padding:6px; border-bottom:1px solid var(--border);">${kelas}</td><td style="padding:6px; border-bottom:1px solid var(--border);"><button class="btn btn-secondary btn-sm" onclick="fillRaporForm(${i})">Isi ke Form</button> <button class="btn btn-primary btn-sm" onclick="previewRaporRow(${i})">Preview</button></td></tr>`;
+        }
+        
+        html += '</tbody></table>';
+        
+        // Tambah info jika ada data yang tidak ditampilkan
+        if(totalRows > BATCH_SIZE) {
+            html += `<div style="padding:10px; background:#fff3cd; border-radius:4px; margin-top:10px; font-size:0.9rem;">
+                <strong>⚠️ Optimasi Performa:</strong> Menampilkan ${displayRows} dari ${totalRows} siswa. 
+                Untuk efisiensi, anda bisa proses dalam batch atau generate per siswa.
+            </div>`;
+        }
+        
+        raporExcelList.innerHTML = html;
+    }
+
+    window.fillRaporForm = function(index) {
+        const row = window.raporExcelRows[index];
+        if(!row) return;
+        const get = (keys) => { for(const k of keys) if(row[k] !== undefined) return row[k]; return ''; };
+        
+        // ===== IDENTITAS SISWA =====
+        document.getElementById('rapor-nama').value = get(['Nama','name','NAMA','nama']);
+        document.getElementById('rapor-nisn').value = get(['NISN','nisn']);
+        document.getElementById('rapor-kelas').value = get(['Kelas','kelas','Class','class']);
+        const faseVal = get(['Fase','fase']); if(faseVal) document.getElementById('rapor-fase').value = faseVal;
+        const semVal = get(['Semester','semester']); if(semVal) document.getElementById('rapor-semester').value = semVal;
+        const thVal = get(['Tahun','Tahun Ajaran','tahun']); if(thVal) document.getElementById('rapor-tahun').value = thVal;
+        
+        // ===== KEHADIRAN =====
+        const sVal = get(['Sakit','sakit']); if(sVal !== '') document.getElementById('rapor-sakit').value = sVal;
+        const iVal = get(['Izin','izin']); if(iVal !== '') document.getElementById('rapor-izin').value = iVal;
+        const aVal = get(['Alfa','alfa']); if(aVal !== '') document.getElementById('rapor-alfa').value = aVal;
+        
+        // ===== KOKURIKULER =====
+        const temaVal = get(['TemaKokul','temakokul']); if(temaVal) document.getElementById('rapor-tema-kokul').value = temaVal;
+        const catKokulVal = get(['CatatanKokul','catatan_kokul','catatankokul']); if(catKokulVal) document.getElementById('rapor-catatan-kokul').value = catKokulVal;
+        
+        // ===== EKSTRAKURIKULER & CATATAN =====
+        const eksVal = get(['Ekstrakurikuler','ekstrakurikuler']); if(eksVal) document.getElementById('rapor-ekstrakurikuler').value = eksVal;
+        const catVal = get(['Catatan','catatan']); if(catVal) document.getElementById('rapor-catatan').value = catVal;
+        
+        // ===== PENANDATANGANAN =====
+        const waliVal = get(['Walikelas','walikelas']); if(waliVal) document.getElementById('rapor-walikelas').value = waliVal;
+        const nipWaliVal = get(['NIP_Walikelas','nip_walikelas']); if(nipWaliVal) document.getElementById('rapor-nip').value = nipWaliVal;
+        const alamatVal = get(['AlamatSekolah','alamatsekolah']); if(alamatVal) document.getElementById('rapor-alamat-sekolah').value = alamatVal;
+        const kepsekVal = get(['Kepsek','kepsek']); if(kepsekVal) document.getElementById('rapor-kepsek').value = kepsekVal;
+        const nipKepsekVal = get(['NIP_Kepsek','nip_kepsek']); if(nipKepsekVal) document.getElementById('rapor-nip-kepsek').value = nipKepsekVal;
+        const lokasiVal = get(['LokasiLaporan','lokasi_laporan']); if(lokasiVal) document.getElementById('rapor-lokasi-laporan').value = lokasiVal;
+        const tglVal = get(['TanggalLaporan','tanggal_laporan']); if(tglVal) document.getElementById('rapor-tanggal-laporan').value = tglVal;
+        
+        // ===== DIMENSI PROFIL LULUSAN =====
+        document.querySelectorAll('.rapor-profil-switch').forEach(switchEl => {
+            const profilName = switchEl.getAttribute('data-profil');
+            const profilKey = `Profil_${profilName.replace(/\s+/g, '')}`;
+            const profilVal = row[profilKey];
+            // Check jika status "Terpenuhi" atau similar
+            switchEl.checked = profilVal && (profilVal.toLowerCase().includes('terpenuhi') || profilVal.toLowerCase() === 'ya' || profilVal === '1' || profilVal === true);
+        });
+        
+        // ===== MATA PELAJARAN (Nilai & Capaian) =====
+        document.querySelectorAll('.rapor-nilai-input').forEach(nilaiInput => {
+            const mapel = nilaiInput.getAttribute('data-mapel');
+            // Cari kolom nilai untuk mapel ini
+            const nilaiKey = `Mapel_${mapel.replace(/\s+/g, '')}_Nilai`;
+            const nilaiVal = row[nilaiKey] || row[mapel] || '';
+            if(nilaiVal) nilaiInput.value = nilaiVal;
+        });
+        
+        // Fill capaian kompetensi per mapel
+        document.querySelectorAll('.rapor-capaian-kompetensi-input').forEach(capaianInput => {
+            const mapel = capaianInput.getAttribute('data-mapel');
+            const capaianKey = `Mapel_${mapel.replace(/\s+/g, '')}_Capaian`;
+            const capaianVal = row[capaianKey];
+            if(capaianVal) capaianInput.value = capaianVal;
+        });
+        
+        // ===== MUATAN LOKAL (Nilai & Capaian) =====
+        document.querySelectorAll('.rapor-muatan-lokal-nilai').forEach((muatanInput, idx) => {
+            const muatanNameInput = muatanInput.parentElement.querySelector('.rapor-muatan-lokal-nama');
+            
+            // Cari nama muatan lokal dari kolom MuatanLocal<N>_Name
+            const muatanNameKey = `MuatanLocal${idx+1}_Name`;
+            const muatanName = row[muatanNameKey];
+            if(muatanName) {
+                muatanNameInput.value = muatanName;
+                muatanInput.setAttribute('data-muatan', muatanName);
+            }
+            
+            // Cari nilai muatan lokal
+            const muatanValueKey = `MuatanLocal${idx+1}_Nilai`;
+            const muatanValue = row[muatanValueKey];
+            if(muatanValue) muatanInput.value = muatanValue;
+        });
+        
+        // Fill capaian kompetensi per muatan lokal
+        document.querySelectorAll('.rapor-capaian-kompetensi-mulok-input').forEach((capaianInput, idx) => {
+            const capaianKey = `MuatanLocal${idx+1}_Capaian`;
+            const capaianVal = row[capaianKey];
+            if(capaianVal) capaianInput.value = capaianVal;
+        });
+        
+        showToast('Data siswa dimuat ke form. Klik "Buat & Preview E-Rapor" untuk menampilkan rapor.');
+    };
+
+    window.previewRaporRow = function(index) {
+        window.fillRaporForm(index);
+        // trigger generate (same as user clicking the button)
+        document.getElementById('btn-gen-rapor').click();
+    };
+
+    if(raporExcelGenerateAllBtn) {
+        raporExcelGenerateAllBtn.addEventListener('click', async function() {
+            if(!window.raporExcelRows || window.raporExcelRows.length === 0) { showToast('Tidak ada data'); return; }
+            
+            showBatchProgress(window.raporExcelRows.length);
+            showToast('🎬 Memulai preview semua rapor (berurutan)...');
+            
+            for(let i = 0; i < window.raporExcelRows.length; i++) {
+                // Check abort
+                if(batchProcessState.abortRequested) {
+                    showToast('⏹️ Preview dibatalkan oleh user');
+                    break;
+                }
+                
+                // Check pause
+                while(batchProcessState.isPaused && !batchProcessState.abortRequested) {
+                    await new Promise(r => setTimeout(r, 500));
+                }
+                
+                try {
+                    const siswaName = window.raporExcelRows[i]['Nama'] || `Siswa ${i+1}`;
+                    batchProcessState.currentSiswaName = siswaName;
+                    
+                    window.fillRaporForm(i);
+                    document.getElementById('btn-gen-rapor').click();
+                    
+                    batchProcessState.successCount++;
+                    batchProcessState.processedCount++;
+                    
+                    updateBatchProgress();
+                    
+                    // Adaptive delay berdasarkan complexity
+                    const delay = 700;
+                    await new Promise(r => setTimeout(r, delay));
+                } catch(err) {
+                    console.error(`Gagal preview siswa ke-${i+1}:`, err);
+                    batchProcessState.failedCount++;
+                    batchProcessState.failedList.push({
+                        index: i+1,
+                        nama: window.raporExcelRows[i]['Nama'] || 'Unknown',
+                        error: err.message
+                    });
+                    batchProcessState.processedCount++;
+                    updateBatchProgress();
+                }
+            }
+            
+            // Final message
+            const totalTime = ((Date.now() - batchProcessState.startTime) / 1000).toFixed(1);
+            showToast(`✅ Selesai! Preview ${batchProcessState.successCount}/${window.raporExcelRows.length} siswa (${totalTime}s)`);
+            
+            if(batchProcessState.failedCount > 0) {
+                showToast(`⚠️ Ada ${batchProcessState.failedCount} siswa yang gagal`);
+            }
+            
+            hideBatchProgress();
+        });
+    }
+    
+    // Pause button handler
+    document.getElementById('rapor-batch-pause').addEventListener('click', function() {
+        if(batchProcessState.isPaused) {
+            batchProcessState.isPaused = false;
+            this.innerHTML = '<i class="fas fa-pause"></i> Pause';
+            this.classList.remove('btn-warning');
+            this.classList.add('btn-warning');
+            showToast('▶️ Melanjutkan preview...');
+        } else {
+            batchProcessState.isPaused = true;
+            this.innerHTML = '<i class="fas fa-play"></i> Resume';
+            showToast('⏸️  Preview dijeda');
+        }
+    });
+    
+    // Stop button handler
+    document.getElementById('rapor-batch-stop').addEventListener('click', function() {
+        batchProcessState.abortRequested = true;
+        batchProcessState.isPaused = false;
+        showToast('🛑 Menghentikan preview...');
+    });
+
+} catch(e) { console.warn('Import Excel init skipped:', e); }
+
 // Print E-Rapor
 window.printRapor = function(divId) {
     const element = document.getElementById(divId);
@@ -3069,7 +4588,7 @@ window.printRapor = function(divId) {
             <title>Print E-Rapor</title>
             <style>
                 body { font-family: 'Times New Roman', serif; margin: 10mm; }
-                .rapor-header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid black; padding-bottom: 10px; }
+                .rapor-header { text-align: center; margin-bottom: 20px; padding-bottom: 10px; }
                 .rapor-header h2 { margin: 0; font-size: 16pt; font-weight: bold; }
                 .rapor-header p { margin: 2px 0; font-size: 10pt; }
                 .rapor-section { margin-bottom: 15px; }
@@ -3091,3 +4610,548 @@ window.printRapor = function(divId) {
     printWindow.document.close();
     setTimeout(() => printWindow.print(), 250);
 };
+
+// --- EVENT LISTENERS UNTUK GENERATE AI BUTTONS ---
+// Generate Catatan Wali Kelas
+document.getElementById('btn-gen-catatan-wali').addEventListener('click', async function() {
+    const btn = this;
+    const nama = document.getElementById('rapor-nama').value || 'Siswa';
+    const nilaiInputs = document.querySelectorAll('.rapor-nilai-input');
+    const mapelNilai = [];
+    nilaiInputs.forEach(input => {
+        const mapel = input.getAttribute('data-mapel');
+        const nilai = parseInt(input.value) || 0;
+        mapelNilai.push({ mapel, nilai });
+    });
+    
+    if(mapelNilai.length === 0) {
+        showToast('Silakan isi minimal satu nilai mata pelajaran terlebih dahulu');
+        return;
+    }
+
+    btn.classList.add('loading');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+
+    // Build prompt untuk generate catatan wali kelas
+    let mapelInfo = mapelNilai.map(m => `${m.mapel}: ${m.nilai}`).join(', ');
+    const prompt = `
+    Buatkan catatan wali kelas untuk siswa bernama ${nama} dengan nilai mata pelajaran: ${mapelInfo}.
+    Catatan harus profesional, konstruktif, dan memberikan masukan positif untuk meningkatkan prestasi siswa.
+    Panjang catatan 2-3 kalimat. Gunakan Bahasa Indonesia yang baik dan benar.
+    Fokus pada pencapaian positif dan area untuk improvement.
+    Jangan sertakan nama kota/alamat spesifik.
+    `;
+
+    try {
+        const result = await callGemini(prompt);
+        document.getElementById('rapor-catatan').value = result.trim();
+        showToast('Catatan Wali Kelas berhasil di-generate!');
+    } catch(err) {
+        console.error(err);
+        showToast('Gagal generate catatan wali kelas');
+    } finally {
+        btn.classList.remove('loading');
+        btn.innerHTML = '<i class="fas fa-magic"></i> Generate dengan AI';
+    }
+});
+
+// Generate Catatan Proses Kokurikuler
+document.getElementById('btn-gen-catatan-kokul').addEventListener('click', async function() {
+    const btn = this;
+    const nama = document.getElementById('rapor-nama').value || 'Siswa';
+    const temakokul = document.getElementById('rapor-tema-kokul').value || 'proyek kokurikuler';
+    
+    // Get checked profil dimensi
+    const profilSwitches = document.querySelectorAll('.rapor-profil-switch:checked');
+    const profilDimensi = Array.from(profilSwitches).map(s => s.getAttribute('data-profil')).join(', ') || 'berbagai dimensi profil';
+
+    btn.classList.add('loading');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+
+    const prompt = `
+    Buatkan catatan proses kokurikuler untuk siswa ${nama} dalam konteks tema "${temakokul}".
+    Dimensi profil lulusan yang dinilai: ${profilDimensi}.
+    Catatan harus menjelaskan capaian siswa dan area pengembangan dalam kegiatan kokurikuler.
+    Panjang catatan 2-3 kalimat. Gunakan Bahasa Indonesia yang profesional.
+    Format: Mulai dengan "Ananda..." dan jelaskan pencapaian serta rekomendasi pengembangan.
+    `;
+
+    try {
+        const result = await callGemini(prompt);
+        document.getElementById('rapor-catatan-kokul').value = result.trim();
+        showToast('Catatan Kokurikuler berhasil di-generate!');
+    } catch(err) {
+        console.error(err);
+        showToast('Gagal generate catatan kokurikuler');
+    } finally {
+        btn.classList.remove('loading');
+        btn.innerHTML = '<i class="fas fa-magic"></i> Generate dengan AI';
+    }
+});
+
+// Generate Capaian Kompetensi per Mapel
+document.getElementById('btn-gen-capaian-kompetensi').addEventListener('click', async function() {
+    const btn = this;
+    const nama = document.getElementById('rapor-nama').value || 'Siswa';
+    const nilaiInputs = document.querySelectorAll('.rapor-nilai-input');
+    const mapelNilai = [];
+    nilaiInputs.forEach(input => {
+        const mapel = input.getAttribute('data-mapel');
+        const nilai = parseInt(input.value) || 0;
+        // Hanya include yang switch-nya aktif
+        const mapelSwitch = Array.from(document.querySelectorAll('.rapor-mapel-switch')).find(
+            s => s.getAttribute('data-mapel') === mapel
+        );
+        if(mapelSwitch && mapelSwitch.checked) {
+            mapelNilai.push({ mapel, nilai });
+        }
+    });
+    
+    if(mapelNilai.length === 0) {
+        showToast('Silakan isi minimal satu nilai mata pelajaran terlebih dahulu');
+        return;
+    }
+
+    btn.classList.add('loading');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+
+    try {
+        // Generate per mapel
+        for(let mapel of mapelNilai) {
+            // Determine kategori based on nilai
+            let kategori = 'cukup';
+            if(mapel.nilai >= 90) kategori = 'sangat baik';
+            else if(mapel.nilai >= 80) kategori = 'baik';
+            else if(mapel.nilai >= 70) kategori = 'cukup';
+            else kategori = 'perlu ditingkatkan';
+
+            const prompt = `
+Buatkan ringkasan capaian kompetensi untuk siswa bernama ${nama} di mata pelajaran ${mapel.mapel} dengan nilai ${mapel.nilai} (${kategori}).
+Ringkasan harus mencakup:
+1. Pencapaian kompetensi yang sudah dikuasai di ${mapel.mapel}
+2. Kekuatan siswa dalam mata pelajaran ini
+3. Area untuk pengembangan lebih lanjut
+
+Panjang: 1-2 kalimat. Gunakan Bahasa Indonesia yang profesional dan motivatif.
+Mulai dengan "Ananda..." jika cocok. Hindari nama spesifik tempat/kota.
+            `;
+
+            try {
+                const result = await callGemini(prompt);
+                // Find textarea for this mapel
+                const textarea = document.querySelector(`.rapor-capaian-kompetensi-input[data-mapel="${mapel.mapel}"]`);
+                if(textarea) {
+                    textarea.value = result.trim();
+                }
+            } catch(err) {
+                console.error(`Error generating for ${mapel.mapel}:`, err);
+            }
+        }
+        
+        // Show preview table dengan mata pelajaran dan capaian kompetensi
+        let previewHtml = `
+            <div style="margin-top: 15px; padding: 15px; background: #f9f9f9; border-radius: 8px; border: 1px solid #ddd;">
+                <h4 style="margin-top: 0; margin-bottom: 12px; font-size: 14px;">Preview Capaian Kompetensi</h4>
+                <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                    <thead>
+                        <tr style="background: #e8e8e8; border: 1px solid #999;">
+                            <th style="padding: 8px; text-align: left; border: 1px solid #999;">No.</th>
+                            <th style="padding: 8px; text-align: left; border: 1px solid #999;">Mata Pelajaran</th>
+                            <th style="padding: 8px; text-align: left; border: 1px solid #999;">Capaian Kompetensi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+        
+        mapelNilai.forEach((item, idx) => {
+            const textarea = document.querySelector(`.rapor-capaian-kompetensi-input[data-mapel="${item.mapel}"]`);
+            const capaian = textarea ? textarea.value : '-';
+            previewHtml += `
+                        <tr style="border: 1px solid #999;">
+                            <td style="padding: 8px; text-align: center; border: 1px solid #999;">${idx + 1}</td>
+                            <td style="padding: 8px; border: 1px solid #999; font-weight: 600;">${item.mapel}</td>
+                            <td style="padding: 8px; border: 1px solid #999; text-align: left; font-size: 12px; line-height: 1.4;">${capaian}</td>
+                        </tr>
+            `;
+        });
+        
+        previewHtml += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+        
+        // Append preview to the capaian kompetensi section
+        const container = document.getElementById('rapor-capaian-kompetensi-container');
+        if(container) {
+            const existingPreview = container.parentElement.querySelector('.capaian-preview-container');
+            if(existingPreview) existingPreview.remove();
+            
+            const previewDiv = document.createElement('div');
+            previewDiv.className = 'capaian-preview-container';
+            previewDiv.innerHTML = previewHtml;
+            container.parentElement.appendChild(previewDiv);
+        }
+        
+        showToast('Capaian Kompetensi per Mapel berhasil di-generate!');
+    } catch(err) {
+        console.error(err);
+        showToast('Gagal generate capaian kompetensi');
+    } finally {
+        btn.classList.remove('loading');
+        btn.innerHTML = '<i class="fas fa-magic"></i> Generate Capaian Kompetensi untuk Semua Mapel';
+    }
+});
+
+// Generate Capaian Kompetensi Muatan Lokal per item
+document.getElementById('btn-gen-capaian-kompetensi-mulok').addEventListener('click', async function() {
+    const btn = this;
+    const nama = document.getElementById('rapor-nama').value || 'Siswa';
+    
+    // Get muatan lokal values
+    const muatanInputs = document.querySelectorAll('.rapor-muatan-lokal-nilai');
+    const muatanNilai = [];
+    muatanInputs.forEach(input => {
+        const muatan = input.getAttribute('data-muatan');
+        const nilai = parseInt(input.value) || 0;
+        muatanNilai.push({ muatan, nilai });
+    });
+    
+    if(muatanNilai.length === 0) {
+        showToast('Silakan isi minimal satu nilai muatan lokal terlebih dahulu');
+        return;
+    }
+
+    btn.classList.add('loading');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+
+    try {
+        // Generate per muatan lokal
+        for(let muatan of muatanNilai) {
+            // Determine kategori based on nilai
+            let kategori = 'cukup';
+            if(muatan.nilai >= 90) kategori = 'sangat baik';
+            else if(muatan.nilai >= 80) kategori = 'baik';
+            else if(muatan.nilai >= 70) kategori = 'cukup';
+            else kategori = 'perlu ditingkatkan';
+
+            const prompt = `
+Buatkan ringkasan capaian kompetensi untuk siswa bernama ${nama} di muatan lokal ${muatan.muatan} dengan nilai ${muatan.nilai} (${kategori}).
+Ringkasan harus mencakup:
+1. Pencapaian kompetensi yang sudah dikuasai di ${muatan.muatan}
+2. Kekuatan siswa dalam muatan lokal ini
+3. Area untuk pengembangan lebih lanjut
+
+Panjang: 1-2 kalimat. Gunakan Bahasa Indonesia yang profesional dan motivatif.
+Mulai dengan "Ananda..." jika cocok. Hindari nama spesifik tempat/kota.
+            `;
+
+            try {
+                const result = await callGemini(prompt);
+                // Find textarea for this muatan
+                const textarea = document.querySelector(`.rapor-capaian-kompetensi-mulok-input[data-muatan="${muatan.muatan}"]`);
+                if(textarea) {
+                    textarea.value = result.trim();
+                }
+            } catch(err) {
+                console.error(`Error generating for ${muatan.muatan}:`, err);
+            }
+        }
+        showToast('Capaian Kompetensi Muatan Lokal berhasil di-generate!');
+    } catch(err) {
+        console.error(err);
+        showToast('Gagal generate capaian kompetensi muatan lokal');
+    } finally {
+        btn.classList.remove('loading');
+        btn.innerHTML = '<i class="fas fa-magic"></i> Generate Capaian Kompetensi Muatan Lokal';
+    }
+});
+
+// ==================== MODAL DIALOG UNTUK TAMBAH MAPEL/MULOK ====================
+
+// Modal HTML akan diinsert secara dinamis, atau gunakan ini:
+function initAddItemModals() {
+    if(document.getElementById('add-mapel-modal')) return; // sudah ada
+    
+    const modalHTML = `
+    <!-- Modal Tambah Mapel Baru -->
+    <div id="add-mapel-modal" class="add-item-modal">
+        <div class="add-item-dialog">
+            <div class="add-item-header">
+                <h3><i class="fas fa-plus-circle" style="color:var(--primary); margin-right:8px;"></i> Tambah Mata Pelajaran Baru</h3>
+                <button class="add-item-close" onclick="closeAddMapelModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="add-item-body">
+                <div class="add-item-form-group">
+                    <label>Pilih dari Daftar Kurikulum Merdeka</label>
+                    <select id="add-mapel-select" class="form-control" onchange="onMapelSelectChange()">
+                        <option value="">-- Pilih Mata Pelajaran --</option>
+                    </select>
+                    <small style="color:var(--text-muted); margin-top:4px;">Atau tulis sendiri di bawah</small>
+                </div>
+                <div class="add-item-form-group">
+                    <label>Atau Input Nama Mapel (Kustom)</label>
+                    <input type="text" id="add-mapel-custom-input" class="form-control" placeholder="Contoh: Bahasa Arab, Informatika, dll">
+                </div>
+                <div class="add-item-form-group">
+                    <label>Nilai Awal</label>
+                    <input type="number" id="add-mapel-nilai" class="form-control" min="0" max="100" value="75" placeholder="75">
+                </div>
+            </div>
+            <div class="add-item-footer">
+                <button class="btn btn-secondary btn-sm" onclick="closeAddMapelModal()">Batal</button>
+                <button class="btn btn-primary btn-sm" onclick="saveAddMapel()">Tambah Mapel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Tambah Muatan Lokal Baru -->
+    <div id="add-mulok-modal" class="add-item-modal">
+        <div class="add-item-dialog">
+            <div class="add-item-header">
+                <h3><i class="fas fa-plus-circle" style="color:var(--primary); margin-right:8px;"></i> Tambah Muatan Lokal Baru</h3>
+                <button class="add-item-close" onclick="closeAddMulokModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="add-item-body">
+                <div class="add-item-form-group">
+                    <label>Pilih dari Saran Muatan Lokal</label>
+                    <select id="add-mulok-select" class="form-control" onchange="onMulokSelectChange()">
+                        <option value="">-- Pilih Muatan Lokal --</option>
+                        <option value="Budaya Lokal">Budaya Lokal</option>
+                        <option value="Bahasa Daerah">Bahasa Daerah</option>
+                        <option value="Keterampilan Lokal">Keterampilan Lokal</option>
+                        <option value="Seni Tradisional">Seni Tradisional</option>
+                        <option value="Ekologi Lokal">Ekologi Lokal</option>
+                    </select>
+                    <small style="color:var(--text-muted); margin-top:4px;">Atau tulis sendiri di bawah</small>
+                </div>
+                <div class="add-item-form-group">
+                    <label>Atau Input Nama Muatan Lokal (Kustom)</label>
+                    <input type="text" id="add-mulok-custom-input" class="form-control" placeholder="Contoh: Tari Jaipong, Batik, dll">
+                </div>
+                <div class="add-item-form-group">
+                    <label>Nilai Awal</label>
+                    <input type="number" id="add-mulok-nilai" class="form-control" min="0" max="100" value="75" placeholder="75">
+                </div>
+            </div>
+            <div class="add-item-footer">
+                <button class="btn btn-secondary btn-sm" onclick="closeAddMulokModal()">Batal</button>
+                <button class="btn btn-primary btn-sm" onclick="saveAddMulok()">Tambah Muatan Lokal</button>
+            </div>
+        </div>
+    </div>
+    `;
+    
+    // Insert ke dalam body (sebelum closing)
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Populate mapel select dengan data Kurikulum Merdeka
+    populateMapelSelect();
+}
+
+// Daftar Mapel Kurikulum Merdeka untuk berbagai jenjang
+const MAPEL_KURIKULUM_MERDEKA = {
+    'SD': [
+        'Bahasa Indonesia', 'Matematika', 'IPAS', 'Bahasa Inggris', 
+        'PJOK', 'Seni & Budaya', 'Informatika', 'Pendidikan Pancasila'
+    ],
+    'SMP': [
+        'Bahasa Indonesia', 'Bahasa Inggris', 'Matematika', 'IPAS',
+        'PJOK', 'Seni & Budaya', 'Informatika', 'Pendidikan Pancasila'
+    ],
+    'SMA': [
+        'Bahasa Indonesia', 'Bahasa Inggris', 'Matematika', 'Sejarah',
+        'Geografi', 'Ekonomi', 'Sosiologi', 'Kimia', 'Fisika', 'Biologi',
+        'PJOK', 'Seni & Budaya', 'Informatika', 'Pendidikan Pancasila'
+    ]
+};
+
+function populateMapelSelect() {
+    const select = document.getElementById('add-mapel-select');
+    if(!select) return;
+    
+    // Tentukan jenjang berdasarkan konteks atau buat opsi universal
+    const allMapel = new Set();
+    Object.values(MAPEL_KURIKULUM_MERDEKA).forEach(arr => {
+        arr.forEach(m => allMapel.add(m));
+    });
+    
+    Array.from(allMapel).sort().forEach(mapel => {
+        const opt = document.createElement('option');
+        opt.value = mapel;
+        opt.textContent = mapel;
+        select.appendChild(opt);
+    });
+}
+
+function openAddMapelModal() {
+    if(!document.getElementById('add-mapel-modal')) {
+        initAddItemModals();
+    }
+    document.getElementById('add-mapel-modal').classList.add('show');
+    document.getElementById('add-mapel-custom-input').value = '';
+    document.getElementById('add-mapel-select').value = '';
+    document.getElementById('add-mapel-nilai').value = '75';
+}
+
+function closeAddMapelModal() {
+    const modal = document.getElementById('add-mapel-modal');
+    if(modal) modal.classList.remove('show');
+}
+
+function onMapelSelectChange() {
+    const select = document.getElementById('add-mapel-select');
+    const customInput = document.getElementById('add-mapel-custom-input');
+    if(select.value) {
+        customInput.value = select.value;
+    }
+}
+
+function saveAddMapel() {
+    const mapelName = document.getElementById('add-mapel-custom-input').value.trim();
+    const nilai = parseInt(document.getElementById('add-mapel-nilai').value) || 75;
+    
+    if(!mapelName) {
+        showToast('Silakan masukkan nama mata pelajaran');
+        return;
+    }
+    
+    // Tambah ke container nilai
+    const container = document.getElementById('rapor-nilai-container');
+    const div = document.createElement('div');
+    div.style.padding = '12px';
+    div.style.background = 'var(--bg-body)';
+    div.style.borderRadius = '8px';
+    div.style.border = '1px solid var(--border)';
+    div.innerHTML = `
+        <label style="font-size:0.85rem; font-weight:600;">${mapelName}</label>
+        <div style="display:flex; gap:5px; margin-top:5px;">
+            <input type="number" class="rapor-nilai-input form-control" data-mapel="${mapelName}" min="0" max="100" value="${nilai}" style="flex:1;">
+            <button class="btn btn-danger btn-sm" onclick="removeMapelAndCapaian('${mapelName}', this)"><i class="fas fa-trash"></i></button>
+        </div>
+    `;
+    container.appendChild(div);
+    
+    // Tambah ke container capaian kompetensi
+    const capContainer = document.getElementById('rapor-capaian-kompetensi-container');
+    const capDiv = document.createElement('div');
+    capDiv.style.padding = '12px';
+    capDiv.style.background = 'var(--bg-body)';
+    capDiv.style.borderRadius = '8px';
+    capDiv.style.border = '1px solid var(--border)';
+    capDiv.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label style="font-size:0.85rem; font-weight:600; margin: 0;">${mapelName}</label>
+            <label class="switch" style="margin: 0;">
+                <input type="checkbox" class="rapor-mapel-switch" data-mapel="${mapelName}" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+        <textarea class="rapor-capaian-kompetensi-input form-control" data-mapel="${mapelName}" rows="2" placeholder="Capaian kompetensi..." style="margin-top:5px; font-size:0.85rem;"></textarea>
+    `;
+    capDiv.setAttribute('data-mapel-capaian', mapelName);
+    capContainer.appendChild(capDiv);
+    
+    // Trigger sync untuk consistency
+    syncMapelCapaian();
+    
+    showToast(`Mata Pelajaran "${mapelName}" berhasil ditambahkan!`);
+    closeAddMapelModal();
+}
+
+function openAddMulokModal() {
+    if(!document.getElementById('add-mulok-modal')) {
+        initAddItemModals();
+    }
+    document.getElementById('add-mulok-modal').classList.add('show');
+    document.getElementById('add-mulok-custom-input').value = '';
+    document.getElementById('add-mulok-select').value = '';
+    document.getElementById('add-mulok-nilai').value = '75';
+}
+
+function closeAddMulokModal() {
+    const modal = document.getElementById('add-mulok-modal');
+    if(modal) modal.classList.remove('show');
+}
+
+function onMulokSelectChange() {
+    const select = document.getElementById('add-mulok-select');
+    const customInput = document.getElementById('add-mulok-custom-input');
+    if(select.value) {
+        customInput.value = select.value;
+    }
+}
+
+function saveAddMulok() {
+    const muatanName = document.getElementById('add-mulok-custom-input').value.trim();
+    const nilai = parseInt(document.getElementById('add-mulok-nilai').value) || 75;
+    
+    if(!muatanName) {
+        showToast('Silakan masukkan nama muatan lokal');
+        return;
+    }
+    
+    const id = __genMuatanId();
+    
+    // Tambah ke container nilai
+    const container = document.getElementById('rapor-muatan-lokal-container');
+    const div = document.createElement('div');
+    div.style.padding = '12px';
+    div.style.background = 'var(--bg-body)';
+    div.style.borderRadius = '8px';
+    div.style.border = '1px solid var(--border)';
+    div.innerHTML = `
+        <label style="font-size:0.85rem; font-weight:600;">Nama Muatan Lokal</label>
+        <input type="text" class="rapor-muatan-lokal-nama form-control" value="${muatanName}" placeholder="Nama Muatan Lokal" style="margin-top:5px; margin-bottom:5px;">
+        <div style="display:flex; gap:5px; margin-top:5px;">
+            <input type="number" class="rapor-muatan-lokal-nilai form-control" data-muatan="${muatanName}" data-muatan-id="${id}" min="0" max="100" value="${nilai}" style="flex:1;">
+            <button class="btn btn-danger btn-sm remove-mulok" type="button"><i class="fas fa-trash"></i></button>
+        </div>
+    `;
+    container.appendChild(div);
+    
+    // Tambah ke container capaian
+    const capContainer = document.getElementById('rapor-capaian-kompetensi-mulok-container');
+    const capDiv = document.createElement('div');
+    capDiv.style.padding = '12px';
+    capDiv.style.background = 'var(--bg-body)';
+    capDiv.style.borderRadius = '8px';
+    capDiv.style.border = '1px solid var(--border)';
+    capDiv.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label style="font-size:0.85rem; font-weight:600; margin: 0;">${muatanName}</label>
+            <label class="switch" style="margin: 0;">
+                <input type="checkbox" class="rapor-mulok-switch" data-muatan="${muatanName}" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+        <textarea class="rapor-capaian-kompetensi-mulok-input form-control" data-muatan="${muatanName}" data-muatan-id="${id}" rows="2" placeholder="Capaian kompetensi..." style="margin-top:5px; font-size:0.85rem;"></textarea>
+    `;
+    capContainer.appendChild(capDiv);
+    
+    // Wire up listeners
+    const nameInput = div.querySelector('.rapor-muatan-lokal-nama');
+    const nilaiInput = div.querySelector('.rapor-muatan-lokal-nilai');
+    const removeBtn = div.querySelector('.remove-mulok');
+    
+    removeBtn.addEventListener('click', function() {
+        div.remove();
+        const cap = capContainer.querySelector(`.rapor-capaian-kompetensi-mulok-input[data-muatan-id="${id}"]`);
+        if(cap && cap.parentElement) cap.parentElement.remove();
+    });
+    
+    nameInput.addEventListener('input', function() {
+        const newName = this.value.trim();
+        if(!newName) return;
+        nilaiInput.setAttribute('data-muatan', newName);
+        const capTextarea = capContainer.querySelector(`.rapor-capaian-kompetensi-mulok-input[data-muatan-id="${id}"]`);
+        if(capTextarea) {
+            capTextarea.setAttribute('data-muatan', newName);
+            const lbl = capTextarea.parentElement && capTextarea.parentElement.querySelector('label');
+            if(lbl) lbl.textContent = newName;
+        }
+    });
+    
+    showToast(`Muatan Lokal "${muatanName}" berhasil ditambahkan!`);
+    closeAddMulokModal();
+}
