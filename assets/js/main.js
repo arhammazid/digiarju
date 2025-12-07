@@ -6,7 +6,7 @@ let MAPEL_BY_JENJANG = {};
 // Load data on page initialization
 async function loadAcademicData() {
     try {
-        const response = await fetch('https://cdn.jsdelivr.net/gh/arhammazid/digiarju/data.js');
+        const response = await fetch('https://cdn.jsdelivr.net/gh/arhammazid/digiarju/data.json');
         const data = await response.json();
         AKADEMIK_DATA = data.AKADEMIK_DATA;
         MAPEL_BY_JENJANG = data.MAPEL_BY_JENJANG;
