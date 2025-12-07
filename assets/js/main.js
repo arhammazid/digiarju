@@ -6,7 +6,7 @@ let MAPEL_BY_JENJANG = {};
 // Load data on page initialization
 async function loadAcademicData() {
     try {
-        const response = await fetch('https://cdn.jsdelivr.net/gh/arhammazid/digiarju/data.json');
+        const response = await fetch('https://cdn.jsdelivr.net/gh/arhammazid/digiarju/assets/js/data.json');
         const data = await response.json();
         AKADEMIK_DATA = data.AKADEMIK_DATA;
         MAPEL_BY_JENJANG = data.MAPEL_BY_JENJANG;
@@ -3901,7 +3901,7 @@ document.getElementById('btn-gen-rapor').addEventListener('click', function() {
                 <thead>
                     <tr>
                         <th style="width: 30px;">No.</th>
-                        <th>Muatan Lokal</th>
+                        <th>Mata Pelajaran</th>
                         <th style="width: 100px;">Nilai</th>
                         <th style="width: 300px;">Capaian Kompetensi</th>
                     </tr>
