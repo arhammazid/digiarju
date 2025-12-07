@@ -1,0 +1,200 @@
+{
+  "AKADEMIK_DATA": {
+    "PAUD/TK/RA": {
+      "kelas": ["Kelompok A", "Kelompok B"],
+      "fase": {
+        "Kelompok A": "P",
+        "Kelompok B": "P"
+      }
+    },
+    "SD": {
+      "kelas": ["Kelas 1", "Kelas 2", "Kelas 3", "Kelas 4", "Kelas 5", "Kelas 6"],
+      "fase": {
+        "Kelas 1": "A",
+        "Kelas 2": "A",
+        "Kelas 3": "B",
+        "Kelas 4": "B",
+        "Kelas 5": "C",
+        "Kelas 6": "C"
+      }
+    },
+    "MI": {
+      "kelas": ["Kelas 1", "Kelas 2", "Kelas 3", "Kelas 4", "Kelas 5", "Kelas 6"],
+      "fase": {
+        "Kelas 1": "A",
+        "Kelas 2": "A",
+        "Kelas 3": "B",
+        "Kelas 4": "B",
+        "Kelas 5": "C",
+        "Kelas 6": "C"
+      }
+    },
+    "SMP": {
+      "kelas": ["Kelas 7", "Kelas 8", "Kelas 9"],
+      "fase": {
+        "Kelas 7": "D",
+        "Kelas 8": "D",
+        "Kelas 9": "D"
+      }
+    },
+    "MTs": {
+      "kelas": ["Kelas 7", "Kelas 8", "Kelas 9"],
+      "fase": {
+        "Kelas 7": "D",
+        "Kelas 8": "D",
+        "Kelas 9": "D"
+      }
+    },
+    "SMA": {
+      "kelas": ["Kelas 10", "Kelas 11", "Kelas 12"],
+      "fase": {
+        "Kelas 10": "E",
+        "Kelas 11": "F",
+        "Kelas 12": "F"
+      }
+    },
+    "MA": {
+      "kelas": ["Kelas 10", "Kelas 11", "Kelas 12"],
+      "fase": {
+        "Kelas 10": "E",
+        "Kelas 11": "F",
+        "Kelas 12": "F"
+      }
+    },
+    "SMK": {
+      "kelas": ["Kelas 10", "Kelas 11", "Kelas 12"],
+      "fase": {
+        "Kelas 10": "E",
+        "Kelas 11": "F",
+        "Kelas 12": "F"
+      }
+    }
+  },
+  "MAPEL_BY_JENJANG": {
+    "PAUD/TK/RA": [
+      "Nilai Agama dan Budi Pekerti",
+      "Jati Diri",
+      "Dasar-dasar Literasi, Bahasa, dan Komunikasi",
+      "Dasar-dasar Matematika dan Sains",
+      "Kreativitas, Estetika, dan Imajinasi",
+      "Dasar-dasar Kesehatan dan Keselamatan"
+    ],
+    "SD": [
+      "Pendidikan Agama dan Budi Pekerti",
+      "Pendidikan Pancasila",
+      "Bahasa Indonesia",
+      "Matematika",
+      "IPAS",
+      "PJOK",
+      "Seni dan Budaya",
+      "Bahasa Inggris",
+      "Muatan Lokal"
+    ],
+    "MI": [
+      "Pendidikan Pancasila",
+      "Bahasa Indonesia",
+      "Matematika",
+      "IPAS",
+      "PJOK",
+      "Seni dan Budaya",
+      "Bahasa Inggris",
+      "Muatan Lokal",
+      "Al-Qur'an Hadits",
+      "Akidah Akhlak",
+      "Fikih",
+      "SKI",
+      "Bahasa Arab",
+      "Muatan Lokal"
+    ],
+    "SMP": [
+      "Pendidikan Agama dan Budi Pekerti",
+      "Pendidikan Pancasila",
+      "Bahasa Indonesia",
+      "Matematika",
+      "IPA",
+      "IPS",
+      "Bahasa Inggris",
+      "Informatika",
+      "PJOK",
+      "Seni/Prakarya",
+      "Muatan Lokal"
+    ],
+    "MTs": [
+      "Pendidikan Pancasila",
+      "Bahasa Indonesia",
+      "Matematika",
+      "IPA",
+      "IPS",
+      "Bahasa Inggris",
+      "Informatika",
+      "PJOK",
+      "Seni/Prakarya",
+      "Muatan Lokal",
+      "Al-Qur'an Hadits",
+      "Akidah Akhlak",
+      "Fikih",
+      "SKI",
+      "Bahasa Arab"
+    ],
+    "SMA": [
+      "Pendidikan Agama dan Budi Pekerti",
+      "Pendidikan Pancasila",
+      "Bahasa Indonesia",
+      "Bahasa Inggris",
+      "Matematika",
+      "IPA Lintasan",
+      "IPS Lintasan",
+      "Informatika",
+      "PJOK",
+      "Seni/Prakarya",
+      "Matematika Lanjutan",
+      "Fisika",
+      "Kimia",
+      "Biologi",
+      "Ekonomi",
+      "Geografi",
+      "Sosiologi",
+      "Sejarah",
+      "Seni Budaya Lanjutan"
+    ],
+    "MA": [
+      "Pendidikan Pancasila",
+      "Bahasa Indonesia",
+      "Bahasa Inggris",
+      "Matematika",
+      "IPA Lintasan",
+      "IPS Lintasan",
+      "Informatika",
+      "PJOK",
+      "Seni/Prakarya",
+      "Al-Qur'an Hadits",
+      "Akidah Akhlak",
+      "Fikih",
+      "SKI",
+      "Bahasa Arab",
+      "Matematika Lanjutan",
+      "Fisika",
+      "Kimia",
+      "Biologi",
+      "Ekonomi",
+      "Geografi",
+      "Sosiologi",
+      "Sejarah",
+      "Seni Budaya Lanjutan"
+    ],
+    "SMK": [
+      "Pendidikan Agama dan Budi Pekerti",
+      "Pendidikan Pancasila",
+      "Bahasa Indonesia",
+      "Matematika",
+      "Bahasa Inggris",
+      "IPAS",
+      "Informatika",
+      "PJOK",
+      "Seni/Prakarya",
+      "Dasar Bidang Keahlian",
+      "Dasar Program Keahlian",
+      "Kompetensi Keahlian"
+    ]
+  }
+}
