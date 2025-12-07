@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#6366f1">
+    <title>Tutorial - DigiArju APP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="help-styles.css">
+</head>
+<body>
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fas fa-book"></i>Panduan Menggunakan DigiArju APP</h3>
+        </div>
+        <div class="card-body">
+            <div class="intro-box">
+                <p style="margin: 0; color: var(--text-main);"><strong>Selamat datang di DigiArju APP!</strong> Panduan berikut akan membantu Anda memaksimalkan fitur-fitur yang tersedia untuk menunjang proses pembelajaran.</p>
+            </div>
+
+            <h4><i class="fas fa-th-large"></i>1. Dashboard</h4>
+            <div class="tutorial-box">
+                <p><strong>Apa itu Dashboard?</strong></p>
+                <p>Dashboard adalah halaman utama yang menampilkan ringkasan aktivitas Anda, termasuk jumlah dokumen yang telah dibuat dan bank soal yang tersimpan. Gunakan dashboard untuk memantau produktivitas mengajar Anda.</p>
+            </div>
+
+            <h4><i class="fas fa-user-circle"></i>2. Profil Guru</h4>
+            <div class="tutorial-box">
+                <p><strong>Apa itu Profil Guru?</strong></p>
+                <p>Di menu ini Anda dapat mengatur identitas guru dan sekolah, termasuk nama, NIP, dan informasi sekolah. Anda juga dapat menghubungkan Google Spreadsheet untuk sinkronisasi data siswa dan absensi secara otomatis.</p>
+                <p style="margin-top: 10px;"><strong>Tips:</strong> Pastikan Google Spreadsheet Anda publik atau dishare agar aplikasi dapat mengaksesnya.</p>
+            </div>
+
+            <h4><i class="fas fa-book"></i>3. Modul Ajar</h4>
+            <div class="tutorial-box">
+                <p><strong>Apa itu Modul Ajar?</strong></p>
+                <p>Gunakan fitur Modul Ajar untuk membuat materi pembelajaran berkualitas tinggi dengan bantuan AI. Anda dapat membuat soal, ringkasan materi, atau konten pembelajaran lainnya dan mengekspor dalam berbagai format (Word, PDF, PowerPoint).</p>
+            </div>
+
+            <h4><i class="fas fa-file-signature"></i>4. Asesmen & Koreksi</h4>
+            <div class="tutorial-box">
+                <p><strong>Apa itu Asesmen & Koreksi?</strong></p>
+                <p>Fitur ini membantu Anda membuat soal ujian, kuis, dan berbagai bentuk penilaian. Sistem dapat membantu dalam proses koreksi dan analisis hasil pembelajaran siswa.</p>
+            </div>
+
+            <h4><i class="fas fa-database"></i>5. Bank Soal</h4>
+            <div class="tutorial-box">
+                <p><strong>Apa itu Bank Soal?</strong></p>
+                <p>Bank Soal adalah penyimpanan soal-soal Anda yang dapat digunakan kembali. Simpan soal Anda di sini agar mudah ditemukan dan dapat digunakan untuk ujian berikutnya.</p>
+            </div>
+
+            <h4><i class="fas fa-lightbulb"></i>Tips & Trik</h4>
+            <div class="tips-box">
+                <ul>
+                    <li>Gunakan <strong>Mode Gelap</strong> dengan mengklik ikon bulan di sudut kanan atas untuk kenyamanan mata.</li>
+                    <li>Pastikan <strong>koneksi internet stabil</strong> saat menggunakan fitur AI dan sinkronisasi.</li>
+                    <li>Simpan hasil pekerjaan Anda secara berkala dengan menggunakan fitur export.</li>
+                    <li>Jelajahi setiap menu untuk menemukan fitur-fitur bermanfaat lainnya.</li>
+                    <li>Hubungi tim support jika mengalami kendala atau memiliki saran perbaikan.</li>
+                </ul>
+            </div>
+
+            <div class="help-box">
+                <p style="margin: 0; color: var(--text-main);"><strong><i class="fas fa-headset" style="margin-right: 8px;"></i>Butuh Bantuan?</strong> Kunjungi menu "Tentang" untuk informasi lebih lanjut tentang pengembang atau hubungi tim support kami.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Detect dark mode preference
+        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    </script>
+</body>
+</html>
