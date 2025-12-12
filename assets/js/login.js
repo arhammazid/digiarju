@@ -75,9 +75,6 @@ function handleLogin(event) {
     // Kirim request ke Google Apps Script
     fetch(AUTH_CONFIG.GOOGLE_APPS_SCRIPT_URL, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
         body: JSON.stringify({
             username: username,
             password: password
