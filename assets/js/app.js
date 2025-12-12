@@ -553,14 +553,17 @@ window.switchTab = function(tabId) {
 };
 const sidebar = document.getElementById('sidebar');
 const mainContent = document.getElementById('main-content');
-document.getElementById('sidebar-toggle').addEventListener('click', () => {
-    if (window.innerWidth <= 768) {
-        sidebar.classList.toggle('open');
-    } else {
-        sidebar.classList.toggle('collapsed');
-        mainContent.classList.toggle('collapsed');
-    }
-});
+const sidebarToggle = document.getElementById('sidebar-toggle');
+if (sidebarToggle) {
+    sidebarToggle.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+            sidebar.classList.toggle('open');
+        } else {
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('collapsed');
+        }
+    });
+}
 document.querySelectorAll('.menu-item, .menu-dropdown-item, .nav-item').forEach(item => {
     item.addEventListener('click', function() {
         const target = this.getAttribute('data-target');
