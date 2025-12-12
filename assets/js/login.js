@@ -72,59 +72,96 @@ function handleLogin(event) {
     loadingDiv.style.display = 'block';
     loginBtn.disabled = true;
 
-    // Kirim request ke Google Apps Script
-    fetch(AUTH_CONFIG.GOOGLE_APPS_SCRIPT_URL, {
-        method: 'POST',
-        body: JSON.stringify({
-            username: username,
-            password: password
+    // Gunakan google.script.run untuk Apps Script deployment
+    if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+            .withSuccessHandler(function(data) {
+                loadingDiv.style.display = 'none';
+                loginBtn.disabled = false;
+
+                if (data.success) {
+                    // Login berhasil
+                    const token = data.token;
+                    const expiredTime = new Date().getTime() + AUTH_CONFIG.SESSION_DURATION;
+
+                    // Simpan ke session storage
+                    sessionStorage.setItem('auth_token', token);
+                    sessionStorage.setItem('auth_expired', expiredTime);
+                    sessionStorage.setItem('user_name', data.user.name);
+                    sessionStorage.setItem('user_email', data.user.email);
+                    sessionStorage.setItem('user_username', data.user.username);
+
+                    // Reset form
+                    document.getElementById('login-form').reset();
+
+                    // Tampilkan success message
+                    errorDiv.style.display = 'block';
+                    errorDiv.innerHTML = '<i class="fas fa-check-circle"></i> Login berhasil! Mengalihkan...';
+                    errorDiv.className = 'login-error success';
+
+                    // Redirect ke main app
+                    setTimeout(() => {
+                        checkAuthentication();
+                    }, 1500);
+                } else {
+                    // Login gagal
+                    errorDiv.style.display = 'block';
+                    errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + data.message;
+                    errorDiv.className = 'login-error error';
+                }
+            })
+            .withFailureHandler(function(error) {
+                loadingDiv.style.display = 'none';
+                loginBtn.disabled = false;
+                
+                console.error('Login error:', error);
+                errorDiv.style.display = 'block';
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Error: ' + error;
+                errorDiv.className = 'login-error error';
+            })
+            .authenticateUser(username, password);
+    } else {
+        // Fallback untuk non-Apps Script environment
+        fetch(AUTH_CONFIG.GOOGLE_APPS_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
         })
-    })
-    .then(response => response.json())
-    .then(data => {
-        loadingDiv.style.display = 'none';
-        loginBtn.disabled = false;
+        .then(response => response.json())
+        .then(data => {
+            loadingDiv.style.display = 'none';
+            loginBtn.disabled = false;
 
-        if (data.success) {
-            // Login berhasil
-            const token = data.token;
-            const expiredTime = new Date().getTime() + AUTH_CONFIG.SESSION_DURATION;
-
-            // Simpan ke session storage
-            sessionStorage.setItem('auth_token', token);
-            sessionStorage.setItem('auth_expired', expiredTime);
-            sessionStorage.setItem('user_name', data.user.name);
-            sessionStorage.setItem('user_email', data.user.email);
-            sessionStorage.setItem('user_username', data.user.username);
-
-            // Reset form
-            document.getElementById('login-form').reset();
-
-            // Tampilkan success message
+            if (data.success) {
+                const token = data.token;
+                const expiredTime = new Date().getTime() + AUTH_CONFIG.SESSION_DURATION;
+                sessionStorage.setItem('auth_token', token);
+                sessionStorage.setItem('auth_expired', expiredTime);
+                sessionStorage.setItem('user_name', data.user.name);
+                sessionStorage.setItem('user_email', data.user.email);
+                sessionStorage.setItem('user_username', data.user.username);
+                document.getElementById('login-form').reset();
+                errorDiv.style.display = 'block';
+                errorDiv.innerHTML = '<i class="fas fa-check-circle"></i> Login berhasil! Mengalihkan...';
+                errorDiv.className = 'login-error success';
+                setTimeout(() => { checkAuthentication(); }, 1500);
+            } else {
+                errorDiv.style.display = 'block';
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + data.message;
+                errorDiv.className = 'login-error error';
+            }
+        })
+        .catch(error => {
+            loadingDiv.style.display = 'none';
+            loginBtn.disabled = false;
+            console.error('Login error:', error);
             errorDiv.style.display = 'block';
-            errorDiv.innerHTML = '<i class="fas fa-check-circle"></i> Login berhasil! Mengalihkan...';
-            errorDiv.className = 'login-error success';
-
-            // Redirect ke main app
-            setTimeout(() => {
-                checkAuthentication();
-            }, 1500);
-        } else {
-            // Login gagal
-            errorDiv.style.display = 'block';
-            errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + data.message;
+            errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Koneksi error: ' + error.message;
             errorDiv.className = 'login-error error';
-        }
-    })
-    .catch(error => {
-        loadingDiv.style.display = 'none';
-        loginBtn.disabled = false;
-        
-        console.error('Login error:', error);
-        errorDiv.style.display = 'block';
-        errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Koneksi error: ' + error.message;
-        errorDiv.className = 'login-error error';
-    });
+        });
+    }
 }
 
 /**
