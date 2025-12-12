@@ -1,6 +1,6 @@
-// ===== AUTHENTICATION & LOGIN SYSTEM =====
+// ===== LOGIN SYSTEM =====
 const AUTH_CONFIG = {
-    GOOGLE_APPS_SCRIPT_URL: "https://script.google.com/macros/d/AKfycbx1Ehnafw2JDbealpLR7-PJixN8PzdFAduJkgcccVfTrLVyOWYs_C8iSikVRg-PEMQ6/usercoderun", // Ganti dengan URL Google Apps Script yang di-deploy
+    GOOGLE_APPS_SCRIPT_URL: "https://script.google.com/macros/d/AKfycbyvB7-EcSMslXPbTYIM6Ia6RRTjuXUV_wT1PFvuc7Eiizu-Vlv1q3A0ME7obokrv9YR/usercontent", // Ganti dengan URL Google Apps Script yang di-deploy
     SESSION_DURATION: 24 * 60 * 60 * 1000 // 24 jam dalam milliseconds
 };
 
@@ -16,7 +16,13 @@ function checkAuthentication() {
     const token = sessionStorage.getItem('auth_token');
     const expiredTime = sessionStorage.getItem('auth_expired');
     const loginSection = document.getElementById('login-section');
-    const appContainer = document.getElementById('app-container');
+    const appContainer = document.querySelector('.app-container');
+
+    // Return early if elements don't exist
+    if (!loginSection || !appContainer) {
+        console.warn('Login or app container elements not found');
+        return;
+    }
 
     if (token && expiredTime) {
         const now = new Date().getTime();
@@ -72,62 +78,96 @@ function handleLogin(event) {
     loadingDiv.style.display = 'block';
     loginBtn.disabled = true;
 
-    // Kirim request ke Google Apps Script
-    fetch(AUTH_CONFIG.GOOGLE_APPS_SCRIPT_URL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            username: username,
-            password: password
+    // Gunakan google.script.run untuk Apps Script deployment
+    if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+            .withSuccessHandler(function(data) {
+                loadingDiv.style.display = 'none';
+                loginBtn.disabled = false;
+
+                if (data.success) {
+                    // Login berhasil
+                    const token = data.token;
+                    const expiredTime = new Date().getTime() + AUTH_CONFIG.SESSION_DURATION;
+
+                    // Simpan ke session storage
+                    sessionStorage.setItem('auth_token', token);
+                    sessionStorage.setItem('auth_expired', expiredTime);
+                    sessionStorage.setItem('user_name', data.user.name);
+                    sessionStorage.setItem('user_email', data.user.email);
+                    sessionStorage.setItem('user_username', data.user.username);
+
+                    // Reset form
+                    document.getElementById('login-form').reset();
+
+                    // Tampilkan success message
+                    errorDiv.style.display = 'block';
+                    errorDiv.innerHTML = '<i class="fas fa-check-circle"></i> Login berhasil! Mengalihkan...';
+                    errorDiv.className = 'login-error success';
+
+                    // Redirect ke main app
+                    setTimeout(() => {
+                        checkAuthentication();
+                    }, 1500);
+                } else {
+                    // Login gagal
+                    errorDiv.style.display = 'block';
+                    errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + data.message;
+                    errorDiv.className = 'login-error error';
+                }
+            })
+            .withFailureHandler(function(error) {
+                loadingDiv.style.display = 'none';
+                loginBtn.disabled = false;
+                
+                console.error('Login error:', error);
+                errorDiv.style.display = 'block';
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Error: ' + error;
+                errorDiv.className = 'login-error error';
+            })
+            .authenticateUser(username, password);
+    } else {
+        // Fallback untuk non-Apps Script environment
+        fetch(AUTH_CONFIG.GOOGLE_APPS_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
         })
-    })
-    .then(response => response.json())
-    .then(data => {
-        loadingDiv.style.display = 'none';
-        loginBtn.disabled = false;
+        .then(response => response.json())
+        .then(data => {
+            loadingDiv.style.display = 'none';
+            loginBtn.disabled = false;
 
-        if (data.success) {
-            // Login berhasil
-            const token = data.token;
-            const expiredTime = new Date().getTime() + AUTH_CONFIG.SESSION_DURATION;
-
-            // Simpan ke session storage
-            sessionStorage.setItem('auth_token', token);
-            sessionStorage.setItem('auth_expired', expiredTime);
-            sessionStorage.setItem('user_name', data.user.name);
-            sessionStorage.setItem('user_email', data.user.email);
-            sessionStorage.setItem('user_username', data.user.username);
-
-            // Reset form
-            document.getElementById('login-form').reset();
-
-            // Tampilkan success message
+            if (data.success) {
+                const token = data.token;
+                const expiredTime = new Date().getTime() + AUTH_CONFIG.SESSION_DURATION;
+                sessionStorage.setItem('auth_token', token);
+                sessionStorage.setItem('auth_expired', expiredTime);
+                sessionStorage.setItem('user_name', data.user.name);
+                sessionStorage.setItem('user_email', data.user.email);
+                sessionStorage.setItem('user_username', data.user.username);
+                document.getElementById('login-form').reset();
+                errorDiv.style.display = 'block';
+                errorDiv.innerHTML = '<i class="fas fa-check-circle"></i> Login berhasil! Mengalihkan...';
+                errorDiv.className = 'login-error success';
+                setTimeout(() => { checkAuthentication(); }, 1500);
+            } else {
+                errorDiv.style.display = 'block';
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + data.message;
+                errorDiv.className = 'login-error error';
+            }
+        })
+        .catch(error => {
+            loadingDiv.style.display = 'none';
+            loginBtn.disabled = false;
+            console.error('Login error:', error);
             errorDiv.style.display = 'block';
-            errorDiv.innerHTML = '<i class="fas fa-check-circle"></i> Login berhasil! Mengalihkan...';
-            errorDiv.className = 'login-error success';
-
-            // Redirect ke main app
-            setTimeout(() => {
-                checkAuthentication();
-            }, 1500);
-        } else {
-            // Login gagal
-            errorDiv.style.display = 'block';
-            errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + data.message;
+            errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Koneksi error: ' + error.message;
             errorDiv.className = 'login-error error';
-        }
-    })
-    .catch(error => {
-        loadingDiv.style.display = 'none';
-        loginBtn.disabled = false;
-        
-        console.error('Login error:', error);
-        errorDiv.style.display = 'block';
-        errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Koneksi error: ' + error.message;
-        errorDiv.className = 'login-error error';
-    });
+        });
+    }
 }
 
 /**
@@ -136,11 +176,31 @@ function handleLogin(event) {
 function logout() {
     if (confirm('Apakah Anda yakin ingin logout?')) {
         sessionStorage.clear();
-        document.getElementById('login-section').style.display = 'flex';
-        document.getElementById('app-container').style.display = 'none';
-        document.getElementById('login-form').reset();
+        const loginSection = document.getElementById('login-section');
+        const appContainer = document.querySelector('.app-container');
+        if (loginSection) loginSection.style.display = 'flex';
+        if (appContainer) appContainer.style.display = 'none';
+        const form = document.getElementById('login-form');
+        if (form) form.reset();
         location.reload();
     }
+}
+
+/**
+ * Inisialisasi aplikasi setelah login
+ */
+function initializeApp() {
+    const userName = sessionStorage.getItem('user_name');
+    const userEmail = sessionStorage.getItem('user_email');
+
+    // Set user info di dashboard
+    const dashName = document.getElementById('dash-name');
+    const userInitial = document.getElementById('user-initial');
+    const userNameDisplay = document.getElementById('user-name-display');
+
+    if (dashName) dashName.textContent = userName || 'Guru';
+    if (userInitial) userInitial.textContent = (userName || 'G').charAt(0).toUpperCase();
+    if (userNameDisplay) userNameDisplay.textContent = userName || 'Guru';
 }
 
 /**
