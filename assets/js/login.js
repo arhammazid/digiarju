@@ -1,6 +1,6 @@
 // ===== LOGIN SYSTEM =====
 const AUTH_CONFIG = {
-    GOOGLE_APPS_SCRIPT_URL: "https://script.google.com/macros/d/AKfycbx7rx1ALuH3h0HxckAORs90U1hOEGpUl8BBsI5vt6vIv0h6l63DVwHVJU2xFy3NFt2u/usercoderun", // Ganti dengan URL Google Apps Script yang di-deploy
+    GOOGLE_APPS_SCRIPT_URL: "https://script.google.com/macros/d/AKfycbx7rx1ALuH3h0HxckAORs90U1hOEGpUl8BBsI5vt6vIv0h6l63DVwHVJU2xFy3NFt2u/usercontent", // Ganti dengan URL Google Apps Script yang di-deploy
     SESSION_DURATION: 24 * 60 * 60 * 1000 // 24 jam dalam milliseconds
 };
 
@@ -180,13 +180,22 @@ function handleLogin(event) {
             loginBtn.disabled = false;
             
             let errorMessage = 'Koneksi error: ' + error.message;
+            
             if (error.message.includes('Failed to fetch')) {
-                errorMessage = 'CORS error - Pastikan Google Apps Script telah di-redeploy setelah perubahan kode. Lihat console (F12) untuk detail error.';
+                errorMessage = `Failed to fetch error. Kemungkinan penyebab:
+                <br>1. Google Apps Script belum di-redeploy
+                <br>2. URL Google Apps Script salah (check di line 2)
+                <br>3. Google Apps Script tidak di-deploy sebagai Web App "Anyone" access
+                <br><br>URL saat ini: ${AUTH_CONFIG.GOOGLE_APPS_SCRIPT_URL}`;
             }
             
             errorDiv.style.display = 'block';
             errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + errorMessage;
             errorDiv.className = 'login-error error';
+            
+            // Log untuk debugging
+            console.error('Full error:', error);
+            console.error('URL being used:', AUTH_CONFIG.GOOGLE_APPS_SCRIPT_URL);
         });
     }
 }
