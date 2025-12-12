@@ -128,6 +128,8 @@ function handleLogin(event) {
             .authenticateUser(username, password);
     } else {
         // Fallback untuk non-Apps Script environment
+        console.log('Attempting to fetch from:', AUTH_CONFIG.GOOGLE_APPS_SCRIPT_URL);
+        
         fetch(AUTH_CONFIG.GOOGLE_APPS_SCRIPT_URL, {
             method: 'POST',
             mode: 'cors',
@@ -140,12 +142,16 @@ function handleLogin(event) {
             })
         })
         .then(response => {
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+            
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             return response.json();
         })
         .then(data => {
+            console.log('Login response:', data);
             loadingDiv.style.display = 'none';
             loginBtn.disabled = false;
 
@@ -169,13 +175,13 @@ function handleLogin(event) {
             }
         })
         .catch(error => {
+            console.error('Login error details:', error);
             loadingDiv.style.display = 'none';
             loginBtn.disabled = false;
-            console.error('Login error:', error);
             
             let errorMessage = 'Koneksi error: ' + error.message;
             if (error.message.includes('Failed to fetch')) {
-                errorMessage = 'CORS error atau server tidak dapat diakses. Periksa URL Google Apps Script.';
+                errorMessage = 'CORS error - Pastikan Google Apps Script telah di-redeploy setelah perubahan kode. Lihat console (F12) untuk detail error.';
             }
             
             errorDiv.style.display = 'block';
