@@ -551,36 +551,30 @@ function switchSection(targetId) {
 window.switchTab = function(tabId) {
     switchSection(tabId);
 };
-
-document.addEventListener('DOMContentLoaded', function() {
-    const sidebar = document.getElementById('sidebar');
-    const mainContent = document.getElementById('main-content');
-    const sidebarToggle = document.getElementById('sidebar-toggle');
-    if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', () => {
-            if (window.innerWidth <= 768) {
-                sidebar.classList.toggle('open');
-            } else {
-                sidebar.classList.toggle('collapsed');
-                mainContent.classList.toggle('collapsed');
-            }
-        });
-    }
-    document.querySelectorAll('.menu-item, .menu-dropdown-item, .nav-item').forEach(item => {
-        item.addEventListener('click', function() {
-            const target = this.getAttribute('data-target');
-            switchSection(target);
-        });
-    });
-    const darkModeBtn = document.getElementById('toggle-dark-mode');
-    if(darkModeBtn){
-        darkModeBtn.addEventListener('click', () => {
-            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
-            darkModeBtn.querySelector('i').className = isDark ? 'fas fa-moon' : 'fas fa-sun';
-        });
+const sidebar = document.getElementById('sidebar');
+const mainContent = document.getElementById('main-content');
+document.getElementById('sidebar-toggle').addEventListener('click', () => {
+    if (window.innerWidth <= 768) {
+        sidebar.classList.toggle('open');
+    } else {
+        sidebar.classList.toggle('collapsed');
+        mainContent.classList.toggle('collapsed');
     }
 });
+document.querySelectorAll('.menu-item, .menu-dropdown-item, .nav-item').forEach(item => {
+    item.addEventListener('click', function() {
+        const target = this.getAttribute('data-target');
+        switchSection(target);
+    });
+});
+const darkModeBtn = document.getElementById('toggle-dark-mode');
+if(darkModeBtn){
+    darkModeBtn.addEventListener('click', () => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        darkModeBtn.querySelector('i').className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+    });
+}
 function loadProfile() {
     if (!localStorage.getItem('disclaimerAccepted')) {
         showDisclaimerModal();
