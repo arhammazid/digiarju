@@ -1,6 +1,6 @@
 // ===== LOGIN SYSTEM =====
 const AUTH_CONFIG = {
-    GOOGLE_APPS_SCRIPT_URL: "https://script.google.com/macros/d/AKfycbzKOGFOYltQbbsCC4LeZc5KmfNQDGyNMgxr8d7OtsNhycnfXG3Sww-hDTbcxL6q1Y7Q/usercontent", // Ganti dengan URL Google Apps Script yang di-deploy
+    GOOGLE_APPS_SCRIPT_URL: "https://script.google.com/macros/d/AKfycbyvB7-EcSMslXPbTYIM6Ia6RRTjuXUV_wT1PFvuc7Eiizu-Vlv1q3A0ME7obokrv9YR/usercontent", // Ganti dengan URL Google Apps Script yang di-deploy
     SESSION_DURATION: 24 * 60 * 60 * 1000 // 24 jam dalam milliseconds
 };
 
