@@ -1,647 +1,4534 @@
 {
-  "AKADEMIK_DATA": {
-    "PAUD/TK/RA": {
-      "kelas": ["Kelompok A", "Kelompok B"],
-      "fase": {
-        "Kelompok A": "P",
-        "Kelompok B": "P"
-      }
+  "Akademik": [
+    {
+      "Jenjang": "PAUD/TK/RA",
+      "Kelas": "Kelompok A",
+      "Fase": "P"
     },
-    "SD": {
-      "kelas": ["Kelas 1", "Kelas 2", "Kelas 3", "Kelas 4", "Kelas 5", "Kelas 6"],
-      "fase": {
-        "Kelas 1": "A",
-        "Kelas 2": "A",
-        "Kelas 3": "B",
-        "Kelas 4": "B",
-        "Kelas 5": "C",
-        "Kelas 6": "C"
-      }
+    {
+      "Jenjang": "PAUD/TK/RA",
+      "Kelas": "Kelompok B",
+      "Fase": "P"
     },
-    "MI": {
-      "kelas": ["Kelas 1", "Kelas 2", "Kelas 3", "Kelas 4", "Kelas 5", "Kelas 6"],
-      "fase": {
-        "Kelas 1": "A",
-        "Kelas 2": "A",
-        "Kelas 3": "B",
-        "Kelas 4": "B",
-        "Kelas 5": "C",
-        "Kelas 6": "C"
-      }
+    {
+      "Jenjang": "SD",
+      "Kelas": "Kelas 1",
+      "Fase": "A"
     },
-    "SMP": {
-      "kelas": ["Kelas 7", "Kelas 8", "Kelas 9"],
-      "fase": {
-        "Kelas 7": "D",
-        "Kelas 8": "D",
-        "Kelas 9": "D"
-      }
+    {
+      "Jenjang": "SD",
+      "Kelas": "Kelas 2",
+      "Fase": "A"
     },
-    "MTs": {
-      "kelas": ["Kelas 7", "Kelas 8", "Kelas 9"],
-      "fase": {
-        "Kelas 7": "D",
-        "Kelas 8": "D",
-        "Kelas 9": "D"
-      }
+    {
+      "Jenjang": "SD",
+      "Kelas": "Kelas 3",
+      "Fase": "B"
     },
-    "SMA": {
-      "kelas": ["Kelas 10", "Kelas 11", "Kelas 12"],
-      "fase": {
-        "Kelas 10": "E",
-        "Kelas 11": "F",
-        "Kelas 12": "F"
-      }
+    {
+      "Jenjang": "SD",
+      "Kelas": "Kelas 4",
+      "Fase": "B"
     },
-    "MA": {
-      "kelas": ["Kelas 10", "Kelas 11", "Kelas 12"],
-      "fase": {
-        "Kelas 10": "E",
-        "Kelas 11": "F",
-        "Kelas 12": "F"
-      }
+    {
+      "Jenjang": "SD",
+      "Kelas": "Kelas 5",
+      "Fase": "C"
     },
-    "SMK": {
-      "kelas": ["Kelas 10", "Kelas 11", "Kelas 12"],
-      "fase": {
-        "Kelas 10": "E",
-        "Kelas 11": "F",
-        "Kelas 12": "F"
-      }
+    {
+      "Jenjang": "SD",
+      "Kelas": "Kelas 6",
+      "Fase": "C"
+    },
+    {
+      "Jenjang": "MI",
+      "Kelas": "Kelas 1",
+      "Fase": "A"
+    },
+    {
+      "Jenjang": "MI",
+      "Kelas": "Kelas 2",
+      "Fase": "A"
+    },
+    {
+      "Jenjang": "MI",
+      "Kelas": "Kelas 3",
+      "Fase": "B"
+    },
+    {
+      "Jenjang": "MI",
+      "Kelas": "Kelas 4",
+      "Fase": "B"
+    },
+    {
+      "Jenjang": "MI",
+      "Kelas": "Kelas 5",
+      "Fase": "C"
+    },
+    {
+      "Jenjang": "MI",
+      "Kelas": "Kelas 6",
+      "Fase": "C"
+    },
+    {
+      "Jenjang": "SMP",
+      "Kelas": "Kelas 7",
+      "Fase": "D"
+    },
+    {
+      "Jenjang": "SMP",
+      "Kelas": "Kelas 8",
+      "Fase": "D"
+    },
+    {
+      "Jenjang": "SMP",
+      "Kelas": "Kelas 9",
+      "Fase": "D"
+    },
+    {
+      "Jenjang": "MTs",
+      "Kelas": "Kelas 7",
+      "Fase": "D"
+    },
+    {
+      "Jenjang": "MTs",
+      "Kelas": "Kelas 8",
+      "Fase": "D"
+    },
+    {
+      "Jenjang": "MTs",
+      "Kelas": "Kelas 9",
+      "Fase": "D"
+    },
+    {
+      "Jenjang": "SMA",
+      "Kelas": "Kelas 10",
+      "Fase": "E"
+    },
+    {
+      "Jenjang": "SMA",
+      "Kelas": "Kelas 11",
+      "Fase": "F"
+    },
+    {
+      "Jenjang": "SMA",
+      "Kelas": "Kelas 12",
+      "Fase": "F"
+    },
+    {
+      "Jenjang": "MA",
+      "Kelas": "Kelas 10",
+      "Fase": "E"
+    },
+    {
+      "Jenjang": "MA",
+      "Kelas": "Kelas 11",
+      "Fase": "F"
+    },
+    {
+      "Jenjang": "MA",
+      "Kelas": "Kelas 12",
+      "Fase": "F"
+    },
+    {
+      "Jenjang": "SMK",
+      "Kelas": "Kelas 10",
+      "Fase": "E"
+    },
+    {
+      "Jenjang": "SMK",
+      "Kelas": "Kelas 11",
+      "Fase": "F"
+    },
+    {
+      "Jenjang": "SMK",
+      "Kelas": "Kelas 12",
+      "Fase": "F"
     }
-  },
-  "MAPEL_BY_KELAS": {
-    "PAUD/TK/RA": {
-      "Kelompok A": [
-        "Nilai Agama dan Budi Pekerti",
-        "Jati Diri",
-        "Dasar-dasar Literasi, Bahasa, dan Komunikasi",
-        "Dasar-dasar Matematika dan Sains",
-        "Kreativitas, Estetika, dan Imajinasi",
-        "Dasar-dasar Kesehatan dan Keselamatan"
-      ],
-      "Kelompok B": [
-        "Nilai Agama dan Budi Pekerti",
-        "Jati Diri",
-        "Dasar-dasar Literasi, Bahasa, dan Komunikasi",
-        "Dasar-dasar Matematika dan Sains",
-        "Kreativitas, Estetika, dan Imajinasi",
-        "Dasar-dasar Kesehatan dan Keselamatan"
-      ]
+  ],
+  "Mapel by Jenjang": [
+    {
+      "Jenjang": "PAUD/TK/RA",
+      "Mata Pelajaran": "Nilai Agama dan Budi Pekerti"
     },
-    "SD": {
-      "Kelas 1": [
-        "Pendidikan Agama dan Budi Pekerti",
-        "Pendidikan Pancasila",
-        "Bahasa Indonesia",
-        "Matematika",
-        "PJOK",
-        "Seni dan Budaya",
-        "Bahasa Inggris",
-        "Muatan Lokal"
-      ],
-      "Kelas 2": [
-        "Pendidikan Agama dan Budi Pekerti",
-        "Pendidikan Pancasila",
-        "Bahasa Indonesia",
-        "Matematika",
-        "PJOK",
-        "Seni dan Budaya",
-        "Bahasa Inggris",
-        "Muatan Lokal"
-      ],
-      "Kelas 3": [
-        "Pendidikan Agama dan Budi Pekerti",
-        "Pendidikan Pancasila",
-        "Bahasa Indonesia",
-        "Matematika",
-        "IPAS",
-        "PJOK",
-        "Seni dan Budaya",
-        "Bahasa Inggris",
-        "Muatan Lokal"
-      ],
-      "Kelas 4": [
-        "Pendidikan Agama dan Budi Pekerti",
-        "Pendidikan Pancasila",
-        "Bahasa Indonesia",
-        "Matematika",
-        "IPAS",
-        "PJOK",
-        "Seni dan Budaya",
-        "Bahasa Inggris",
-        "Muatan Lokal"
-      ],
-      "Kelas 5": [
-        "Pendidikan Agama dan Budi Pekerti",
-        "Pendidikan Pancasila",
-        "Bahasa Indonesia",
-        "Matematika",
-        "IPAS",
-        "PJOK",
-        "Seni dan Budaya",
-        "Bahasa Inggris",
-        "Muatan Lokal",
-        "Koding dan Kecerdasan Artifisial (KKA)"
-      ],
-      "Kelas 6": [
-        "Pendidikan Agama dan Budi Pekerti",
-        "Pendidikan Pancasila",
-        "Bahasa Indonesia",
-        "Matematika",
-        "IPAS",
-        "PJOK",
-        "Seni dan Budaya",
-        "Bahasa Inggris",
-        "Muatan Lokal",
-        "Koding dan Kecerdasan Artifisial (KKA)"
-      ]
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Jati Diri"
     },
-    "MI": {
-      "Kelas 1": [
-        "Pendidikan Pancasila",
-        "Bahasa Indonesia",
-        "Matematika",
-        "PJOK",
-        "Seni dan Budaya",
-        "Bahasa Inggris",
-        "Muatan Lokal",
-        "Al-Qur'an Hadits",
-        "Akidah Akhlak",
-        "Fikih",
-        "SKI",
-        "Bahasa Arab",
-        "Muatan Lokal"
-      ],
-      "Kelas 2": [
-        "Pendidikan Pancasila",
-        "Bahasa Indonesia",
-        "Matematika",
-        "PJOK",
-        "Seni dan Budaya",
-        "Bahasa Inggris",
-        "Muatan Lokal",
-        "Al-Qur'an Hadits",
-        "Akidah Akhlak",
-        "Fikih",
-        "SKI",
-        "Bahasa Arab",
-        "Muatan Lokal"
-      ],
-      "Kelas 3": [
-        "Pendidikan Pancasila",
-        "Bahasa Indonesia",
-        "Matematika",
-        "IPAS",
-        "PJOK",
-        "Seni dan Budaya",
-        "Bahasa Inggris",
-        "Muatan Lokal",
-        "Al-Qur'an Hadits",
-        "Akidah Akhlak",
-        "Fikih",
-        "SKI",
-        "Bahasa Arab",
-        "Muatan Lokal"
-      ],
-      "Kelas 4": [
-        "Pendidikan Pancasila",
-        "Bahasa Indonesia",
-        "Matematika",
-        "IPAS",
-        "PJOK",
-        "Seni dan Budaya",
-        "Bahasa Inggris",
-        "Muatan Lokal",
-        "Al-Qur'an Hadits",
-        "Akidah Akhlak",
-        "Fikih",
-        "SKI",
-        "Bahasa Arab",
-        "Muatan Lokal"
-      ],
-      "Kelas 5": [
-        "Pendidikan Pancasila",
-        "Bahasa Indonesia",
-        "Matematika",
-        "IPAS",
-        "PJOK",
-        "Seni dan Budaya",
-        "Bahasa Inggris",
-        "Muatan Lokal",
-        "Al-Qur'an Hadits",
-        "Akidah Akhlak",
-        "Fikih",
-        "SKI",
-        "Bahasa Arab",
-        "Muatan Lokal",
-        "Koding dan Kecerdasan Artifisial (KKA)"
-      ],
-      "Kelas 6": [
-        "Pendidikan Pancasila",
-        "Bahasa Indonesia",
-        "Matematika",
-        "IPAS",
-        "PJOK",
-        "Seni dan Budaya",
-        "Bahasa Inggris",
-        "Muatan Lokal",
-        "Al-Qur'an Hadits",
-        "Akidah Akhlak",
-        "Fikih",
-        "SKI",
-        "Bahasa Arab",
-        "Muatan Lokal",
-        "Koding dan Kecerdasan Artifisial (KKA)"
-      ]
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Dasar-dasar Literasi, Bahasa, dan Komunikasi"
     },
-    "SMP": {
-      "Kelas 7": [
-        "Pendidikan Agama dan Budi Pekerti",
-        "Pendidikan Pancasila",
-        "Bahasa Indonesia",
-        "Matematika",
-        "IPA",
-        "IPS",
-        "Bahasa Inggris",
-        "Informatika",
-        "PJOK",
-        "Seni/Prakarya",
-        "Muatan Lokal",
-        "Koding dan Kecerdasan Artifisial (KKA)"
-      ],
-      "Kelas 8": [
-        "Pendidikan Agama dan Budi Pekerti",
-        "Pendidikan Pancasila",
-        "Bahasa Indonesia",
-        "Matematika",
-        "IPA",
-        "IPS",
-        "Bahasa Inggris",
-        "Informatika",
-        "PJOK",
-        "Seni/Prakarya",
-        "Muatan Lokal",
-        "Koding dan Kecerdasan Artifisial (KKA)"
-      ],
-      "Kelas 9": [
-        "Pendidikan Agama dan Budi Pekerti",
-        "Pendidikan Pancasila",
-        "Bahasa Indonesia",
-        "Matematika",
-        "IPA",
-        "IPS",
-        "Bahasa Inggris",
-        "Informatika",
-        "PJOK",
-        "Seni/Prakarya",
-        "Muatan Lokal",
-        "Koding dan Kecerdasan Artifisial (KKA)"
-      ]
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Dasar-dasar Matematika dan Sains"
     },
-    "MTs": {
-      "Kelas 7": [
-        "Pendidikan Pancasila",
-        "Bahasa Indonesia",
-        "Matematika",
-        "IPA",
-        "IPS",
-        "Bahasa Inggris",
-        "Informatika",
-        "PJOK",
-        "Seni/Prakarya",
-        "Muatan Lokal",
-        "Al-Qur'an Hadits",
-        "Akidah Akhlak",
-        "Fikih",
-        "SKI",
-        "Bahasa Arab",
-        "Koding dan Kecerdasan Artifisial (KKA)"
-      ],
-      "Kelas 8": [
-        "Pendidikan Pancasila",
-        "Bahasa Indonesia",
-        "Matematika",
-        "IPA",
-        "IPS",
-        "Bahasa Inggris",
-        "Informatika",
-        "PJOK",
-        "Seni/Prakarya",
-        "Muatan Lokal",
-        "Al-Qur'an Hadits",
-        "Akidah Akhlak",
-        "Fikih",
-        "SKI",
-        "Bahasa Arab",
-        "Koding dan Kecerdasan Artifisial (KKA)"
-      ],
-      "Kelas 9": [
-        "Pendidikan Pancasila",
-        "Bahasa Indonesia",
-        "Matematika",
-        "IPA",
-        "IPS",
-        "Bahasa Inggris",
-        "Informatika",
-        "PJOK",
-        "Seni/Prakarya",
-        "Muatan Lokal",
-        "Al-Qur'an Hadits",
-        "Akidah Akhlak",
-        "Fikih",
-        "SKI",
-        "Bahasa Arab",
-        "Koding dan Kecerdasan Artifisial (KKA)"
-      ]
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Kreativitas, Estetika, dan Imajinasi"
     },
-    "SMA": {
-      "Kelas 10": [
-        "Pendidikan Agama dan Budi Pekerti",
-        "Pendidikan Pancasila",
-        "Bahasa Indonesia",
-        "Bahasa Inggris",
-        "Matematika",
-        "IPA Lintasan",
-        "IPS Lintasan",
-        "Informatika",
-        "PJOK",
-        "Seni/Prakarya",
-        "Koding dan Kecerdasan Artifisial (KKA)"
-      ],
-      "Kelas 11": [
-        "Pendidikan Agama dan Budi Pekerti",
-        "Pendidikan Pancasila",
-        "Bahasa Indonesia",
-        "Bahasa Inggris",
-        "Matematika",
-        "Matematika Lanjutan",
-        "Fisika",
-        "Kimia",
-        "Biologi",
-        "Ekonomi",
-        "Geografi",
-        "Sosiologi",
-        "Sejarah",
-        "Informatika",
-        "PJOK",
-        "Seni Budaya Lanjutan",
-        "Koding dan Kecerdasan Artifisial (KKA)"
-      ],
-      "Kelas 12": [
-        "Pendidikan Agama dan Budi Pekerti",
-        "Pendidikan Pancasila",
-        "Bahasa Indonesia",
-        "Bahasa Inggris",
-        "Matematika",
-        "Matematika Lanjutan",
-        "Fisika",
-        "Kimia",
-        "Biologi",
-        "Ekonomi",
-        "Geografi",
-        "Sosiologi",
-        "Sejarah",
-        "Informatika",
-        "PJOK",
-        "Seni Budaya Lanjutan",
-        "Koding dan Kecerdasan Artifisial (KKA)"
-      ]
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Dasar-dasar Kesehatan dan Keselamatan"
     },
-    "MA": {
-      "Kelas 10": [
-        "Pendidikan Pancasila",
-        "Bahasa Indonesia",
-        "Bahasa Inggris",
-        "Matematika",
-        "IPA Lintasan",
-        "IPS Lintasan",
-        "Informatika",
-        "PJOK",
-        "Seni/Prakarya",
-        "Al-Qur'an Hadits",
-        "Akidah Akhlak",
-        "Fikih",
-        "SKI",
-        "Bahasa Arab",
-        "Koding dan Kecerdasan Artifisial (KKA)"
-      ],
-      "Kelas 11": [
-        "Pendidikan Pancasila",
-        "Bahasa Indonesia",
-        "Bahasa Inggris",
-        "Matematika",
-        "Matematika Lanjutan",
-        "Fisika",
-        "Kimia",
-        "Biologi",
-        "Ekonomi",
-        "Geografi",
-        "Sosiologi",
-        "Sejarah",
-        "Informatika",
-        "PJOK",
-        "Seni Budaya Lanjutan",
-        "Al-Qur'an Hadits",
-        "Akidah Akhlak",
-        "Fikih",
-        "SKI",
-        "Bahasa Arab",
-        "Koding dan Kecerdasan Artifisial (KKA)"
-      ],
-      "Kelas 12": [
-        "Pendidikan Pancasila",
-        "Bahasa Indonesia",
-        "Bahasa Inggris",
-        "Matematika",
-        "Matematika Lanjutan",
-        "Fisika",
-        "Kimia",
-        "Biologi",
-        "Ekonomi",
-        "Geografi",
-        "Sosiologi",
-        "Sejarah",
-        "Informatika",
-        "PJOK",
-        "Seni Budaya Lanjutan",
-        "Al-Qur'an Hadits",
-        "Akidah Akhlak",
-        "Fikih",
-        "SKI",
-        "Bahasa Arab",
-        "Koding dan Kecerdasan Artifisial (KKA)"
-      ]
+    {
+      "Jenjang": "SD",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
     },
-    "SMK": {
-      "Kelas 10": [
-        "Pendidikan Agama dan Budi Pekerti",
-        "Pendidikan Pancasila",
-        "Bahasa Indonesia",
-        "Matematika",
-        "Bahasa Inggris",
-        "IPAS",
-        "Informatika",
-        "PJOK",
-        "Seni/Prakarya",
-        "Dasar Bidang Keahlian",
-        "Koding dan Kecerdasan Artifisial (KKA)"
-      ],
-      "Kelas 11": [
-        "Pendidikan Agama dan Budi Pekerti",
-        "Pendidikan Pancasila",
-        "Bahasa Indonesia",
-        "Matematika",
-        "Bahasa Inggris",
-        "IPAS",
-        "Informatika",
-        "PJOK",
-        "Seni/Prakarya",
-        "Dasar Program Keahlian",
-        "Kompetensi Keahlian",
-        "Koding dan Kecerdasan Artifisial (KKA)"
-      ],
-      "Kelas 12": [
-        "Pendidikan Agama dan Budi Pekerti",
-        "Pendidikan Pancasila",
-        "Bahasa Indonesia",
-        "Matematika",
-        "Bahasa Inggris",
-        "IPAS",
-        "Informatika",
-        "PJOK",
-        "Seni/Prakarya",
-        "Dasar Program Keahlian",
-        "Kompetensi Keahlian",
-        "Koding dan Kecerdasan Artifisial (KKA)"
-      ]
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam dan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Seni dan Budaya"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "MI",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam dan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Seni dan Budaya"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Muatan Lokal"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Al-Qur'an Hadits"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Akidah Akhlak"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Fikih"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Sejarah Kebudayaan Islam"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Bahasa Arab"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SMP",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Seni/Prakarya"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "MTs",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Seni/Prakarya"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Al-Qur'an Hadits"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Akidah Akhlak"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Fikih"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Sejarah Kebudayaan Islam"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Bahasa Arab"
+    },
+    {
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SMA",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam Lintasan"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Sosial Lintasan"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Seni/Prakarya"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Matematika Lanjutan"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Fisika"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Kimia"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Biologi"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Ekonomi"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Geografi"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Sosiologi"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Sejarah"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Seni Budaya Lanjutan"
+    },
+    {
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "MA",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam Lintasan"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Sosial Lintasan"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Seni/Prakarya"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Al-Qur'an Hadits"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Akidah Akhlak"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Fikih"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Sejarah Kebudayaan Islam"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Bahasa Arab"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Matematika Lanjutan"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Fisika"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Kimia"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Biologi"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Ekonomi"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Geografi"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Sosiologi"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Sejarah"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Seni Budaya Lanjutan"
+    },
+    {
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SMK",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam dan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Seni/Prakarya"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Dasar Bidang Keahlian"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Dasar Program Keahlian"
+    },
+    {
+      "Jenjang": "",
+      "Mata Pelajaran": "Kompetensi Keahlian"
+    },
+    {
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
     }
-  },
-  "MAPEL_BY_JENJANG": {
-    "PAUD/TK/RA": [
-      "Nilai Agama dan Budi Pekerti",
-      "Jati Diri",
-      "Dasar-dasar Literasi, Bahasa, dan Komunikasi",
-      "Dasar-dasar Matematika dan Sains",
-      "Kreativitas, Estetika, dan Imajinasi",
-      "Dasar-dasar Kesehatan dan Keselamatan"
-    ],
-    "SD": [
-      "Pendidikan Agama dan Budi Pekerti",
-      "Pendidikan Pancasila",
-      "Bahasa Indonesia",
-      "Matematika",
-      "IPAS",
-      "PJOK",
-      "Seni dan Budaya",
-      "Bahasa Inggris",
-      "Muatan Lokal"
-    ],
-    "MI": [
-      "Pendidikan Pancasila",
-      "Bahasa Indonesia",
-      "Matematika",
-      "IPAS",
-      "PJOK",
-      "Seni dan Budaya",
-      "Bahasa Inggris",
-      "Muatan Lokal",
-      "Al-Qur'an Hadits",
-      "Akidah Akhlak",
-      "Fikih",
-      "SKI",
-      "Bahasa Arab",
-      "Muatan Lokal"
-    ],
-    "SMP": [
-      "Pendidikan Agama dan Budi Pekerti",
-      "Pendidikan Pancasila",
-      "Bahasa Indonesia",
-      "Matematika",
-      "IPA",
-      "IPS",
-      "Bahasa Inggris",
-      "Informatika",
-      "PJOK",
-      "Seni/Prakarya",
-      "Muatan Lokal"
-    ],
-    "MTs": [
-      "Pendidikan Pancasila",
-      "Bahasa Indonesia",
-      "Matematika",
-      "IPA",
-      "IPS",
-      "Bahasa Inggris",
-      "Informatika",
-      "PJOK",
-      "Seni/Prakarya",
-      "Muatan Lokal",
-      "Al-Qur'an Hadits",
-      "Akidah Akhlak",
-      "Fikih",
-      "SKI",
-      "Bahasa Arab"
-    ],
-    "SMA": [
-      "Pendidikan Agama dan Budi Pekerti",
-      "Pendidikan Pancasila",
-      "Bahasa Indonesia",
-      "Bahasa Inggris",
-      "Matematika",
-      "IPA Lintasan",
-      "IPS Lintasan",
-      "Informatika",
-      "PJOK",
-      "Seni/Prakarya",
-      "Matematika Lanjutan",
-      "Fisika",
-      "Kimia",
-      "Biologi",
-      "Ekonomi",
-      "Geografi",
-      "Sosiologi",
-      "Sejarah",
-      "Seni Budaya Lanjutan"
-    ],
-    "MA": [
-      "Pendidikan Pancasila",
-      "Bahasa Indonesia",
-      "Bahasa Inggris",
-      "Matematika",
-      "IPA Lintasan",
-      "IPS Lintasan",
-      "Informatika",
-      "PJOK",
-      "Seni/Prakarya",
-      "Al-Qur'an Hadits",
-      "Akidah Akhlak",
-      "Fikih",
-      "SKI",
-      "Bahasa Arab",
-      "Matematika Lanjutan",
-      "Fisika",
-      "Kimia",
-      "Biologi",
-      "Ekonomi",
-      "Geografi",
-      "Sosiologi",
-      "Sejarah",
-      "Seni Budaya Lanjutan"
-    ],
-    "SMK": [
-      "Pendidikan Agama dan Budi Pekerti",
-      "Pendidikan Pancasila",
-      "Bahasa Indonesia",
-      "Matematika",
-      "Bahasa Inggris",
-      "IPAS",
-      "Informatika",
-      "PJOK",
-      "Seni/Prakarya",
-      "Dasar Bidang Keahlian",
-      "Dasar Program Keahlian",
-      "Kompetensi Keahlian"
-    ]
-  }
+  ],
+  "Mapel by Kelas": [
+    {
+      "Jenjang": "PAUD/TK/RA",
+      "Kelas": "Kelompok A",
+      "Mata Pelajaran": "Nilai Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Jati Diri"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Dasar-dasar Literasi, Bahasa, dan Komunikasi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Dasar-dasar Matematika dan Sains"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Kreativitas, Estetika, dan Imajinasi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Dasar-dasar Kesehatan dan Keselamatan"
+    },
+    {
+      "Jenjang": "PAUD/TK/RA",
+      "Kelas": "Kelompok B",
+      "Mata Pelajaran": "Nilai Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Jati Diri"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Dasar-dasar Literasi, Bahasa, dan Komunikasi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Dasar-dasar Matematika dan Sains"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Kreativitas, Estetika, dan Imajinasi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Dasar-dasar Kesehatan dan Keselamatan"
+    },
+    {
+      "Jenjang": "SD",
+      "Kelas": "Kelas 1",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni dan Budaya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SD",
+      "Kelas": "Kelas 2",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni dan Budaya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SD",
+      "Kelas": "Kelas 3",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam dan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni dan Budaya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SD",
+      "Kelas": "Kelas 4",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam dan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni dan Budaya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SD",
+      "Kelas": "Kelas 5",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam dan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni dan Budaya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SD",
+      "Kelas": "Kelas 6",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam dan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni dan Budaya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "MI",
+      "Kelas": "Kelas 1",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni dan Budaya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Al-Qur'an Hadits"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Akidah Akhlak"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fikih"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah Kebudayaan Islam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Arab"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "MI",
+      "Kelas": "Kelas 2",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni dan Budaya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Muatan Lokal"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Al-Qur'an Hadits"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Akidah Akhlak"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fikih"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah Kebudayaan Islam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Arab"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "MI",
+      "Kelas": "Kelas 3",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam dan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni dan Budaya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Muatan Lokal"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Al-Qur'an Hadits"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Akidah Akhlak"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fikih"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah Kebudayaan Islam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Arab"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "MI",
+      "Kelas": "Kelas 4",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam dan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni dan Budaya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Muatan Lokal"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Al-Qur'an Hadits"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Akidah Akhlak"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fikih"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah Kebudayaan Islam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Arab"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "MI",
+      "Kelas": "Kelas 5",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam dan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni dan Budaya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Muatan Lokal"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Al-Qur'an Hadits"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Akidah Akhlak"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fikih"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah Kebudayaan Islam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Arab"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "MI",
+      "Kelas": "Kelas 6",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam dan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni dan Budaya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Muatan Lokal"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Al-Qur'an Hadits"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Akidah Akhlak"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fikih"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah Kebudayaan Islam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Arab"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SMP",
+      "Kelas": "Kelas 7",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni/Prakarya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SMP",
+      "Kelas": "Kelas 8",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni/Prakarya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SMP",
+      "Kelas": "Kelas 9",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni/Prakarya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "MTs",
+      "Kelas": "Kelas 7",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni/Prakarya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Muatan Lokal"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Al-Qur'an Hadits"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Akidah Akhlak"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fikih"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah Kebudayaan Islam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Arab"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "MTs",
+      "Kelas": "Kelas 8",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni/Prakarya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Muatan Lokal"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Al-Qur'an Hadits"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Akidah Akhlak"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fikih"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah Kebudayaan Islam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Arab"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "MTs",
+      "Kelas": "Kelas 9",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni/Prakarya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Al-Qur'an Hadits"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Akidah Akhlak"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fikih"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah Kebudayaan Islam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Arab"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SMA",
+      "Kelas": "Kelas 10",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam Lintasan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Sosial Lintasan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni/Prakarya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SMA",
+      "Kelas": "Kelas 11",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika Lanjutan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fisika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Kimia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Biologi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ekonomi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Geografi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sosiologi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni Budaya Lanjutan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SMA",
+      "Kelas": "Kelas 12",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika Lanjutan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fisika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Kimia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Biologi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ekonomi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Geografi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sosiologi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni Budaya Lanjutan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "MA",
+      "Kelas": "Kelas 10",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam Lintasan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Sosial Lintasan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni/Prakarya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Al-Qur'an Hadits"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Akidah Akhlak"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fikih"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah Kebudayaan Islam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Arab"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "MA",
+      "Kelas": "Kelas 11",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika Lanjutan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fisika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Kimia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Biologi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ekonomi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Geografi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sosiologi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni Budaya Lanjutan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Al-Qur'an Hadits"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Akidah Akhlak"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fikih"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah Kebudayaan Islam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Arab"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "MA",
+      "Kelas": "Kelas 12",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika Lanjutan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fisika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Kimia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Biologi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ekonomi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Geografi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sosiologi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni Budaya Lanjutan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Al-Qur'an Hadits"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Akidah Akhlak"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fikih"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah Kebudayaan Islam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Arab"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SMK",
+      "Kelas": "Kelas 10",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam dan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni/Prakarya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Dasar Bidang Keahlian"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SMK",
+      "Kelas": "Kelas 11",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam dan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni/Prakarya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Dasar Program Keahlian"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Kompetensi Keahlian"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SMK",
+      "Kelas": "Kelas 12",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam dan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni/Prakarya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Dasar Program Keahlian"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Kompetensi Keahlian"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    }
+  ],
+  "Mapel by Fase": [
+    {
+      "Jenjang": "PAUD/TK/RA",
+      "Kelas": "Kelompok A",
+      "Fase": "P",
+      "Mata Pelajaran": "Nilai Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Jati Diri"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Dasar-dasar Literasi, Bahasa, dan Komunikasi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Dasar-dasar Matematika dan Sains"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Kreativitas, Estetika, dan Imajinasi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Dasar-dasar Kesehatan dan Keselamatan"
+    },
+    {
+      "Jenjang": "PAUD/TK/RA",
+      "Kelas": "Kelompok B",
+      "Fase": "P",
+      "Mata Pelajaran": "Nilai Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Jati Diri"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Dasar-dasar Literasi, Bahasa, dan Komunikasi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Dasar-dasar Matematika dan Sains"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Kreativitas, Estetika, dan Imajinasi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Dasar-dasar Kesehatan dan Keselamatan"
+    },
+    {
+      "Jenjang": "SD",
+      "Kelas": "Kelas 1",
+      "Fase": "A",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni dan Budaya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SD",
+      "Kelas": "Kelas 2",
+      "Fase": "A",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni dan Budaya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SD",
+      "Kelas": "Kelas 3",
+      "Fase": "B",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam dan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni dan Budaya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SD",
+      "Kelas": "Kelas 4",
+      "Fase": "B",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam dan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni dan Budaya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SD",
+      "Kelas": "Kelas 5",
+      "Fase": "C",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam dan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni dan Budaya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SD",
+      "Kelas": "Kelas 6",
+      "Fase": "C",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam dan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni dan Budaya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "MI",
+      "Kelas": "Kelas 1",
+      "Fase": "A",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni dan Budaya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Al-Qur'an Hadits"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Akidah Akhlak"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fikih"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah Kebudayaan Islam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Arab"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "MI",
+      "Kelas": "Kelas 2",
+      "Fase": "A",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni dan Budaya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Muatan Lokal"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Al-Qur'an Hadits"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Akidah Akhlak"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fikih"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah Kebudayaan Islam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Arab"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "MI",
+      "Kelas": "Kelas 3",
+      "Fase": "B",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam dan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni dan Budaya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Muatan Lokal"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Al-Qur'an Hadits"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Akidah Akhlak"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fikih"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah Kebudayaan Islam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Arab"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "MI",
+      "Kelas": "Kelas 4",
+      "Fase": "B",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam dan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni dan Budaya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Muatan Lokal"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Al-Qur'an Hadits"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Akidah Akhlak"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fikih"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah Kebudayaan Islam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Arab"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "MI",
+      "Kelas": "Kelas 5",
+      "Fase": "C",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam dan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni dan Budaya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Muatan Lokal"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Al-Qur'an Hadits"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Akidah Akhlak"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fikih"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah Kebudayaan Islam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Arab"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "MI",
+      "Kelas": "Kelas 6",
+      "Fase": "C",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam dan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni dan Budaya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Muatan Lokal"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Al-Qur'an Hadits"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Akidah Akhlak"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fikih"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah Kebudayaan Islam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Arab"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SMP",
+      "Kelas": "Kelas 7",
+      "Fase": "D",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni/Prakarya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SMP",
+      "Kelas": "Kelas 8",
+      "Fase": "D",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni/Prakarya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SMP",
+      "Kelas": "Kelas 9",
+      "Fase": "D",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni/Prakarya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "MTs",
+      "Kelas": "Kelas 7",
+      "Fase": "D",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni/Prakarya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Muatan Lokal"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Al-Qur'an Hadits"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Akidah Akhlak"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fikih"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah Kebudayaan Islam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Arab"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "MTs",
+      "Kelas": "Kelas 8",
+      "Fase": "D",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni/Prakarya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Muatan Lokal"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Al-Qur'an Hadits"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Akidah Akhlak"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fikih"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah Kebudayaan Islam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Arab"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "MTs",
+      "Kelas": "Kelas 9",
+      "Fase": "D",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni/Prakarya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Al-Qur'an Hadits"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Akidah Akhlak"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fikih"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah Kebudayaan Islam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Arab"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SMA",
+      "Kelas": "Kelas 10",
+      "Fase": "E",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam Lintasan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Sosial Lintasan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni/Prakarya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SMA",
+      "Kelas": "Kelas 11",
+      "Fase": "E",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika Lanjutan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fisika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Kimia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Biologi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ekonomi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Geografi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sosiologi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni Budaya Lanjutan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SMA",
+      "Kelas": "Kelas 12",
+      "Fase": "F",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika Lanjutan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fisika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Kimia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Biologi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ekonomi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Geografi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sosiologi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni Budaya Lanjutan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "MA",
+      "Kelas": "Kelas 10",
+      "Fase": "E",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam Lintasan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Sosial Lintasan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni/Prakarya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Al-Qur'an Hadits"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Akidah Akhlak"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fikih"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah Kebudayaan Islam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Arab"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "MA",
+      "Kelas": "Kelas 11",
+      "Fase": "E",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika Lanjutan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fisika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Kimia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Biologi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ekonomi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Geografi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sosiologi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni Budaya Lanjutan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Al-Qur'an Hadits"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Akidah Akhlak"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fikih"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah Kebudayaan Islam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Arab"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "MA",
+      "Kelas": "Kelas 12",
+      "Fase": "F",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika Lanjutan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fisika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Kimia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Biologi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ekonomi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Geografi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sosiologi"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni Budaya Lanjutan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Al-Qur'an Hadits"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Akidah Akhlak"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Fikih"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Sejarah Kebudayaan Islam"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Arab"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SMK",
+      "Kelas": "Kelas 10",
+      "Fase": "E",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam dan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni/Prakarya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Dasar Bidang Keahlian"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SMK",
+      "Kelas": "Kelas 11",
+      "Fase": "E",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam dan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni/Prakarya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Dasar Program Keahlian"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Kompetensi Keahlian"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    },
+    {
+      "Jenjang": "SMK",
+      "Kelas": "Kelas 12",
+      "Fase": "F",
+      "Mata Pelajaran": "Pendidikan Agama dan Budi Pekerti"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Pancasila dan Kewarganegaraan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Indonesia"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Matematika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Bahasa Inggris"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Ilmu Pengetahuan Alam dan Sosial"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Informatika"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Pendidikan Jasmani, Olahraga, dan Kesehatan"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Seni/Prakarya"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Dasar Program Keahlian"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Kompetensi Keahlian"
+    },
+    {
+      "Jenjang": "",
+      "Kelas": "",
+      "Mata Pelajaran": "Koding dan Kecerdasan Artifisial"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Bahasa Daerah"
+    },
+    {
+      "Mata Pelajaran": "Muatan Lokal Sekolah"
+    }
+  ]
 }
