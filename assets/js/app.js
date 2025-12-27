@@ -1,4 +1,4 @@
-const apiKey = ""; 
+const apiKey = "";
 const AKADEMIK_DATA = {
     'PAUD/TK/RA': {
         kelas: ['Kelompok A', 'Kelompok B'],
@@ -229,7 +229,7 @@ function hideBatchProgress() {
     document.getElementById('rapor-batch-pause').style.display = 'none';
     document.getElementById('rapor-batch-stop').style.display = 'none';
     document.getElementById('rapor-excel-generate-all').style.display = 'inline-flex';
-    if(batchProcessState.failedList.length > 0) {
+    if (batchProcessState.failedList.length > 0) {
         showFailedSiswaModal();
     }
 }
@@ -302,7 +302,7 @@ async function callGemini(prompt, systemInstruction = "Anda adalah asisten penga
             })
         });
         const data = await response.json();
-        if(data.error) throw new Error(data.error.message);
+        if (data.error) throw new Error(data.error.message);
         return data.candidates[0].content.parts[0].text;
     } catch (error) {
         console.error(error);
@@ -320,21 +320,21 @@ async function callImagen(prompt) {
                 parameters: { sampleCount: 1 }
             })
         });
-        
+
         if (!response.ok) {
             throw new Error(`API returned status ${response.status}: ${response.statusText}`);
         }
-        
+
         const data = await response.json();
-        
-        if(data.error) {
+
+        if (data.error) {
             throw new Error(data.error.message || 'Unknown API error');
         }
-        
-        if(!data.predictions || !data.predictions[0] || !data.predictions[0].bytesBase64Encoded) {
+
+        if (!data.predictions || !data.predictions[0] || !data.predictions[0].bytesBase64Encoded) {
             throw new Error('Invalid API response format: missing predictions or bytesBase64Encoded');
         }
-        
+
         const base64 = data.predictions[0].bytesBase64Encoded;
         return `data:image/png;base64,${base64}`;
     } catch (error) {
@@ -349,7 +349,7 @@ async function analyzeFaceCharacteristics(imageData) {
     try {
         // Use Gemini Vision to analyze the uploaded photo
         const base64Image = imageData.startsWith('data:image') ? imageData.split(',')[1] : imageData;
-        
+
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -369,13 +369,13 @@ async function analyzeFaceCharacteristics(imageData) {
                 }]
             })
         });
-        
+
         const data = await response.json();
-        if(data.error) {
+        if (data.error) {
             console.error('Face analysis error:', data.error);
             return null;
         }
-        
+
         const faceDescription = data.candidates[0].content.parts[0].text;
         return faceDescription;
     } catch (error) {
@@ -388,10 +388,10 @@ async function callImagenWithReference(prompt, referenceImageData) {
     try {
         // Analyze the uploaded image to get face characteristics
         const faceCharacteristics = await analyzeFaceCharacteristics(referenceImageData);
-        
+
         // Build enhanced prompt with detailed face description
         let enhancedPrompt = prompt;
-        if(faceCharacteristics) {
+        if (faceCharacteristics) {
             enhancedPrompt = `${prompt}
 
 EXACT FACE REFERENCE DESCRIPTION:
@@ -399,7 +399,7 @@ ${faceCharacteristics}
 
 CRITICAL: The generated image MUST show a person with the exact same facial features, face shape, skin tone, eye color, hair color, and distinctive characteristics as described above. The face must be immediately recognizable as the same person from the reference photo.`;
         }
-        
+
         // Use regular Imagen generation with enhanced face-specific prompt
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, {
             method: 'POST',
@@ -410,7 +410,7 @@ CRITICAL: The generated image MUST show a person with the exact same facial feat
             })
         });
         const data = await response.json();
-        if(data.error) throw new Error(data.error.message);
+        if (data.error) throw new Error(data.error.message);
         const base64 = data.predictions[0].bytesBase64Encoded;
         return `data:image/png;base64,${base64}`;
     } catch (error) {
@@ -428,13 +428,13 @@ async function callTTS(text, voice, style, speed, pitch, volume) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 contents: [{ parts: [{ text: text }] }],
-                generationConfig: { 
+                generationConfig: {
                     responseModalities: ["AUDIO"],
-                    speechConfig: { 
-                        voiceConfig: { 
-                            prebuiltVoiceConfig: { voiceName: voice } 
-                        } 
-                    } 
+                    speechConfig: {
+                        voiceConfig: {
+                            prebuiltVoiceConfig: { voiceName: voice }
+                        }
+                    }
                 }
             })
         });
@@ -443,8 +443,8 @@ async function callTTS(text, voice, style, speed, pitch, volume) {
             throw new Error(`API Error ${response.status}: ${errorText}`);
         }
         const data = await response.json();
-        if(data.error) throw new Error(data.error.message);
-        return data.candidates[0].content.parts[0].inlineData.data; 
+        if (data.error) throw new Error(data.error.message);
+        return data.candidates[0].content.parts[0].inlineData.data;
     } catch (error) {
         console.error(error);
         showToast("Error TTS: " + error.message);
@@ -478,8 +478,8 @@ function pcmToWav(pcmData, sampleRate = 24000) {
     view.setUint32(4, 36 + dataSize, true);
     writeString(view, 8, 'WAVE');
     writeString(view, 12, 'fmt ');
-    view.setUint32(16, 16, true); 
-    view.setUint16(20, 1, true); 
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
     view.setUint16(22, numChannels, true);
     view.setUint32(24, sampleRate, true);
     view.setUint32(28, byteRate, true);
@@ -492,29 +492,18 @@ function pcmToWav(pcmData, sampleRate = 24000) {
     wavBytes.set(pcmBytes);
     return buffer;
 }
-function toggleMenuDropdown(btn) {
-    const content = btn.nextElementSibling;
-    content.classList.toggle('show');
-    btn.classList.toggle('expanded');
-}
-document.addEventListener('click', function(event) {
-    if (!event.target.closest('.menu-dropdown')) {
-        document.querySelectorAll('.menu-dropdown-content').forEach(el => el.classList.remove('show'));
-        document.querySelectorAll('.menu-dropdown-toggle').forEach(el => el.classList.remove('expanded'));
-    }
-});
 function switchSection(targetId) {
     document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.menu-item, .menu-dropdown-item, .nav-item').forEach(el => el.classList.remove('active'));
     const targetSection = document.getElementById(targetId);
-    if(targetSection) targetSection.classList.add('active');
+    if (targetSection) targetSection.classList.add('active');
     document.querySelectorAll(`[data-target="${targetId}"]`).forEach(el => el.classList.add('active'));
     const titleMap = {
         'dashboard': 'Dashboard',
         'pengaturan': 'Profil Guru',
         'materi-ajar': 'Generator Modul Ajar',
-        'media-ajar': 'Generator Media Ajar', 
-        'kokurikuler': 'Projek Kokurikuler', 
+        'media-ajar': 'Generator Media Ajar',
+        'kokurikuler': 'Projek Kokurikuler',
         'soal': 'Asesmen & Evaluasi',
         'audio-visual': 'Visual & Audio Generator',
         'rubrik-penilaian': 'Rubrik Penilaian',
@@ -526,29 +515,29 @@ function switchSection(targetId) {
         'konten-kreator': 'Konten Kreator',
         'tentang': 'Tentang DigiArju'
     };
-    if(document.getElementById('page-title')) {
+    if (document.getElementById('page-title')) {
         document.getElementById('page-title').innerText = titleMap[targetId] || 'DigiArju APP';
     }
     if (targetId === 'rapor-siswa' && typeof window.loadDataFromProfil === 'function') {
         try {
-            window.loadDataFromProfil(); 
+            window.loadDataFromProfil();
             if (typeof initAddItemModals === 'function') {
                 initAddItemModals();
             }
         } catch (e) { console.error('Error auto-loading profil into E-Rapor:', e); }
     }
-    if(['materi-ajar', 'media-ajar', 'kokurikuler', 'soal', 'rapor-siswa'].includes(targetId)) {
+    if (['materi-ajar', 'media-ajar', 'kokurikuler', 'soal', 'rapor-siswa'].includes(targetId)) {
         setTimeout(() => {
             try {
                 window.autoPopulateCurrentSection();
-            } catch(e) {
+            } catch (e) {
                 console.error('Error auto-populating section:', e);
             }
         }, 300);
     }
     document.getElementById('sidebar').classList.remove('open');
 }
-window.switchTab = function(tabId) {
+window.switchTab = function (tabId) {
     switchSection(tabId);
 };
 const sidebar = document.getElementById('sidebar');
@@ -562,13 +551,13 @@ document.getElementById('sidebar-toggle').addEventListener('click', () => {
     }
 });
 document.querySelectorAll('.menu-item, .menu-dropdown-item, .nav-item').forEach(item => {
-    item.addEventListener('click', function() {
+    item.addEventListener('click', function () {
         const target = this.getAttribute('data-target');
         switchSection(target);
     });
 });
 const darkModeBtn = document.getElementById('toggle-dark-mode');
-if(darkModeBtn){
+if (darkModeBtn) {
     darkModeBtn.addEventListener('click', () => {
         const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
         document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
@@ -581,23 +570,23 @@ function loadProfile() {
     }
     const nama = localStorage.getItem('as_nama') || 'Guru';
     const sekolah = localStorage.getItem('as_sekolah') || 'Nama Sekolah';
-    if(document.getElementById('user-name-display')) document.getElementById('user-name-display').innerText = nama;
-    if(document.getElementById('dash-name')) document.getElementById('dash-name').innerText = nama;
-    if(document.getElementById('user-initial')) document.getElementById('user-initial').innerText = nama.charAt(0);
-    if(document.getElementById('p-nama')) document.getElementById('p-nama').value = localStorage.getItem('as_nama') || '';
-    if(document.getElementById('p-nip')) document.getElementById('p-nip').value = localStorage.getItem('as_nip') || '';
-    if(document.getElementById('p-sekolah')) document.getElementById('p-sekolah').value = sekolah;
-    if(document.getElementById('p-npsn')) document.getElementById('p-npsn').value = localStorage.getItem('as_npsn') || '';
-    if(document.getElementById('p-alamat')) document.getElementById('p-alamat').value = localStorage.getItem('as_alamat') || '';
-    if(document.getElementById('p-kepsek')) document.getElementById('p-kepsek').value = localStorage.getItem('as_kepsek') || '';
-    if(document.getElementById('p-nip-kepsek')) document.getElementById('p-nip-kepsek').value = localStorage.getItem('as_nip_kepsek') || '';
-    if(document.getElementById('p-whatsapp')) document.getElementById('p-whatsapp').value = localStorage.getItem('as_whatsapp') || '';
-    if(document.getElementById('out-sekolah')) document.getElementById('out-sekolah').innerText = sekolah.toUpperCase();
+    if (document.getElementById('user-name-display')) document.getElementById('user-name-display').innerText = nama;
+    if (document.getElementById('dash-name')) document.getElementById('dash-name').innerText = nama;
+    if (document.getElementById('user-initial')) document.getElementById('user-initial').innerText = nama.charAt(0);
+    if (document.getElementById('p-nama')) document.getElementById('p-nama').value = localStorage.getItem('as_nama') || '';
+    if (document.getElementById('p-nip')) document.getElementById('p-nip').value = localStorage.getItem('as_nip') || '';
+    if (document.getElementById('p-sekolah')) document.getElementById('p-sekolah').value = sekolah;
+    if (document.getElementById('p-npsn')) document.getElementById('p-npsn').value = localStorage.getItem('as_npsn') || '';
+    if (document.getElementById('p-alamat')) document.getElementById('p-alamat').value = localStorage.getItem('as_alamat') || '';
+    if (document.getElementById('p-kepsek')) document.getElementById('p-kepsek').value = localStorage.getItem('as_kepsek') || '';
+    if (document.getElementById('p-nip-kepsek')) document.getElementById('p-nip-kepsek').value = localStorage.getItem('as_nip_kepsek') || '';
+    if (document.getElementById('p-whatsapp')) document.getElementById('p-whatsapp').value = localStorage.getItem('as_whatsapp') || '';
+    if (document.getElementById('out-sekolah')) document.getElementById('out-sekolah').innerText = sekolah.toUpperCase();
     const currentDate = new Date();
     const formattedDate = currentDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
-    if(document.getElementById('dash-date')) document.getElementById('dash-date').innerText = formattedDate;
-    if(document.getElementById('dash-role')) document.getElementById('dash-role').innerText = 'Guru';
-    if(document.getElementById('last-update')) document.getElementById('last-update').innerText = 'Dec 4, 2025';
+    if (document.getElementById('dash-date')) document.getElementById('dash-date').innerText = formattedDate;
+    if (document.getElementById('dash-role')) document.getElementById('dash-role').innerText = 'Guru';
+    if (document.getElementById('last-update')) document.getElementById('last-update').innerText = 'Dec 4, 2025';
 }
 document.getElementById('btn-save-profile')?.addEventListener('click', () => {
     localStorage.setItem('as_nama', document.getElementById('p-nama')?.value || '');
@@ -625,10 +614,10 @@ if (typeof window.loadBankItems === 'function') {
 document.querySelectorAll('.upload-box').forEach(box => {
     const input = box.querySelector('input[type="file"]');
     const badge = box.querySelector('.file-badge');
-    if(input && badge){
+    if (input && badge) {
         box.addEventListener('click', () => input.click());
         input.addEventListener('change', () => {
-            if(input.files.length > 0) {
+            if (input.files.length > 0) {
                 badge.style.display = 'inline-block';
                 badge.innerText = input.files[0].name;
                 box.classList.add('has-file');
@@ -638,41 +627,41 @@ document.querySelectorAll('.upload-box').forEach(box => {
 });
 document.querySelectorAll('.btn-group-custom').forEach(group => {
     group.querySelectorAll('.btn-toggle').forEach(button => {
-        button.addEventListener('click', function(e) {
+        button.addEventListener('click', function (e) {
             e.preventDefault();
             group.querySelectorAll('.btn-toggle').forEach(btn => btn.classList.remove('active'));
             this.classList.add('active');
         });
     });
 });
-window.openTab = function(evt, tabId) {
+window.openTab = function (evt, tabId) {
     const container = evt.currentTarget.closest('.doc-preview');
-    if(!container) return;
+    if (!container) return;
     container.querySelectorAll('.tab-pane').forEach(pane => {
         pane.style.display = 'none';
         pane.classList.remove('active');
     });
     container.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     const target = document.getElementById(tabId);
-    if(target) {
+    if (target) {
         target.style.display = 'block';
         target.classList.add('active');
     }
     evt.currentTarget.classList.add('active');
 };
-window.toggleMetodeSubsection = function(id) {
+window.toggleMetodeSubsection = function (id) {
     const element = document.getElementById(id);
-    if(element) {
+    if (element) {
         element.style.display = element.style.display === 'none' ? 'grid' : 'none';
     }
 };
-window.togglePendekatanSubsection = function(id) {
+window.togglePendekatanSubsection = function (id) {
     const element = document.getElementById(id);
-    if(element) {
+    if (element) {
         element.style.display = element.style.display === 'none' ? 'grid' : 'none';
     }
 };
-window.updateKelasOptions = function() {
+window.updateKelasOptions = function () {
     const jenjang = document.getElementById('soal-jenjang').value;
     const kelasSelect = document.getElementById('soal-kelas');
     let options = "";
@@ -681,60 +670,60 @@ window.updateKelasOptions = function() {
     else if (jenjang === "SMP" || jenjang === "MTs") options = "<option value='Kelas 7'>Kelas 7</option><option value='Kelas 8'>Kelas 8</option><option value='Kelas 9'>Kelas 9</option>";
     else if (jenjang === "SMA" || jenjang === "MA" || jenjang === "SMK") options = "<option value='Kelas 10'>Kelas 10</option><option value='Kelas 11'>Kelas 11</option><option value='Kelas 12'>Kelas 12</option>";
     kelasSelect.innerHTML = options;
-    if(kelasSelect.options.length > 0) kelasSelect.selectedIndex = 0;
+    if (kelasSelect.options.length > 0) kelasSelect.selectedIndex = 0;
     const evt = new Event('change');
     kelasSelect.dispatchEvent(evt);
 }
-window.updateFaseOptions = function() {
+window.updateFaseOptions = function () {
     const kelas = document.getElementById('soal-kelas').value;
     const jenjang = (document.getElementById('soal-jenjang') || {}).value || '';
     const faseSelect = document.getElementById('soal-fase');
     let fase = "A";
-    if(jenjang === "PAUD/TK/RA") fase = "P";
-    else if(jenjang === "SD" || jenjang === "MI") {
-        const faseMap = {"Kelas 1": "A", "Kelas 2": "A", "Kelas 3": "B", "Kelas 4": "B", "Kelas 5": "C", "Kelas 6": "C"};
+    if (jenjang === "PAUD/TK/RA") fase = "P";
+    else if (jenjang === "SD" || jenjang === "MI") {
+        const faseMap = { "Kelas 1": "A", "Kelas 2": "A", "Kelas 3": "B", "Kelas 4": "B", "Kelas 5": "C", "Kelas 6": "C" };
         fase = faseMap[kelas] || "A";
-    } else if(jenjang === "SMP" || jenjang === "MTs") {
+    } else if (jenjang === "SMP" || jenjang === "MTs") {
         fase = "D";
-    } else if(jenjang === "SMA" || jenjang === "MA" || jenjang === "SMK") {
-        const faseMap = {"Kelas 10": "E", "Kelas 11": "F", "Kelas 12": "F"};
+    } else if (jenjang === "SMA" || jenjang === "MA" || jenjang === "SMK") {
+        const faseMap = { "Kelas 10": "E", "Kelas 11": "F", "Kelas 12": "F" };
         fase = faseMap[kelas] || "E";
     }
     faseSelect.innerHTML = `<option value="${fase}">Fase ${fase} (Otomatis)</option>`;
 }
 const soalKelasEl = document.getElementById('soal-kelas');
-if(soalKelasEl) {
-    soalKelasEl.addEventListener('change', function(){
-        try { window.updateFaseOptions(); } catch(e) {}
-        try { updateSoalMapelOptions(); } catch(e) {}
+if (soalKelasEl) {
+    soalKelasEl.addEventListener('change', function () {
+        try { window.updateFaseOptions(); } catch (e) { }
+        try { updateSoalMapelOptions(); } catch (e) { }
     });
 }
-if(document.getElementById('soal-jenjang')) window.updateKelasOptions();
-(function(){
+if (document.getElementById('soal-jenjang')) window.updateKelasOptions();
+(function () {
     const naskahToggle = document.getElementById('check-layout-2col');
     const naskahOptions = document.getElementById('naskah-options');
     const gambarBlock = document.getElementById('naskah-gambar-count');
-    function updateNaskahVisibility(){
-        if(!naskahToggle || !naskahOptions) return;
+    function updateNaskahVisibility() {
+        if (!naskahToggle || !naskahOptions) return;
         naskahOptions.style.display = naskahToggle.checked ? 'block' : 'none';
     }
-    function updateGambarVisibility(){
-        if(!gambarBlock) return;
+    function updateGambarVisibility() {
+        if (!gambarBlock) return;
         const sel = document.querySelector('input[name="naskah-option"]:checked');
         gambarBlock.style.display = (sel && sel.value === 'dengan-gambar') ? 'block' : 'none';
     }
-    if(naskahToggle){
+    if (naskahToggle) {
         naskahToggle.addEventListener('change', updateNaskahVisibility);
         updateNaskahVisibility();
     }
-    document.addEventListener('change', function(e){
-        if(e.target && e.target.name === 'naskah-option') updateGambarVisibility();
+    document.addEventListener('change', function (e) {
+        if (e.target && e.target.name === 'naskah-option') updateGambarVisibility();
     });
     updateGambarVisibility();
 })();
 const modulJenjang = document.getElementById('modul-jenjang');
-if(modulJenjang) {
-    modulJenjang.addEventListener('change', function(){
+if (modulJenjang) {
+    modulJenjang.addEventListener('change', function () {
         const jenjang = this.value;
         const kelasSelect = document.getElementById('modul-kelas-select');
         let options = "";
@@ -748,19 +737,19 @@ if(modulJenjang) {
     });
 }
 const modulKelas = document.getElementById('modul-kelas-select');
-if(modulKelas) {
-    modulKelas.addEventListener('change', function() {
+if (modulKelas) {
+    modulKelas.addEventListener('change', function () {
         const kelasStr = this.value;
         const jenjang = (document.getElementById('modul-jenjang') || {}).value || '';
         let fase = "A";
-        if(jenjang === "PAUD/TK/RA") fase = "P";
-        else if(jenjang === "SD" || jenjang === "MI") {
-            const faseMap = {"Kelas 1": "A", "Kelas 2": "A", "Kelas 3": "B", "Kelas 4": "B", "Kelas 5": "C", "Kelas 6": "C"};
+        if (jenjang === "PAUD/TK/RA") fase = "P";
+        else if (jenjang === "SD" || jenjang === "MI") {
+            const faseMap = { "Kelas 1": "A", "Kelas 2": "A", "Kelas 3": "B", "Kelas 4": "B", "Kelas 5": "C", "Kelas 6": "C" };
             fase = faseMap[kelasStr] || "A";
-        } else if(jenjang === "SMP" || jenjang === "MTs") {
+        } else if (jenjang === "SMP" || jenjang === "MTs") {
             fase = "D";
-        } else if(jenjang === "SMA" || jenjang === "MA" || jenjang === "SMK") {
-            const faseMap = {"Kelas 10": "E", "Kelas 11": "F", "Kelas 12": "F"};
+        } else if (jenjang === "SMA" || jenjang === "MA" || jenjang === "SMK") {
+            const faseMap = { "Kelas 10": "E", "Kelas 11": "F", "Kelas 12": "F" };
             fase = faseMap[kelasStr] || "E";
         }
         document.getElementById('modul-fase-select').innerHTML = `<option value="${fase}">Fase ${fase}</option>`;
@@ -811,7 +800,7 @@ const MODUL_KOMPONEN_BY_KURIKULUM = {
 function updateModulKomponenOptions() {
     const kurikulum = getActiveModulKurikulum();
     const grid = document.getElementById('modul-komponen-grid');
-    if(!grid) return;
+    if (!grid) return;
     const komponen = MODUL_KOMPONEN_BY_KURIKULUM[kurikulum] || MODUL_KOMPONEN_BY_KURIKULUM["Kurikulum Merdeka 2025"];
     grid.innerHTML = '';
     komponen.forEach(item => {
@@ -993,24 +982,24 @@ const subjectData = {
         }
     },
     "Kurikulum Berbasis Cinta": {
-        "PAUD/TK/RA": { "default": ["Tema Tematik: Keluarga, Alam, Kebudayaan","Bermain dan Bekerjasama","Aku Cinta Indonesia"] },
-        "SD": { "default": ["Penguatan Karakter","Bahasa Indonesia","Matematika","PJOK","Muatan Lokal"] },
-        "MI": { "default": ["Penguatan Karakter","Bahasa Indonesia","Matematika","PJOK","Fikih"] },
-        "SMP": { "default": ["Penguatan Karakter","Bahasa Indonesia","Matematika","IPA/IPS integratif"] },
-        "MTs": { "default": ["Penguatan Karakter","Bahasa Indonesia","Matematika","IPA/IPS","Fikih"] },
-        "SMA": { "default": ["Kewargaan","Etika Teknologi","Bahasa Indonesia","Matematika"] },
-        "MA": { "default": ["Kewargaan","Etika Teknologi","Bahasa Indonesia","Matematika"] },
-        "SMK": { "default": ["Kewargaan","Etika Teknologi","Bahasa Indonesia","Kompetensi Keahlian"] }
+        "PAUD/TK/RA": { "default": ["Tema Tematik: Keluarga, Alam, Kebudayaan", "Bermain dan Bekerjasama", "Aku Cinta Indonesia"] },
+        "SD": { "default": ["Penguatan Karakter", "Bahasa Indonesia", "Matematika", "PJOK", "Muatan Lokal"] },
+        "MI": { "default": ["Penguatan Karakter", "Bahasa Indonesia", "Matematika", "PJOK", "Fikih"] },
+        "SMP": { "default": ["Penguatan Karakter", "Bahasa Indonesia", "Matematika", "IPA/IPS integratif"] },
+        "MTs": { "default": ["Penguatan Karakter", "Bahasa Indonesia", "Matematika", "IPA/IPS", "Fikih"] },
+        "SMA": { "default": ["Kewargaan", "Etika Teknologi", "Bahasa Indonesia", "Matematika"] },
+        "MA": { "default": ["Kewargaan", "Etika Teknologi", "Bahasa Indonesia", "Matematika"] },
+        "SMK": { "default": ["Kewargaan", "Etika Teknologi", "Bahasa Indonesia", "Kompetensi Keahlian"] }
     },
     "KMA 1503 Tahun 2025": {
         "PAUD/TK/RA": { "default": ["Pendekatan Tematik & Penguatan Karakter"] },
-        "SD": { "default": ["Matematika","Bahasa Indonesia","Pendidikan Agama"] },
-        "MI": { "default": ["Matematika","Bahasa Indonesia","Fikih"] },
-        "SMP": { "default": ["Matematika","Bahasa Indonesia","IPA"] },
-        "MTs": { "default": ["Matematika","Bahasa Indonesia","IPA","Fikih"] },
-        "SMA": { "default": ["Matematika","Bahasa Indonesia","IPA/Bahasa"] },
-        "MA": { "default": ["Matematika","Bahasa Indonesia","IPA/Bahasa","Fikih"] },
-        "SMK": { "default": ["Matematika","Bahasa Indonesia","Kompetensi Keahlian"] }
+        "SD": { "default": ["Matematika", "Bahasa Indonesia", "Pendidikan Agama"] },
+        "MI": { "default": ["Matematika", "Bahasa Indonesia", "Fikih"] },
+        "SMP": { "default": ["Matematika", "Bahasa Indonesia", "IPA"] },
+        "MTs": { "default": ["Matematika", "Bahasa Indonesia", "IPA", "Fikih"] },
+        "SMA": { "default": ["Matematika", "Bahasa Indonesia", "IPA/Bahasa"] },
+        "MA": { "default": ["Matematika", "Bahasa Indonesia", "IPA/Bahasa", "Fikih"] },
+        "SMK": { "default": ["Matematika", "Bahasa Indonesia", "Kompetensi Keahlian"] }
     },
     "SMK": {
         "default": [
@@ -1032,13 +1021,13 @@ function getActiveModulKurikulum() {
 function updateModulMapelOptions() {
     const jenjang = (document.getElementById('modul-jenjang') || {}).value || '';
     const select = document.getElementById('modul-mapel-select');
-    if(!select) return;
+    if (!select) return;
     let list = [];
-    if(jenjang && MAPEL_BY_JENJANG[jenjang]) {
+    if (jenjang && MAPEL_BY_JENJANG[jenjang]) {
         list = MAPEL_BY_JENJANG[jenjang].slice();
     }
-    if(list.length === 0) {
-        list = ["Matematika","Bahasa Indonesia","Bahasa Inggris","IPA","IPS","PJOK","Seni & Budaya"];
+    if (list.length === 0) {
+        list = ["Matematika", "Bahasa Indonesia", "Bahasa Inggris", "IPA", "IPS", "PJOK", "Seni & Budaya"];
     }
     select.innerHTML = '<option value="">-- Pilih Mata Pelajaran --</option>';
     list.forEach(sub => {
@@ -1053,13 +1042,13 @@ function updateModulMapelOptions() {
     select.appendChild(otherOpt);
 }
 const modulMapelSelect = document.getElementById('modul-mapel-select');
-if(modulMapelSelect) {
-    modulMapelSelect.addEventListener('change', function(){
+if (modulMapelSelect) {
+    modulMapelSelect.addEventListener('change', function () {
         const val = this.value;
         const textarea = document.getElementById('modul-mapel');
-        if(!textarea) return;
-        if(val === '' ) return; 
-        if(val === 'Lainnya') {
+        if (!textarea) return;
+        if (val === '') return;
+        if (val === 'Lainnya') {
             textarea.value = '';
             textarea.focus();
         } else {
@@ -1068,33 +1057,33 @@ if(modulMapelSelect) {
     });
 }
 const _mj = document.getElementById('modul-jenjang');
-if(_mj) _mj.addEventListener('change', updateModulMapelOptions);
-if(modulKelas) modulKelas.addEventListener('change', updateModulMapelOptions);
+if (_mj) _mj.addEventListener('change', updateModulMapelOptions);
+if (modulKelas) modulKelas.addEventListener('change', updateModulMapelOptions);
 setTimeout(updateModulMapelOptions, 50);
 setTimeout(updateModulKomponenOptions, 100);
 function buildTopicDataFromSubjectData() {
     const topicMap = {};
     function addTopicsFromList(list) {
         list.forEach(item => {
-            if(typeof item !== 'string') return;
+            if (typeof item !== 'string') return;
             const m = item.match(/^(.*?)\s*\((.*)\)\s*$/);
-            if(m) {
+            if (m) {
                 const subj = m[1].trim();
                 const topics = m[2].split(/,|;/).map(s => s.trim()).filter(Boolean);
-                if(!topicMap[subj]) topicMap[subj] = new Set();
+                if (!topicMap[subj]) topicMap[subj] = new Set();
                 topics.forEach(t => topicMap[subj].add(t));
             } else {
                 const subj = item.trim();
-                if(!topicMap[subj]) topicMap[subj] = new Set();
+                if (!topicMap[subj]) topicMap[subj] = new Set();
                 const defaults = {
-                    'Matematika': ['Bilangan','Geometri','Pecahan','Pengukuran','Aljabar dasar'],
-                    'Bahasa Indonesia': ['Teks Naratif','Teks Prosedur','Teks Berita','Puisi Anak'],
-                    'IPAS': ['Alam Sekitar','Siklus Air','Ekosistem'],
-                    'IPA': ['Sel & Jaringan','Energi','Sistem Tata Surya'],
-                    'IPS': ['Peta & Letak','Sejarah Lokal','Sumber Daya Alam'],
-                    'Bahasa Inggris': ['Percakapan Sederhana','Vocabulary Dasar','Descriptive Text']
+                    'Matematika': ['Bilangan', 'Geometri', 'Pecahan', 'Pengukuran', 'Aljabar dasar'],
+                    'Bahasa Indonesia': ['Teks Naratif', 'Teks Prosedur', 'Teks Berita', 'Puisi Anak'],
+                    'IPAS': ['Alam Sekitar', 'Siklus Air', 'Ekosistem'],
+                    'IPA': ['Sel & Jaringan', 'Energi', 'Sistem Tata Surya'],
+                    'IPS': ['Peta & Letak', 'Sejarah Lokal', 'Sumber Daya Alam'],
+                    'Bahasa Inggris': ['Percakapan Sederhana', 'Vocabulary Dasar', 'Descriptive Text']
                 };
-                if(defaults[subj]) defaults[subj].forEach(t => topicMap[subj].add(t));
+                if (defaults[subj]) defaults[subj].forEach(t => topicMap[subj].add(t));
             }
         });
     }
@@ -1102,11 +1091,11 @@ function buildTopicDataFromSubjectData() {
         const jenjangs = subjectData[k];
         Object.keys(jenjangs).forEach(j => {
             const entry = jenjangs[j];
-            if(Array.isArray(entry)) addTopicsFromList(entry);
-            else if(entry && typeof entry === 'object') {
+            if (Array.isArray(entry)) addTopicsFromList(entry);
+            else if (entry && typeof entry === 'object') {
                 Object.keys(entry).forEach(key => {
                     const v = entry[key];
-                    if(Array.isArray(v)) addTopicsFromList(v);
+                    if (Array.isArray(v)) addTopicsFromList(v);
                 });
             }
         });
@@ -1120,17 +1109,17 @@ function buildTopicDataFromSubjectData() {
 const derivedTopicData = buildTopicDataFromSubjectData();
 function populateTopicOptions(selectId, subjectName) {
     const sel = document.getElementById(selectId);
-    if(!sel) return;
+    if (!sel) return;
     sel.innerHTML = '';
     const def = document.createElement('option');
     def.value = '';
     def.textContent = '-- Pilih Topik Contoh --';
     sel.appendChild(def);
     const topics = derivedTopicData[subjectName] || derivedTopicData[subjectName.replace(/\s*\(.*\)$/, '')] || [];
-    if(topics.length === 0) {
+    if (topics.length === 0) {
         sel.style.display = 'none';
         const note = document.getElementById(selectId === 'modul-topik-select' ? 'modul-topik-note' : null);
-        if(note) note.style.display = 'none';
+        if (note) note.style.display = 'none';
         return;
     }
     topics.forEach(t => {
@@ -1141,13 +1130,13 @@ function populateTopicOptions(selectId, subjectName) {
     });
     const other = document.createElement('option'); other.value = 'Lainnya'; other.textContent = 'Lainnya (Kustom)'; sel.appendChild(other);
     sel.style.display = 'block';
-    const note = document.getElementById('modul-topik-note'); if(note) note.style.display = 'block';
+    const note = document.getElementById('modul-topik-note'); if (note) note.style.display = 'block';
 }
 const modulMapelSelEl = document.getElementById('modul-mapel-select');
-if(modulMapelSelEl) {
-    modulMapelSelEl.addEventListener('change', function(){
+if (modulMapelSelEl) {
+    modulMapelSelEl.addEventListener('change', function () {
         const val = this.value;
-        if(!val) {
+        if (!val) {
             document.getElementById('modul-topik-select').style.display = 'none';
             return;
         }
@@ -1155,15 +1144,15 @@ if(modulMapelSelEl) {
     });
 }
 const modulTopikSelect = document.getElementById('modul-topik-select');
-if(modulTopikSelect) {
-    modulTopikSelect.addEventListener('change', function(){
+if (modulTopikSelect) {
+    modulTopikSelect.addEventListener('change', function () {
         const v = this.value;
         const ta = document.getElementById('modul-mapel');
-        if(!ta) return;
-        if(!v || v === '') return;
-        if(v === 'Lainnya') { ta.focus(); return; }
+        if (!ta) return;
+        if (!v || v === '') return;
+        if (v === 'Lainnya') { ta.focus(); return; }
         const currentMapel = modulMapelSelEl ? modulMapelSelEl.value : '';
-        if(ta.value.trim() === '' || (currentMapel && ta.value.trim().toLowerCase().startsWith(currentMapel.toLowerCase()))) {
+        if (ta.value.trim() === '' || (currentMapel && ta.value.trim().toLowerCase().startsWith(currentMapel.toLowerCase()))) {
             ta.value = (currentMapel ? currentMapel + ' - ' : '') + v;
         } else {
             ta.value = v;
@@ -1171,28 +1160,28 @@ if(modulTopikSelect) {
     });
 }
 const soalMapelSelEl = document.getElementById('soal-mapel-select');
-if(soalMapelSelEl) {
-    soalMapelSelEl.addEventListener('change', function(){
+if (soalMapelSelEl) {
+    soalMapelSelEl.addEventListener('change', function () {
         const val = this.value;
-        if(!val) { document.getElementById('soal-topik-select').style.display = 'none'; return; }
+        if (!val) { document.getElementById('soal-topik-select').style.display = 'none'; return; }
         populateTopicOptions('soal-topik-select', val);
     });
 }
 const soalTopikSelect = document.getElementById('soal-topik-select');
-if(soalTopikSelect) {
-    soalTopikSelect.addEventListener('change', function(){
+if (soalTopikSelect) {
+    soalTopikSelect.addEventListener('change', function () {
         const v = this.value;
         const ta = document.getElementById('soal-mapel');
-        if(!ta || !v || v === '') return;
-        if(v === 'Lainnya') { ta.focus(); return; }
+        if (!ta || !v || v === '') return;
+        if (v === 'Lainnya') { ta.focus(); return; }
         const currentMapel = soalMapelSelEl ? soalMapelSelEl.value : '';
-        if(ta.value.trim() === '' ) ta.value = (currentMapel ? currentMapel + ' - ' : '') + v;
+        if (ta.value.trim() === '') ta.value = (currentMapel ? currentMapel + ' - ' : '') + v;
         else ta.value = v;
     });
 }
 setTimeout(() => {
-    if(modulMapelSelEl && modulMapelSelEl.value) populateTopicOptions('modul-topik-select', modulMapelSelEl.value);
-    if(soalMapelSelEl && soalMapelSelEl.value) populateTopicOptions('soal-topik-select', soalMapelSelEl.value);
+    if (modulMapelSelEl && modulMapelSelEl.value) populateTopicOptions('modul-topik-select', modulMapelSelEl.value);
+    if (soalMapelSelEl && soalMapelSelEl.value) populateTopicOptions('soal-topik-select', soalMapelSelEl.value);
 }, 200);
 function getGenericTopicList(limit = 40) {
     const s = new Set();
@@ -1203,7 +1192,7 @@ function getGenericTopicList(limit = 40) {
 }
 function populateGenericTopicSelect(selectId) {
     const sel = document.getElementById(selectId);
-    if(!sel) return;
+    if (!sel) return;
     sel.innerHTML = '';
     const def = document.createElement('option'); def.value = ''; def.textContent = '-- Pilih Topik Contoh --'; sel.appendChild(def);
     const topics = getGenericTopicList(80);
@@ -1213,9 +1202,9 @@ function populateGenericTopicSelect(selectId) {
     const other = document.createElement('option'); other.value = 'Lainnya'; other.textContent = 'Lainnya (Kustom)'; sel.appendChild(other);
     sel.style.display = 'block';
     const noteId = selectId === 'bahan-topik-select' ? 'bahan-topik-note' : (selectId === 'kokul-topik-select' ? 'kokul-topik-note' : null);
-    if(noteId) {
+    if (noteId) {
         const noteEl = document.getElementById(noteId);
-        if(noteEl) noteEl.style.display = 'block';
+        if (noteEl) noteEl.style.display = 'block';
     }
 }
 setTimeout(() => {
@@ -1223,28 +1212,28 @@ setTimeout(() => {
     populateGenericTopicSelect('kokul-topik-select');
 }, 300);
 const bahanTopikSelect = document.getElementById('bahan-topik-select');
-if(bahanTopikSelect) {
-    bahanTopikSelect.addEventListener('change', function(){
+if (bahanTopikSelect) {
+    bahanTopikSelect.addEventListener('change', function () {
         const v = this.value;
         const ta = document.getElementById('bahan-topik');
-        if(!ta || !v) return;
-        if(v === 'Lainnya') { ta.focus(); return; }
+        if (!ta || !v) return;
+        if (v === 'Lainnya') { ta.focus(); return; }
         ta.value = v;
     });
 }
 const kokulTopikSelect = document.getElementById('kokul-topik-select');
-if(kokulTopikSelect) {
-    kokulTopikSelect.addEventListener('change', function(){
+if (kokulTopikSelect) {
+    kokulTopikSelect.addEventListener('change', function () {
         const v = this.value;
         const inp = document.getElementById('kokul-tema');
-        if(!inp || !v) return;
-        if(v === 'Lainnya') { inp.focus(); return; }
+        if (!inp || !v) return;
+        if (v === 'Lainnya') { inp.focus(); return; }
         inp.value = v;
     });
 }
 const kokulJenjang = document.getElementById('kokul-jenjang');
-if(kokulJenjang) {
-    kokulJenjang.addEventListener('change', function(){
+if (kokulJenjang) {
+    kokulJenjang.addEventListener('change', function () {
         const jenjang = this.value;
         const kelasSelect = document.getElementById('kokul-kelas');
         let options = "";
@@ -1258,19 +1247,19 @@ if(kokulJenjang) {
     });
 }
 const kokulKelas = document.getElementById('kokul-kelas');
-if(kokulKelas) {
-    kokulKelas.addEventListener('change', function() {
+if (kokulKelas) {
+    kokulKelas.addEventListener('change', function () {
         const kelasStr = this.value;
         const jenjang = (document.getElementById('kokul-jenjang') || {}).value || '';
         let fase = "A";
-        if(jenjang === "PAUD/TK/RA") fase = "P";
-        else if(jenjang === "SD" || jenjang === "MI") {
-            const faseMap = {"Kelas 1": "A", "Kelas 2": "A", "Kelas 3": "B", "Kelas 4": "B", "Kelas 5": "C", "Kelas 6": "C"};
+        if (jenjang === "PAUD/TK/RA") fase = "P";
+        else if (jenjang === "SD" || jenjang === "MI") {
+            const faseMap = { "Kelas 1": "A", "Kelas 2": "A", "Kelas 3": "B", "Kelas 4": "B", "Kelas 5": "C", "Kelas 6": "C" };
             fase = faseMap[kelasStr] || "A";
-        } else if(jenjang === "SMP" || jenjang === "MTs") {
+        } else if (jenjang === "SMP" || jenjang === "MTs") {
             fase = "D";
-        } else if(jenjang === "SMA" || jenjang === "MA" || jenjang === "SMK") {
-            const faseMap = {"Kelas 10": "E", "Kelas 11": "F", "Kelas 12": "F"};
+        } else if (jenjang === "SMA" || jenjang === "MA" || jenjang === "SMK") {
+            const faseMap = { "Kelas 10": "E", "Kelas 11": "F", "Kelas 12": "F" };
             fase = faseMap[kelasStr] || "E";
         }
         document.getElementById('kokul-fase').innerHTML = `<option value="${fase}">Fase ${fase}</option>`;
@@ -1298,24 +1287,24 @@ setupKurikulumToggle('kokul-kurikulum-group', 'kokul-kurikulum-kustom');
 setupKurikulumToggle('soal-kurikulum-group', 'soal-kurikulum-kustom');
 function setupBtnGroupToggle(groupId, onChange) {
     const group = document.getElementById(groupId);
-    if(!group) return;
+    if (!group) return;
     const btns = group.querySelectorAll('.btn-toggle');
     btns.forEach(btn => {
         btn.addEventListener('click', () => {
             btns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            if(typeof onChange === 'function') {
-                try { onChange(btn.getAttribute('data-value')); } catch(e) { console.error(e); }
+            if (typeof onChange === 'function') {
+                try { onChange(btn.getAttribute('data-value')); } catch (e) { console.error(e); }
             }
         });
     });
 }
 setupBtnGroupToggle('soal-distribusi-group');
 const soalCustomToggle = document.getElementById('soal-custom-weights-toggle');
-if(soalCustomToggle) {
-    soalCustomToggle.addEventListener('change', function(){
+if (soalCustomToggle) {
+    soalCustomToggle.addEventListener('change', function () {
         const block = document.getElementById('soal-custom-weights-block');
-        if(block) block.style.display = this.checked ? 'block' : 'none';
+        if (block) block.style.display = this.checked ? 'block' : 'none';
     });
 }
 function getActiveSoalKurikulum() {
@@ -1327,17 +1316,17 @@ function updateSoalMapelOptions() {
     const jenjang = (document.getElementById('soal-jenjang') || {}).value || '';
     const kelas = (document.getElementById('soal-kelas') || {}).value || '';
     const select = document.getElementById('soal-mapel-select');
-    if(!select) return;
+    if (!select) return;
     let list = [];
-    if(subjectData[kurikulum]) {
+    if (subjectData[kurikulum]) {
         const byJenjang = subjectData[kurikulum][jenjang];
-        if(byJenjang) {
-            if(byJenjang[kelas]) list = byJenjang[kelas].slice();
-            else if(byJenjang['default']) list = byJenjang['default'].slice();
+        if (byJenjang) {
+            if (byJenjang[kelas]) list = byJenjang[kelas].slice();
+            else if (byJenjang['default']) list = byJenjang['default'].slice();
         }
     }
-    if(list.length === 0) {
-        list = ["Matematika","Bahasa Indonesia","Bahasa Inggris","IPA","IPS","PJOK","SBdP"];
+    if (list.length === 0) {
+        list = ["Matematika", "Bahasa Indonesia", "Bahasa Inggris", "IPA", "IPS", "PJOK", "SBdP"];
     }
     select.innerHTML = '<option value="">-- Pilih Mata Pelajaran --</option>';
     list.forEach(sub => {
@@ -1352,31 +1341,34 @@ function updateSoalMapelOptions() {
     select.appendChild(otherOpt);
 }
 const soalJenjang = document.getElementById('soal-jenjang');
-if(soalJenjang) soalJenjang.addEventListener('change', () => { window.updateKelasOptions(); setTimeout(updateSoalMapelOptions, 50); });
+if (soalJenjang) soalJenjang.addEventListener('change', () => { window.updateKelasOptions(); setTimeout(updateSoalMapelOptions, 50); });
 const soalKelas = document.getElementById('soal-kelas');
-if(soalKelas) soalKelas.addEventListener('change', updateSoalMapelOptions);
+if (soalKelas) soalKelas.addEventListener('change', updateSoalMapelOptions);
 const soalMapelSelect = document.getElementById('soal-mapel-select');
-if(soalMapelSelect) {
-    soalMapelSelect.addEventListener('change', function(){
+if (soalMapelSelect) {
+    soalMapelSelect.addEventListener('change', function () {
         const val = this.value;
         const customInput = document.getElementById('soal-mapel-kustom');
         const textarea = document.getElementById('soal-mapel');
-        if(!customInput || !textarea) return;
-        if(val === 'Lainnya') {
+        if (!customInput || !textarea) return;
+        if (val === 'Lainnya') {
             customInput.style.display = 'block';
             customInput.focus();
             textarea.placeholder = 'Tuliskan mata pelajaran / topik jika memilih Kustom...';
         } else {
             customInput.style.display = 'none';
-            if(textarea.value.trim() === '') textarea.value = val;
+            if (textarea.value.trim() === '') textarea.value = val;
         }
     });
 }
 setTimeout(updateSoalMapelOptions, 100);
-document.getElementById('btn-gen-modul').addEventListener('click', async function() {
+document.getElementById('btn-gen-modul').addEventListener('click', async function () {
     const btn = this;
-    const mapel = document.getElementById('modul-mapel')?.value || '';
-    if(!mapel) return showToast("Mohon isi Mata Pelajaran/Topik");
+    let mSel = document.getElementById('modul-mapel-select');
+    let mVal = mSel ? mSel.value : '';
+    if (mVal === 'Kustom') mVal = document.getElementById('modul-mapel-manual')?.value;
+    const mapel = mVal || document.getElementById('modul-mapel')?.value || '';
+    if (!mapel) return showToast("Mohon isi Mata Pelajaran/Topik");
     showProgressBar('Membuat Modul Ajar', 'AI sedang menganalisis dan membuat modul ajar berkualitas tinggi...');
     const progressInterval = animateProgressBar();
     const namaGuru = localStorage.getItem('as_nama') || 'Guru';
@@ -1460,7 +1452,7 @@ CATATAN PENTING:
 - Output Markdown profesional dengan tabel
 CATATAN KHUSUS: ${document.getElementById('modul-catatan').value || 'Tidak ada'}
         `;
-    } 
+    }
     else if (kurikulumVal.includes('Berbasis Cinta')) {
         prompt = `
 BUATKAN MODUL AJAR KURIKULUM BERBASIS CINTA YANG LENGKAP
@@ -1638,7 +1630,7 @@ CATATAN KHUSUS: ${document.getElementById('modul-catatan').value || 'Tidak ada'}
             document.getElementById('res-modul').scrollIntoView({ behavior: 'smooth' });
             showToast('✅ Modul Ajar berhasil dibuat!');
         }, 500);
-    } catch(e) {
+    } catch (e) {
         clearInterval(progressInterval);
         hideProgressBar();
         console.error('Error:', e);
@@ -1646,17 +1638,17 @@ CATATAN KHUSUS: ${document.getElementById('modul-catatan').value || 'Tidak ada'}
     }
 });
 const checkAudioEl = document.getElementById('check-audio');
-if(checkAudioEl) {
-    checkAudioEl.addEventListener('change', function() {
+if (checkAudioEl) {
+    checkAudioEl.addEventListener('change', function () {
         const audioSettingsEl = document.getElementById('audio-settings');
-        if(audioSettingsEl) audioSettingsEl.style.display = this.checked ? 'block' : 'none';
+        if (audioSettingsEl) audioSettingsEl.style.display = this.checked ? 'block' : 'none';
     });
 }
-document.getElementById('btn-gen-bahan').addEventListener('click', async function() {
+document.getElementById('btn-gen-bahan').addEventListener('click', async function () {
     const btn = this;
     const bahanSelectedTopicEl = document.getElementById('bahan-topik-select');
     const bahanSelectedTopic = bahanSelectedTopicEl && bahanSelectedTopicEl.value && bahanSelectedTopicEl.value !== 'Lainnya' ? bahanSelectedTopicEl.value : document.getElementById('bahan-topik').value;
-    if(!bahanSelectedTopic) return showToast("Mohon isi Topik Materi");
+    if (!bahanSelectedTopic) return showToast("Mohon isi Topik Materi");
     btn.classList.add('loading');
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
     showProgressBar('Membuat Media Ajar', 'AI sedang menghasilkan media pembelajaran yang kreatif dan interaktif...');
@@ -1688,7 +1680,7 @@ document.getElementById('btn-gen-bahan').addEventListener('click', async functio
         if (data) {
             const setContent = (id, text) => {
                 const el = document.getElementById(id).querySelector('.content-body');
-                if(el) el.innerHTML = marked.parse(text || "Tidak ada konten.");
+                if (el) el.innerHTML = marked.parse(text || "Tidak ada konten.");
             };
             setContent('bahan-info', data.infografis);
             setContent('bahan-peta', data.peta_konsep);
@@ -1734,7 +1726,7 @@ document.getElementById('btn-gen-bahan').addEventListener('click', async functio
             document.getElementById('res-bahan').style.display = 'block';
             document.getElementById('stat-generated').innerText = parseInt(document.getElementById('stat-generated').innerText) + 1;
         } else {
-             throw new Error("Parsed JSON is null");
+            throw new Error("Parsed JSON is null");
         }
     } catch (error) {
         console.error(error);
@@ -1748,13 +1740,16 @@ document.getElementById('btn-gen-bahan').addEventListener('click', async functio
     hideProgressBar();
     document.getElementById('res-bahan').scrollIntoView({ behavior: 'smooth' });
 });
-document.getElementById('btn-gen-kokul').addEventListener('click', async function() {
+document.getElementById('btn-gen-kokul').addEventListener('click', async function () {
     const btn = this;
-    const kokulSelectedTopicEl = document.getElementById('kokul-topik-select');
-    const kokulSelectedTopic = kokulSelectedTopicEl && kokulSelectedTopicEl.value && kokulSelectedTopicEl.value !== 'Lainnya' ? kokulSelectedTopicEl.value : document.getElementById('kokul-tema').value;
+    const kokulMapelSelect = document.getElementById('kokul-mapel-select');
+    let kVal = kokulMapelSelect ? kokulMapelSelect.value : '';
+    if (kVal === 'Kustom') kVal = document.getElementById('kokul-mapel-manual')?.value;
+    const kokulSelectedTopicEl = document.getElementById('kokul-topik-select'); // Fallback
+    const kokulSelectedTopic = kVal || (kokulSelectedTopicEl && kokulSelectedTopicEl.value && kokulSelectedTopicEl.value !== 'Lainnya' ? kokulSelectedTopicEl.value : document.getElementById('kokul-tema')?.value);
     const tema = kokulSelectedTopic;
     const jenjang = document.getElementById('kokul-jenjang').value;
-    if(!tema) return showToast("Topik/Tema Projek harus diisi!");
+    if (!tema) return showToast("Topik/Tema Projek harus diisi!");
     btn.classList.add('loading');
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Merancang Projek...';
     showProgressBar('Membuat Program Kokurikuler', 'AI sedang merancang program kokurikuler yang mendukung kompetensi siswa...');
@@ -1799,7 +1794,7 @@ document.getElementById('btn-gen-kokul').addEventListener('click', async functio
         if (data) {
             const setContent = (id, text) => {
                 const el = document.getElementById(id);
-                if(el) el.innerHTML = marked.parse(text || "Tidak ada konten.");
+                if (el) el.innerHTML = marked.parse(text || "Tidak ada konten.");
             };
             setContent('content-kokul-program', data.modul);
             setContent('content-kokul-pko', data.pko);
@@ -1822,7 +1817,7 @@ document.getElementById('btn-gen-kokul').addEventListener('click', async functio
     hideProgressBar();
     document.getElementById('res-kokul').scrollIntoView({ behavior: 'smooth' });
 });
-window.switchSoalType = function(element, typeName, isKoreksi = false) {
+window.switchSoalType = function (element, typeName, isKoreksi = false) {
     const container = element.parentElement;
     container.querySelectorAll('.btn-tab-sub').forEach(b => b.classList.remove('active'));
     element.classList.add('active');
@@ -1835,10 +1830,13 @@ window.switchSoalType = function(element, typeName, isKoreksi = false) {
         document.getElementById('lbl-soal-mode').innerText = typeName;
     }
 };
-document.getElementById('btn-gen-soal').addEventListener('click', async function() {
+document.getElementById('btn-gen-soal').addEventListener('click', async function () {
     const btn = this;
-    const mapel = document.getElementById('soal-mapel').value;
-    if(!mapel) return showToast("Isi Mata Pelajaran!");
+    let sSel = document.getElementById('soal-mapel-select');
+    let sVal = sSel ? sSel.value : '';
+    if (sVal === 'Kustom') sVal = document.getElementById('soal-mapel-kustom')?.value;
+    const mapel = sVal || document.getElementById('soal-mapel').value;
+    if (!mapel) return showToast("Isi Mata Pelajaran!");
     btn.classList.add('loading');
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Membuat Paket Soal...';
     showProgressBar('Generate Paket Soal', 'AI sedang membuat paket soal berkualitas dengan berbagai tingkat kesulitan...');
@@ -1857,20 +1855,20 @@ document.getElementById('btn-gen-soal').addEventListener('click', async function
     const distribValue = distribBtn ? distribBtn.getAttribute('data-value') : 'Proporsional';
     function computeDistribForSoal(distrib, totalPG) {
         const t = parseInt(totalPG) || 0;
-        let perc = {Mudah:0.4, Sedang:0.3, Sulit:0.2, HOTS:0.1};
-        if(distrib === 'Merata') perc = {Mudah:0.25, Sedang:0.25, Sulit:0.25, HOTS:0.25};
-        else if(distrib === 'HOTS Heavy') perc = {Mudah:0.2, Sedang:0.2, Sulit:0.2, HOTS:0.4};
-        else if(distrib === 'Remedial') perc = {Mudah:0.6, Sedang:0.25, Sulit:0.1, HOTS:0.05};
+        let perc = { Mudah: 0.4, Sedang: 0.3, Sulit: 0.2, HOTS: 0.1 };
+        if (distrib === 'Merata') perc = { Mudah: 0.25, Sedang: 0.25, Sulit: 0.25, HOTS: 0.25 };
+        else if (distrib === 'HOTS Heavy') perc = { Mudah: 0.2, Sedang: 0.2, Sulit: 0.2, HOTS: 0.4 };
+        else if (distrib === 'Remedial') perc = { Mudah: 0.6, Sedang: 0.25, Sulit: 0.1, HOTS: 0.05 };
         const calc = {};
         let assigned = 0;
-        ['Mudah','Sedang','Sulit','HOTS'].forEach((k, i) => {
-            if(i === 3) {
+        ['Mudah', 'Sedang', 'Sulit', 'HOTS'].forEach((k, i) => {
+            if (i === 3) {
                 calc[k] = t - assigned;
             } else {
                 calc[k] = Math.round(t * perc[k]);
                 assigned += calc[k];
             }
-            if(calc[k] < 0) calc[k] = 0;
+            if (calc[k] < 0) calc[k] = 0;
         });
         return calc;
     }
@@ -1878,39 +1876,39 @@ document.getElementById('btn-gen-soal').addEventListener('click', async function
     const distribCounts = computeDistribForSoal(distribValue, pgCount);
     function computeIsianDistrib(distrib, totalIsian) {
         const t = parseInt(totalIsian) || 0;
-        let perc = {Mudah:0.2, Sedang:0.4, Sulit:0.3, HOTS:0.1};
-        if(distrib === 'Merata') perc = {Mudah:0.25, Sedang:0.25, Sulit:0.25, HOTS:0.25};
-        else if(distrib === 'HOTS Heavy') perc = {Mudah:0.1, Sedang:0.2, Sulit:0.3, HOTS:0.4};
-        else if(distrib === 'Remedial') perc = {Mudah:0.6, Sedang:0.25, Sulit:0.1, HOTS:0.05};
+        let perc = { Mudah: 0.2, Sedang: 0.4, Sulit: 0.3, HOTS: 0.1 };
+        if (distrib === 'Merata') perc = { Mudah: 0.25, Sedang: 0.25, Sulit: 0.25, HOTS: 0.25 };
+        else if (distrib === 'HOTS Heavy') perc = { Mudah: 0.1, Sedang: 0.2, Sulit: 0.3, HOTS: 0.4 };
+        else if (distrib === 'Remedial') perc = { Mudah: 0.6, Sedang: 0.25, Sulit: 0.1, HOTS: 0.05 };
         const calc = {};
         let assigned = 0;
-        ['Mudah','Sedang','Sulit','HOTS'].forEach((k, i) => {
-            if(i === 3) {
+        ['Mudah', 'Sedang', 'Sulit', 'HOTS'].forEach((k, i) => {
+            if (i === 3) {
                 calc[k] = t - assigned;
             } else {
                 calc[k] = Math.round(t * perc[k]);
                 assigned += calc[k];
             }
-            if(calc[k] < 0) calc[k] = 0;
+            if (calc[k] < 0) calc[k] = 0;
         });
         return calc;
     }
     function computeEssayDistrib(distrib, totalEssay) {
         const t = parseInt(totalEssay) || 0;
-        let perc = {Mudah:0.1, Sedang:0.3, Sulit:0.3, HOTS:0.3};
-        if(distrib === 'Merata') perc = {Mudah:0.25, Sedang:0.25, Sulit:0.25, HOTS:0.25};
-        else if(distrib === 'HOTS Heavy') perc = {Mudah:0.05, Sedang:0.15, Sulit:0.3, HOTS:0.5};
-        else if(distrib === 'Remedial') perc = {Mudah:0.7, Sedang:0.2, Sulit:0.08, HOTS:0.02};
+        let perc = { Mudah: 0.1, Sedang: 0.3, Sulit: 0.3, HOTS: 0.3 };
+        if (distrib === 'Merata') perc = { Mudah: 0.25, Sedang: 0.25, Sulit: 0.25, HOTS: 0.25 };
+        else if (distrib === 'HOTS Heavy') perc = { Mudah: 0.05, Sedang: 0.15, Sulit: 0.3, HOTS: 0.5 };
+        else if (distrib === 'Remedial') perc = { Mudah: 0.7, Sedang: 0.2, Sulit: 0.08, HOTS: 0.02 };
         const calc = {};
         let assigned = 0;
-        ['Mudah','Sedang','Sulit','HOTS'].forEach((k, i) => {
-            if(i === 3) {
+        ['Mudah', 'Sedang', 'Sulit', 'HOTS'].forEach((k, i) => {
+            if (i === 3) {
                 calc[k] = t - assigned;
             } else {
                 calc[k] = Math.round(t * perc[k]);
                 assigned += calc[k];
             }
-            if(calc[k] < 0) calc[k] = 0;
+            if (calc[k] < 0) calc[k] = 0;
         });
         return calc;
     }
@@ -1919,37 +1917,37 @@ document.getElementById('btn-gen-soal').addEventListener('click', async function
     const essayCount = parseInt(essay) || 0;
     const essayCounts = computeEssayDistrib(distribValue, essayCount);
     let topicList = [];
-    if(soalSelectedTopic && soalSelectedTopic !== '' && soalSelectedTopic !== 'Lainnya') {
+    if (soalSelectedTopic && soalSelectedTopic !== '' && soalSelectedTopic !== 'Lainnya') {
         topicList = [soalSelectedTopic];
     } else {
         const cleanMapel = (mapel || '').replace(/\s*\(.*\)$/, '');
         topicList = (derivedTopicData[mapel] && derivedTopicData[mapel].length) ? derivedTopicData[mapel].slice() : (derivedTopicData[cleanMapel] && derivedTopicData[cleanMapel].length ? derivedTopicData[cleanMapel].slice() : []);
     }
-    if(topicList.length === 0) topicList = ['Umum'];
+    if (topicList.length === 0) topicList = ['Umum'];
     function distributeCountsAcrossTopics(counts, topics) {
         const out = {};
-        topics.forEach(t => out[t] = {Mudah:0, Sedang:0, Sulit:0, HOTS:0, total:0});
-        ['Mudah','Sedang','Sulit','HOTS'].forEach(level => {
+        topics.forEach(t => out[t] = { Mudah: 0, Sedang: 0, Sulit: 0, HOTS: 0, total: 0 });
+        ['Mudah', 'Sedang', 'Sulit', 'HOTS'].forEach(level => {
             const n = counts[level] || 0;
             const base = Math.floor(n / topics.length);
             let rem = n - base * topics.length;
-            for(let i=0;i<topics.length;i++) {
+            for (let i = 0; i < topics.length; i++) {
                 const add = base + (rem > 0 ? 1 : 0);
                 out[topics[i]][level] = add;
                 out[topics[i]].total += add;
-                if(rem>0) rem--;
+                if (rem > 0) rem--;
             }
         });
         return out;
     }
     const perTopicDistrib = distributeCountsAcrossTopics(distribCounts, topicList);
     const perTopicIsian = distributeCountsAcrossTopics(isianCounts, topicList);
-    let pgWeights = {Mudah:1, Sedang:1.5, Sulit:2, HOTS:3};
-    let isianWeights = {Mudah:1.2, Sedang:1.8, Sulit:2.5, HOTS:3};
-    let essayWeights = {Mudah:2, Sedang:3, Sulit:4, HOTS:6}; 
+    let pgWeights = { Mudah: 1, Sedang: 1.5, Sulit: 2, HOTS: 3 };
+    let isianWeights = { Mudah: 1.2, Sedang: 1.8, Sulit: 2.5, HOTS: 3 };
+    let essayWeights = { Mudah: 2, Sedang: 3, Sulit: 4, HOTS: 6 };
     try {
         const toggle = document.getElementById('soal-custom-weights-toggle');
-        if(toggle && toggle.checked) {
+        if (toggle && toggle.checked) {
             const getNum = id => { const el = document.getElementById(id); return el ? parseFloat(el.value) || 0 : 0; };
             pgWeights = {
                 Mudah: getNum('soal-pg-weight-Mudah'),
@@ -1970,65 +1968,65 @@ document.getElementById('btn-gen-soal').addEventListener('click', async function
                 HOTS: getNum('soal-es-weight-HOTS')
             };
         }
-    } catch(e) { console.error('Error reading custom weights:', e); }
+    } catch (e) { console.error('Error reading custom weights:', e); }
     function computeAdvancedScoring(pgCounts, isCounts, esCounts, pgW, isW, esW, totalPoints = 100) {
         let totalWeighted = 0;
-        ['Mudah','Sedang','Sulit','HOTS'].forEach(k => {
+        ['Mudah', 'Sedang', 'Sulit', 'HOTS'].forEach(k => {
             totalWeighted += (pgCounts[k] || 0) * (pgW[k] || 1);
             totalWeighted += (isCounts[k] || 0) * (isW[k] || 1);
             totalWeighted += (esCounts[k] || 0) * (esW[k] || 1);
         });
-        if(totalWeighted <= 0) {
+        if (totalWeighted <= 0) {
             return {
-                pgPoints: {Mudah:1, Sedang:2, Sulit:3, HOTS:4},
-                isianPoints: {Mudah:1, Sedang:2, Sulit:3, HOTS:4},
-                essayPoints: {Mudah:2, Sedang:3, Sulit:4, HOTS:6},
+                pgPoints: { Mudah: 1, Sedang: 2, Sulit: 3, HOTS: 4 },
+                isianPoints: { Mudah: 1, Sedang: 2, Sulit: 3, HOTS: 4 },
+                essayPoints: { Mudah: 2, Sedang: 3, Sulit: 4, HOTS: 6 },
                 actualTotal: 0
             };
         }
         const pointPerWeight = totalPoints / totalWeighted;
         const rawPg = {}, rawIs = {}, rawEs = {};
-        ['Mudah','Sedang','Sulit','HOTS'].forEach(k => {
+        ['Mudah', 'Sedang', 'Sulit', 'HOTS'].forEach(k => {
             rawPg[k] = (pgW[k] || 1) * pointPerWeight;
             rawIs[k] = (isW[k] || 1) * pointPerWeight;
             rawEs[k] = (esW[k] || 1) * pointPerWeight;
         });
         const pgPoints = {}, isianPoints = {}, essayPoints = {};
-        ['Mudah','Sedang','Sulit','HOTS'].forEach(k => {
+        ['Mudah', 'Sedang', 'Sulit', 'HOTS'].forEach(k => {
             pgPoints[k] = Math.max(1, Math.round(rawPg[k]));
             isianPoints[k] = Math.max(1, Math.round(rawIs[k]));
             essayPoints[k] = Math.max(1, Math.round(rawEs[k]));
         });
         let actualTotal = 0;
-        ['Mudah','Sedang','Sulit','HOTS'].forEach(k => {
+        ['Mudah', 'Sedang', 'Sulit', 'HOTS'].forEach(k => {
             actualTotal += (pgCounts[k] || 0) * pgPoints[k];
             actualTotal += (isCounts[k] || 0) * isianPoints[k];
             actualTotal += (esCounts[k] || 0) * essayPoints[k];
         });
         let delta = totalPoints - actualTotal;
-        const priority = ['HOTS','Sulit','Sedang','Mudah'];
-        while(delta !== 0) {
-            for(const level of priority) {
-                if(delta === 0) break;
-                if(delta > 0) {
-                    if((pgCounts[level] || 0) > 0) { pgPoints[level] += 1; actualTotal += (pgCounts[level] || 0); delta -= (pgCounts[level] || 0); }
-                    if(delta === 0) break;
-                    if((isCounts[level] || 0) > 0) { isianPoints[level] += 1; actualTotal += (isCounts[level] || 0); delta -= (isCounts[level] || 0); }
-                    if(delta === 0) break;
-                    if((esCounts[level] || 0) > 0) { essayPoints[level] += 1; actualTotal += (esCounts[level] || 0); delta -= (esCounts[level] || 0); }
+        const priority = ['HOTS', 'Sulit', 'Sedang', 'Mudah'];
+        while (delta !== 0) {
+            for (const level of priority) {
+                if (delta === 0) break;
+                if (delta > 0) {
+                    if ((pgCounts[level] || 0) > 0) { pgPoints[level] += 1; actualTotal += (pgCounts[level] || 0); delta -= (pgCounts[level] || 0); }
+                    if (delta === 0) break;
+                    if ((isCounts[level] || 0) > 0) { isianPoints[level] += 1; actualTotal += (isCounts[level] || 0); delta -= (isCounts[level] || 0); }
+                    if (delta === 0) break;
+                    if ((esCounts[level] || 0) > 0) { essayPoints[level] += 1; actualTotal += (esCounts[level] || 0); delta -= (esCounts[level] || 0); }
                 } else {
-                    if((esCounts[level] || 0) > 0 && essayPoints[level] > 1) { essayPoints[level] -= 1; actualTotal -= (esCounts[level] || 0); delta += (esCounts[level] || 0); }
-                    if(delta === 0) break;
-                    if((isCounts[level] || 0) > 0 && isianPoints[level] > 1) { isianPoints[level] -= 1; actualTotal -= (isCounts[level] || 0); delta += (isCounts[level] || 0); }
-                    if(delta === 0) break;
-                    if((pgCounts[level] || 0) > 0 && pgPoints[level] > 1) { pgPoints[level] -= 1; actualTotal -= (pgCounts[level] || 0); delta += (pgCounts[level] || 0); }
+                    if ((esCounts[level] || 0) > 0 && essayPoints[level] > 1) { essayPoints[level] -= 1; actualTotal -= (esCounts[level] || 0); delta += (esCounts[level] || 0); }
+                    if (delta === 0) break;
+                    if ((isCounts[level] || 0) > 0 && isianPoints[level] > 1) { isianPoints[level] -= 1; actualTotal -= (isCounts[level] || 0); delta += (isCounts[level] || 0); }
+                    if (delta === 0) break;
+                    if ((pgCounts[level] || 0) > 0 && pgPoints[level] > 1) { pgPoints[level] -= 1; actualTotal -= (pgCounts[level] || 0); delta += (pgCounts[level] || 0); }
                 }
             }
-            if(Math.abs(delta) > totalPoints * 2) break;
-            if(priority.every(l => ((pgCounts[l] || 0) === 0 && (isCounts[l] || 0) === 0 && (esCounts[l] || 0) === 0) || (pgPoints[l] <= 1 && isianPoints[l] <= 1 && essayPoints[l] <= 1))) break;
+            if (Math.abs(delta) > totalPoints * 2) break;
+            if (priority.every(l => ((pgCounts[l] || 0) === 0 && (isCounts[l] || 0) === 0 && (esCounts[l] || 0) === 0) || (pgPoints[l] <= 1 && isianPoints[l] <= 1 && essayPoints[l] <= 1))) break;
         }
         actualTotal = 0;
-        ['Mudah','Sedang','Sulit','HOTS'].forEach(k => {
+        ['Mudah', 'Sedang', 'Sulit', 'HOTS'].forEach(k => {
             actualTotal += (pgCounts[k] || 0) * pgPoints[k];
             actualTotal += (isCounts[k] || 0) * isianPoints[k];
             actualTotal += (esCounts[k] || 0) * essayPoints[k];
@@ -2038,99 +2036,99 @@ document.getElementById('btn-gen-soal').addEventListener('click', async function
     let totalPointsTarget = 100;
     try {
         const tpEl = document.getElementById('soal-total-points');
-        if(tpEl) {
+        if (tpEl) {
             const v = parseInt(tpEl.value);
-            if(!isNaN(v) && v > 0) totalPointsTarget = v;
+            if (!isNaN(v) && v > 0) totalPointsTarget = v;
         }
-    } catch(e) { console.error('Error reading total points input', e); }
+    } catch (e) { console.error('Error reading total points input', e); }
     const advancedScoring = computeAdvancedScoring(distribCounts, isianCounts, essayCounts, pgWeights, isianWeights, essayWeights, totalPointsTarget);
     const scorePerQuestion = { pg: advancedScoring.pgPoints, isian: advancedScoring.isianPoints, essay: advancedScoring.essayPoints, actualTotal: advancedScoring.actualTotal };
-    const distributionJSON = JSON.stringify({distribCounts, isianCounts, essayCounts, perTopicDistrib}, null, 2);
+    const distributionJSON = JSON.stringify({ distribCounts, isianCounts, essayCounts, perTopicDistrib }, null, 2);
     function buildKisiKisiHTML(mapelName, topics, perTopicPgCounts, perTopicIsianCounts, perTopicEssayCounts, pgPointsMap, isPointsMap, esPointsMap, perQuestionList = null) {
-        const headers = ['No','Capaian Pembelajaran','Materi/Topik','Indikator Soal','Level Kognitif','Bentuk Soal','Nomor Soal','Soal-soal','Kunci Jawaban','Mudah','Sedang','Sulit','HOTS','Total Soal','PG Count','Isian Count','Essay Count','Poin Topik'];
+        const headers = ['No', 'Capaian Pembelajaran', 'Materi/Topik', 'Indikator Soal', 'Level Kognitif', 'Bentuk Soal', 'Nomor Soal', 'Soal-soal', 'Kunci Jawaban', 'Mudah', 'Sedang', 'Sulit', 'HOTS', 'Total Soal', 'PG Count', 'Isian Count', 'Essay Count', 'Poin Topik'];
         let html = '<table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:0.9rem;">' +
             '<thead><tr style="background:#f1f5f9;">';
         headers.forEach(h => html += `<th style="border:1px solid #ddd; padding:6px; text-align:left">${h}</th>`);
         html += '</tr></thead><tbody>';
-        let grand = {soal:0, pg:0, isian:0, essay:0, poin:0};
+        let grand = { soal: 0, pg: 0, isian: 0, essay: 0, poin: 0 };
         let globalIdx = 1;
         topics.forEach((t, idx) => {
-            const pgc = perTopicPgCounts[t] || {Mudah:0,Sedang:0,Sulit:0,HOTS:0,total:0};
-            const isc = perTopicIsianCounts[t] || {Mudah:0,Sedang:0,Sulit:0,HOTS:0,total:0};
-            const esc = perTopicEssayCounts[t] || {Mudah:0,Sedang:0,Sulit:0,HOTS:0,total:0};
+            const pgc = perTopicPgCounts[t] || { Mudah: 0, Sedang: 0, Sulit: 0, HOTS: 0, total: 0 };
+            const isc = perTopicIsianCounts[t] || { Mudah: 0, Sedang: 0, Sulit: 0, HOTS: 0, total: 0 };
+            const esc = perTopicEssayCounts[t] || { Mudah: 0, Sedang: 0, Sulit: 0, HOTS: 0, total: 0 };
             const totalSoal = (pgc.total || 0) + (isc.total || 0) + (esc.total || 0);
             let poinTopik = 0;
-            ['Mudah','Sedang','Sulit','HOTS'].forEach(l => {
+            ['Mudah', 'Sedang', 'Sulit', 'HOTS'].forEach(l => {
                 poinTopik += (pgc[l] || 0) * (pgPointsMap && pgPointsMap[l] ? pgPointsMap[l] : 0);
                 poinTopik += (isc[l] || 0) * (isPointsMap && isPointsMap[l] ? isPointsMap[l] : 0);
                 poinTopik += (esc[l] || 0) * (esPointsMap && esPointsMap[l] ? esPointsMap[l] : 0);
             });
             const nomorList = [];
-            for(let i=0;i<(pgc.total||0);i++) { nomorList.push(globalIdx++); }
-            for(let i=0;i<(isc.total||0);i++) { nomorList.push(globalIdx++); }
-            for(let i=0;i<(esc.total||0);i++) { nomorList.push(globalIdx++); }
+            for (let i = 0; i < (pgc.total || 0); i++) { nomorList.push(globalIdx++); }
+            for (let i = 0; i < (isc.total || 0); i++) { nomorList.push(globalIdx++); }
+            for (let i = 0; i < (esc.total || 0); i++) { nomorList.push(globalIdx++); }
             function formatNumbers(list) {
-                if(!list || list.length === 0) return '';
+                if (!list || list.length === 0) return '';
                 const ranges = [];
                 let start = list[0], end = list[0];
-                for(let i=1;i<list.length;i++) {
-                    if(list[i] === end + 1) end = list[i];
+                for (let i = 1; i < list.length; i++) {
+                    if (list[i] === end + 1) end = list[i];
                     else { ranges.push(start === end ? `${start}` : `${start}-${end}`); start = end = list[i]; }
                 }
                 ranges.push(start === end ? `${start}` : `${start}-${end}`);
                 return ranges.join(', ');
             }
             const soalSummaryParts = [];
-            if((pgc.total||0) > 0) soalSummaryParts.push(`PG x${pgc.total||0}`);
-            if((isc.total||0) > 0) soalSummaryParts.push(`Isian x${isc.total||0}`);
-            if((esc.total||0) > 0) soalSummaryParts.push(`Uraian x${esc.total||0}`);
-            const levelKognitifText = `M:${pgc.Mudah+isc.Mudah+esc.Mudah} S:${pgc.Sedang+isc.Sedang+esc.Sedang} Su:${pgc.Sulit+isc.Sulit+esc.Sulit} H:${pgc.HOTS+isc.HOTS+esc.HOTS}`;
+            if ((pgc.total || 0) > 0) soalSummaryParts.push(`PG x${pgc.total || 0}`);
+            if ((isc.total || 0) > 0) soalSummaryParts.push(`Isian x${isc.total || 0}`);
+            if ((esc.total || 0) > 0) soalSummaryParts.push(`Uraian x${esc.total || 0}`);
+            const levelKognitifText = `M:${pgc.Mudah + isc.Mudah + esc.Mudah} S:${pgc.Sedang + isc.Sedang + esc.Sedang} Su:${pgc.Sulit + isc.Sulit + esc.Sulit} H:${pgc.HOTS + isc.HOTS + esc.HOTS}`;
             const bentukSoalText = soalSummaryParts.join(' / ') || '-';
             const nomorSoalText = formatNumbers(nomorList);
             let soalSoalText = bentukSoalText ? bentukSoalText + ' (lihat naskah)' : '-';
-            let kunciJawabanText = (pgc.total||0) > 0 ? 'PG: lihat kunci' : '-';
+            let kunciJawabanText = (pgc.total || 0) > 0 ? 'PG: lihat kunci' : '-';
             try {
-                if(perQuestionList && Array.isArray(perQuestionList)) {
+                if (perQuestionList && Array.isArray(perQuestionList)) {
                     const nomorSet = new Set(nomorList);
                     const questionsForTopic = perQuestionList.filter(q => {
-                        if(q.topik && String(q.topik).toLowerCase() === String(t).toLowerCase()) return true;
-                        if(q.topic && String(q.topic).toLowerCase() === String(t).toLowerCase()) return true;
-                        if(q.nomor && nomorSet.has(Number(q.nomor))) return true;
+                        if (q.topik && String(q.topik).toLowerCase() === String(t).toLowerCase()) return true;
+                        if (q.topic && String(q.topic).toLowerCase() === String(t).toLowerCase()) return true;
+                        if (q.nomor && nomorSet.has(Number(q.nomor))) return true;
                         return false;
                     });
-                    if(questionsForTopic.length > 0) {
+                    if (questionsForTopic.length > 0) {
                         soalSoalText = questionsForTopic.map(q => {
-                            const txt = (q.teks || q.text || '').replace(/\s+/g,' ').trim();
-                            return `${q.nomor || '?'}: ${txt.length > 140 ? txt.substring(0,140) + '...' : txt}`;
+                            const txt = (q.teks || q.text || '').replace(/\s+/g, ' ').trim();
+                            return `${q.nomor || '?'}: ${txt.length > 140 ? txt.substring(0, 140) + '...' : txt}`;
                         }).join('<br>');
                         const keys = [];
                         questionsForTopic.forEach(q => {
-                            if(q.tipe && /pg/i.test(q.tipe) && q.jawaban) {
-                                keys.push(`${q.nomor||'?'}: ${q.jawaban}`);
-                            } else if(q.jawaban) {
-                                keys.push(`${q.nomor||'?'}: ${q.jawaban}`);
+                            if (q.tipe && /pg/i.test(q.tipe) && q.jawaban) {
+                                keys.push(`${q.nomor || '?'}: ${q.jawaban}`);
+                            } else if (q.jawaban) {
+                                keys.push(`${q.nomor || '?'}: ${q.jawaban}`);
                             }
                         });
-                        if(keys.length > 0) kunciJawabanText = keys.join(' | ');
+                        if (keys.length > 0) kunciJawabanText = keys.join(' | ');
                     }
                 }
-            } catch(e) { console.error('Error rendering per-question preview in kisi-kisi', e); }
-            grand.soal += totalSoal; grand.pg += (pgc.total||0); grand.isian += (isc.total||0); grand.essay += (esc.total||0); grand.poin += poinTopik;
+            } catch (e) { console.error('Error rendering per-question preview in kisi-kisi', e); }
+            grand.soal += totalSoal; grand.pg += (pgc.total || 0); grand.isian += (isc.total || 0); grand.essay += (esc.total || 0); grand.poin += poinTopik;
             html += `<tr>`;
-            html += `<td style="border:1px solid #eee; padding:6px; width:40px">${idx+1}</td>`;
-            html += `<td style="border:1px solid #eee; padding:6px">${'CP terkait: ' + t}</td>`; 
-            html += `<td style="border:1px solid #eee; padding:6px">${t}</td>`; 
-            html += `<td style="border:1px solid #eee; padding:6px">${'Indikator terkait ' + t}</td>`; 
+            html += `<td style="border:1px solid #eee; padding:6px; width:40px">${idx + 1}</td>`;
+            html += `<td style="border:1px solid #eee; padding:6px">${'CP terkait: ' + t}</td>`;
+            html += `<td style="border:1px solid #eee; padding:6px">${t}</td>`;
+            html += `<td style="border:1px solid #eee; padding:6px">${'Indikator terkait ' + t}</td>`;
             html += `<td style="border:1px solid #eee; padding:6px; text-align:center">${levelKognitifText}</td>`;
             html += `<td style="border:1px solid #eee; padding:6px; text-align:center">${bentukSoalText}</td>`;
             html += `<td style="border:1px solid #eee; padding:6px; text-align:center">${nomorSoalText}</td>`;
             html += `<td style="border:1px solid #eee; padding:6px">${soalSoalText}</td>`;
             html += `<td style="border:1px solid #eee; padding:6px; text-align:center">${kunciJawabanText}</td>`;
-            ['Mudah','Sedang','Sulit','HOTS'].forEach(l => {
+            ['Mudah', 'Sedang', 'Sulit', 'HOTS'].forEach(l => {
                 const a = pgc[l] || 0;
                 const b = isc[l] || 0;
                 const c = esc[l] || 0;
-                const cell = `${a}${(b||c) ? ' / ' + b : ''}${(c) ? ' / ' + c : ''}`;
+                const cell = `${a}${(b || c) ? ' / ' + b : ''}${(c) ? ' / ' + c : ''}`;
                 html += `<td style="border:1px solid #eee; padding:6px; text-align:center">${cell}</td>`;
             });
             html += `<td style="border:1px solid #eee; padding:6px; text-align:center">${totalSoal}</td>`;
@@ -2216,15 +2214,15 @@ document.getElementById('btn-gen-soal').addEventListener('click', async function
             try {
                 const existingNaskah = (data.naskah_soal || "");
                 document.getElementById('content-naskah').innerHTML = existingNaskah + "<hr><h3>Kunci Jawaban</h3>" + (data.kunci_jawaban || "");
-                const ic = isianCounts || {Mudah:0, Sedang:0, Sulit:0, HOTS:0};
+                const ic = isianCounts || { Mudah: 0, Sedang: 0, Sulit: 0, HOTS: 0 };
                 const needsMockIsian = Object.values(ic).some(v => v > 0) && !(/isian|isian singkat|short\s*answer/i.test(existingNaskah));
-                if(needsMockIsian) {
+                if (needsMockIsian) {
                     let isianHTML = '<hr><h3>Soal Isian (Mock berdasarkan distribusi)</h3>';
                     let idxIs = 1;
                     function renderIsianBucket(label, n) {
-                        if(n <= 0) return '';
+                        if (n <= 0) return '';
                         let s = `<div style="margin-bottom:8px;"><strong>${label} (${n})</strong>`;
-                        for(let i=0;i<n;i++) {
+                        for (let i = 0; i < n; i++) {
                             s += `<div style="margin-top:6px;">${idxIs}. (Isian - ${label}) Tuliskan soal isian singkat yang mengukur kompetensi ${label}.</div>`;
                             idxIs++;
                         }
@@ -2237,16 +2235,16 @@ document.getElementById('btn-gen-soal').addEventListener('click', async function
                     isianHTML += renderIsianBucket('HOTS', ic.HOTS);
                     document.getElementById('content-naskah').innerHTML += isianHTML;
                 }
-            } catch(e) { console.error('Error processing naskah/isian in success branch', e); }
+            } catch (e) { console.error('Error processing naskah/isian in success branch', e); }
             try {
                 const naskahSel = document.querySelector('input[name="naskah-option"]:checked');
                 const naskahChoice = naskahSel ? naskahSel.value : 'standar';
-                if(naskahChoice === 'dengan-gambar') {
+                if (naskahChoice === 'dengan-gambar') {
                     const countEl = document.getElementById('naskah-image-count');
                     const imgCount = Math.max(1, Math.min(20, parseInt(countEl ? countEl.value : 1) || 1));
                     const contId = 'naskah-images-container';
                     let cont = document.getElementById(contId);
-                    if(!cont) {
+                    if (!cont) {
                         cont = document.createElement('div');
                         cont.id = contId;
                         const progWrap = document.createElement('div');
@@ -2270,10 +2268,10 @@ document.getElementById('btn-gen-soal').addEventListener('click', async function
                     const totalToCreate = imgCount;
                     const progressTextEl = document.getElementById(progressTextId);
                     const progressBarEl = document.getElementById(progressBarId);
-                    if(progressTextEl) progressTextEl.innerText = `0 / ${totalToCreate}`;
-                    if(progressBarEl) progressBarEl.style.width = '0%';
+                    if (progressTextEl) progressTextEl.innerText = `0 / ${totalToCreate}`;
+                    if (progressBarEl) progressBarEl.style.width = '0%';
                     const soalItemsArr = Array.isArray(perQuestionList) ? perQuestionList : (Array.isArray(data.soal_items) ? data.soal_items : []);
-                    for(let i=0;i<imgCount;i++) {
+                    for (let i = 0; i < imgCount; i++) {
                         const placeholder = document.createElement('div');
                         placeholder.style.border = '1px solid #e2e8f0';
                         placeholder.style.padding = '8px';
@@ -2282,70 +2280,70 @@ document.getElementById('btn-gen-soal').addEventListener('click', async function
                         placeholder.style.display = 'flex';
                         placeholder.style.alignItems = 'center';
                         placeholder.style.justifyContent = 'center';
-                        placeholder.innerHTML = `<div style="text-align:center; color:var(--text-muted);">Membuat gambar ${i+1}...</div>`;
+                        placeholder.innerHTML = `<div style="text-align:center; color:var(--text-muted);">Membuat gambar ${i + 1}...</div>`;
                         cont.appendChild(placeholder);
                         let promptImg = '';
-                        if(soalItemsArr[i] && soalItemsArr[i].teks) {
-                            const teks = String(soalItemsArr[i].teks).replace(/<[^>]+>/g,'').trim();
-                            promptImg = `Ilustrasi edukatif berwarna untuk soal nomor ${soalItemsArr[i].nomor || (i+1)}: ${teks}. Gaya: ilustrasi edukatif, jelas, sederhana, cocok untuk materi ajar dan Lembar Kerja. Resolusi tinggi, latar putih.`;
+                        if (soalItemsArr[i] && soalItemsArr[i].teks) {
+                            const teks = String(soalItemsArr[i].teks).replace(/<[^>]+>/g, '').trim();
+                            promptImg = `Ilustrasi edukatif berwarna untuk soal nomor ${soalItemsArr[i].nomor || (i + 1)}: ${teks}. Gaya: ilustrasi edukatif, jelas, sederhana, cocok untuk materi ajar dan Lembar Kerja. Resolusi tinggi, latar putih.`;
                         } else {
                             const topicForPrompt = (topicList && topicList.length) ? topicList[0] : soalSelectedTopic || mapel;
                             promptImg = `Ilustrasi edukatif berwarna untuk mata pelajaran ${mapel} pada topik ${topicForPrompt}. Gaya: ilustrasi edukatif, jelas, ramah anak, cocok untuk dicetak pada Lembar Kerja.`;
                         }
                         try {
                             const imgDataUrl = await callImagen(promptImg);
-                            if(imgDataUrl) {
+                            if (imgDataUrl) {
                                 placeholder.innerHTML = '';
                                 const img = document.createElement('img');
                                 img.src = imgDataUrl;
                                 img.style.width = '100%';
                                 img.style.height = 'auto';
                                 img.style.borderRadius = '6px';
-                                img.alt = 'Ilustrasi Soal ' + (i+1);
+                                img.alt = 'Ilustrasi Soal ' + (i + 1);
                                 placeholder.appendChild(img);
                                 const dl = document.createElement('a');
                                 dl.href = imgDataUrl;
-                                dl.download = `Ilustrasi_Soal_${i+1}.png`;
+                                dl.download = `Ilustrasi_Soal_${i + 1}.png`;
                                 dl.className = 'btn btn-secondary btn-sm';
                                 dl.style.display = 'inline-block';
                                 dl.style.marginTop = '8px';
                                 dl.innerHTML = '<i class="fas fa-download"></i> Unduh';
                                 placeholder.appendChild(dl);
                             } else {
-                                placeholder.innerHTML = `<div style="color:red">Gagal membuat gambar ${i+1}.</div>`;
+                                placeholder.innerHTML = `<div style="color:red">Gagal membuat gambar ${i + 1}.</div>`;
                             }
-                        } catch(imgErr) {
+                        } catch (imgErr) {
                             console.error('Error generating image for naskah:', imgErr);
-                            placeholder.innerHTML = `<div style="color:red">Gagal membuat gambar ${i+1}.</div>`;
+                            placeholder.innerHTML = `<div style="color:red">Gagal membuat gambar ${i + 1}.</div>`;
                         } finally {
                             try {
                                 const done = i + 1;
-                                if(progressTextEl) progressTextEl.innerText = `${done} / ${totalToCreate}`;
-                                if(progressBarEl) progressBarEl.style.width = `${Math.round((done/totalToCreate)*100)}%`;
-                            } catch(e) { console.error('Progress update error', e); }
+                                if (progressTextEl) progressTextEl.innerText = `${done} / ${totalToCreate}`;
+                                if (progressBarEl) progressBarEl.style.width = `${Math.round((done / totalToCreate) * 100)}%`;
+                            } catch (e) { console.error('Progress update error', e); }
                             try {
-                                if(typeof imgDataUrl !== 'undefined' && imgDataUrl && Array.isArray(perQuestionList) && perQuestionList[i]) {
+                                if (typeof imgDataUrl !== 'undefined' && imgDataUrl && Array.isArray(perQuestionList) && perQuestionList[i]) {
                                     perQuestionList[i].image = imgDataUrl;
                                 }
-                            } catch(attErr) { console.error('Attach image to question error', attErr); }
+                            } catch (attErr) { console.error('Attach image to question error', attErr); }
                         }
                     }
                     try {
-                        if(Array.isArray(perQuestionList) && perQuestionList.length > 0) {
+                        if (Array.isArray(perQuestionList) && perQuestionList.length > 0) {
                             let integrated = '<hr><h3>Naskah Soal (Terintegrasi dengan Gambar)</h3>';
                             integrated += '<ol>';
                             perQuestionList.forEach(q => {
                                 const nomor = q.nomor || q.number || '';
                                 const teks = q.teks || q.text || q.teks_soal || '';
                                 integrated += `<li style="margin-bottom:12px;"><div>${teks}</div>`;
-                                if(q.options && typeof q.options === 'object') {
+                                if (q.options && typeof q.options === 'object') {
                                     integrated += '<div style="margin-top:6px;">';
                                     Object.keys(q.options).forEach(k => {
                                         integrated += `<div><strong>${k}.</strong> ${q.options[k]}</div>`;
                                     });
                                     integrated += '</div>';
                                 }
-                                if(q.image) {
+                                if (q.image) {
                                     integrated += `<div style="text-align:center; margin-top:8px;"><img src="${q.image}" style="max-width:100%; border-radius:6px;" alt="Gambar Soal ${nomor}"></div>`;
                                 }
                                 integrated += '</li>';
@@ -2353,21 +2351,21 @@ document.getElementById('btn-gen-soal').addEventListener('click', async function
                             integrated += '</ol>';
                             try {
                                 const el = document.getElementById('content-naskah');
-                                if(el) el.innerHTML = el.innerHTML + integrated + '<hr>' + (data.kunci_jawaban || '');
-                            } catch(e) { console.error('Insert integrated naskah error', e); }
+                                if (el) el.innerHTML = el.innerHTML + integrated + '<hr>' + (data.kunci_jawaban || '');
+                            } catch (e) { console.error('Insert integrated naskah error', e); }
                         }
-                    } catch(finalErr) { console.error('Error building integrated naskah', finalErr); }
+                    } catch (finalErr) { console.error('Error building integrated naskah', finalErr); }
                 }
-            } catch(imgGlobalErr) { console.error('Error inserting images for naskah:', imgGlobalErr); }
+            } catch (imgGlobalErr) { console.error('Error inserting images for naskah:', imgGlobalErr); }
             document.getElementById('content-bahas').innerHTML = (data.pembahasan || "Tidak ada pembahasan");
             let ljkHTML = '<div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:20px;">';
             try {
-                const counts = distribCounts || {Mudah:pg, Sedang:0, Sulit:0, HOTS:0};
+                const counts = distribCounts || { Mudah: pg, Sedang: 0, Sulit: 0, HOTS: 0 };
                 let idx = 1;
                 function renderBucket(label, n) {
-                    if(n <= 0) return '';
+                    if (n <= 0) return '';
                     let s = `<div style="border-bottom:1px solid #eee; padding-bottom:6px; margin-bottom:6px;"><strong>${label} (${n})</strong><br>`;
-                    for(let j=0;j<n;j++) {
+                    for (let j = 0; j < n; j++) {
                         s += `<div style="margin-top:6px;">${idx}. [A] [B] [C] [D] <span style="color:#888; font-size:0.85rem; margin-left:8px;">(${label})</span></div>`;
                         idx++;
                     }
@@ -2378,58 +2376,58 @@ document.getElementById('btn-gen-soal').addEventListener('click', async function
                 ljkHTML += renderBucket('Sedang', counts.Sedang);
                 ljkHTML += renderBucket('Sulit', counts.Sulit);
                 ljkHTML += renderBucket('HOTS', counts.HOTS);
-                while(idx <= pg) {
+                while (idx <= pg) {
                     ljkHTML += `<div>${idx}. [A] [B] [C] [D]</div>`;
                     idx++;
                 }
-            } catch(e) {
-                for(let i=1; i<=pg; i++) ljkHTML += `<div>${i}. [A] [B] [C] [D]</div>`;
+            } catch (e) {
+                for (let i = 1; i <= pg; i++) ljkHTML += `<div>${i}. [A] [B] [C] [D]</div>`;
             }
             ljkHTML += '</div>';
             document.getElementById('content-ljk').innerHTML = ljkHTML;
             document.getElementById('res-soal').style.display = 'block';
             document.getElementById('stat-generated').innerText = parseInt(document.getElementById('stat-generated').innerText) + 1;
         } else {
-             throw new Error("Parsed JSON is null");
+            throw new Error("Parsed JSON is null");
         }
-    } catch(e) {
+    } catch (e) {
         console.error(e);
         showToast("Gagal memparsing JSON. Mencoba format teks.");
         const textResult = await callGemini(prompt + " (Format Text Biasa saja)");
         let finalHtml = marked.parse(textResult || '');
         try {
-            const ec = essayCounts || {Mudah:0, Sedang:0, Sulit:0, HOTS:0};
-                const ic = isianCounts || {Mudah:0, Sedang:0, Sulit:0, HOTS:0};
-                let isianHTML = '';
-                try {
-                    const hasIsianCounts = Object.values(ic).some(v => v > 0);
-                    const textHasIsian = /isian|isian singkat|short\s*answer/i.test(textResult || '');
-                    const needsMockIsian = hasIsianCounts && !textHasIsian;
-                    if(needsMockIsian) {
-                        isianHTML = '<hr><h3>Soal Isian (Mock berdasarkan distribusi)</h3>';
-                        let idxIs = 1;
-                        function renderIsianBucket(label, n) {
-                            if(n <= 0) return '';
-                            let s = `<div style="margin-bottom:8px;"><strong>${label} (${n})</strong>`;
-                            for(let i=0;i<n;i++) {
-                                s += `<div style="margin-top:6px;">${idxIs}. (Isian - ${label}) Tuliskan soal isian singkat yang mengukur kompetensi ${label}.</div>`;
-                                idxIs++;
-                            }
-                            s += '</div>';
-                            return s;
+            const ec = essayCounts || { Mudah: 0, Sedang: 0, Sulit: 0, HOTS: 0 };
+            const ic = isianCounts || { Mudah: 0, Sedang: 0, Sulit: 0, HOTS: 0 };
+            let isianHTML = '';
+            try {
+                const hasIsianCounts = Object.values(ic).some(v => v > 0);
+                const textHasIsian = /isian|isian singkat|short\s*answer/i.test(textResult || '');
+                const needsMockIsian = hasIsianCounts && !textHasIsian;
+                if (needsMockIsian) {
+                    isianHTML = '<hr><h3>Soal Isian (Mock berdasarkan distribusi)</h3>';
+                    let idxIs = 1;
+                    function renderIsianBucket(label, n) {
+                        if (n <= 0) return '';
+                        let s = `<div style="margin-bottom:8px;"><strong>${label} (${n})</strong>`;
+                        for (let i = 0; i < n; i++) {
+                            s += `<div style="margin-top:6px;">${idxIs}. (Isian - ${label}) Tuliskan soal isian singkat yang mengukur kompetensi ${label}.</div>`;
+                            idxIs++;
                         }
-                        isianHTML += renderIsianBucket('Mudah', ic.Mudah);
-                        isianHTML += renderIsianBucket('Sedang', ic.Sedang);
-                        isianHTML += renderIsianBucket('Sulit', ic.Sulit);
-                        isianHTML += renderIsianBucket('HOTS', ic.HOTS);
+                        s += '</div>';
+                        return s;
                     }
-                } catch(e) { console.error('Error building isianHTML in fallback', e); }
+                    isianHTML += renderIsianBucket('Mudah', ic.Mudah);
+                    isianHTML += renderIsianBucket('Sedang', ic.Sedang);
+                    isianHTML += renderIsianBucket('Sulit', ic.Sulit);
+                    isianHTML += renderIsianBucket('HOTS', ic.HOTS);
+                }
+            } catch (e) { console.error('Error building isianHTML in fallback', e); }
             let essayHTML = '<hr><h3>Soal Uraian (Mock berdasarkan distribusi)</h3>';
             let eIdx = 1;
             function renderEssayBucket(label, n) {
-                if(n <= 0) return '';
+                if (n <= 0) return '';
                 let s = `<div style="margin-bottom:8px;"><strong>${label} (${n})</strong>`;
-                for(let i=0;i<n;i++) {
+                for (let i = 0; i < n; i++) {
                     s += `<div style="margin-top:6px;">${eIdx}. (Uraian - ${label}) Buatkan satu soal uraian yang menilai kompetensi ${label}.</div>`;
                     eIdx++;
                 }
@@ -2441,7 +2439,7 @@ document.getElementById('btn-gen-soal').addEventListener('click', async function
             essayHTML += renderEssayBucket('Sulit', ec.Sulit);
             essayHTML += renderEssayBucket('HOTS', ec.HOTS);
             finalHtml += isianHTML + essayHTML;
-        } catch(err) { console.error(err); }
+        } catch (err) { console.error(err); }
         try {
             const perTopicEssay = distributeCountsAcrossTopics(essayCounts, topicList);
             const kisiTableHTML = buildKisiKisiHTML(mapel, topicList, perTopicDistrib, perTopicIsian, perTopicEssay, scorePerQuestion.pg, scorePerQuestion.isian, scorePerQuestion.essay, null);
@@ -2460,12 +2458,12 @@ document.getElementById('btn-gen-soal').addEventListener('click', async function
             try {
                 const naskahSel = document.querySelector('input[name="naskah-option"]:checked');
                 const naskahChoice = naskahSel ? naskahSel.value : 'standar';
-                if(naskahChoice === 'dengan-gambar') {
+                if (naskahChoice === 'dengan-gambar') {
                     const countEl = document.getElementById('naskah-image-count');
                     const imgCount = Math.max(1, Math.min(20, parseInt(countEl ? countEl.value : 1) || 1));
                     const contId = 'naskah-images-container-fallback';
                     let cont = document.getElementById(contId);
-                    if(!cont) {
+                    if (!cont) {
                         cont = document.createElement('div');
                         cont.id = contId;
                         const progWrap = document.createElement('div');
@@ -2490,9 +2488,9 @@ document.getElementById('btn-gen-soal').addEventListener('click', async function
                     const totalToCreateFb = imgCount;
                     const progressTextElFb = document.getElementById(progressTextIdFb);
                     const progressBarElFb = document.getElementById(progressBarIdFb);
-                    if(progressTextElFb) progressTextElFb.innerText = `0 / ${totalToCreateFb}`;
-                    if(progressBarElFb) progressBarElFb.style.width = '0%';
-                    for(let i=0;i<imgCount;i++) {
+                    if (progressTextElFb) progressTextElFb.innerText = `0 / ${totalToCreateFb}`;
+                    if (progressBarElFb) progressBarElFb.style.width = '0%';
+                    for (let i = 0; i < imgCount; i++) {
                         const placeholder = document.createElement('div');
                         placeholder.style.border = '1px solid #e2e8f0';
                         placeholder.style.padding = '8px';
@@ -2501,44 +2499,44 @@ document.getElementById('btn-gen-soal').addEventListener('click', async function
                         placeholder.style.display = 'flex';
                         placeholder.style.alignItems = 'center';
                         placeholder.style.justifyContent = 'center';
-                        placeholder.innerHTML = `<div style="text-align:center; color:var(--text-muted);">Membuat gambar ${i+1}...</div>`;
+                        placeholder.innerHTML = `<div style="text-align:center; color:var(--text-muted);">Membuat gambar ${i + 1}...</div>`;
                         cont.appendChild(placeholder);
                         const topicForPrompt = (topicList && topicList.length) ? topicList[0] : soalSelectedTopic || mapel;
                         const promptImg = `Ilustrasi edukatif berwarna untuk mata pelajaran ${mapel} pada topik ${topicForPrompt}. Gaya: ilustrasi edukatif, jelas, ramah anak, cocok untuk dicetak pada Lembar Kerja.`;
                         try {
                             const imgDataUrl = await callImagen(promptImg);
-                            if(imgDataUrl) {
+                            if (imgDataUrl) {
                                 placeholder.innerHTML = '';
                                 const img = document.createElement('img');
                                 img.src = imgDataUrl;
                                 img.style.width = '100%';
                                 img.style.height = 'auto';
                                 img.style.borderRadius = '6px';
-                                img.alt = 'Ilustrasi Soal ' + (i+1);
+                                img.alt = 'Ilustrasi Soal ' + (i + 1);
                                 placeholder.appendChild(img);
                                 const dl = document.createElement('a');
                                 dl.href = imgDataUrl;
-                                dl.download = `Ilustrasi_Soal_${i+1}.png`;
+                                dl.download = `Ilustrasi_Soal_${i + 1}.png`;
                                 dl.className = 'btn btn-secondary btn-sm';
                                 dl.style.display = 'inline-block';
                                 dl.style.marginTop = '8px';
                                 dl.innerHTML = '<i class="fas fa-download"></i> Unduh';
                                 placeholder.appendChild(dl);
                             } else {
-                                placeholder.innerHTML = `<div style="color:red">Gagal membuat gambar ${i+1}.</div>`;
+                                placeholder.innerHTML = `<div style="color:red">Gagal membuat gambar ${i + 1}.</div>`;
                             }
-                        } catch(imgErr) { console.error('Error creating fallback image', imgErr); placeholder.innerHTML = `<div style="color:red">Gagal membuat gambar ${i+1}.</div>`; }
+                        } catch (imgErr) { console.error('Error creating fallback image', imgErr); placeholder.innerHTML = `<div style="color:red">Gagal membuat gambar ${i + 1}.</div>`; }
                         finally {
                             try {
                                 const doneFb = i + 1;
-                                if(progressTextElFb) progressTextElFb.innerText = `${doneFb} / ${totalToCreateFb}`;
-                                if(progressBarElFb) progressBarElFb.style.width = `${Math.round((doneFb/totalToCreateFb)*100)}%`;
-                            } catch(pe) { console.error('Progress update fallback error', pe); }
+                                if (progressTextElFb) progressTextElFb.innerText = `${doneFb} / ${totalToCreateFb}`;
+                                if (progressBarElFb) progressBarElFb.style.width = `${Math.round((doneFb / totalToCreateFb) * 100)}%`;
+                            } catch (pe) { console.error('Progress update fallback error', pe); }
                         }
                     }
                 }
-            } catch(imgGlobalErr) { console.error('Error inserting fallback images for naskah:', imgGlobalErr); }
-        } catch(err) {
+            } catch (imgGlobalErr) { console.error('Error inserting fallback images for naskah:', imgGlobalErr); }
+        } catch (err) {
             console.error('Error building kisi-kisi for fallback:', err);
             document.getElementById('content-naskah').innerHTML = finalHtml;
         }
@@ -2549,7 +2547,7 @@ document.getElementById('btn-gen-soal').addEventListener('click', async function
     hideProgressBar();
     document.getElementById('res-soal').scrollIntoView({ behavior: 'smooth' });
 });
-window.switchVisAudioTab = function(tabId) {
+window.switchVisAudioTab = function (tabId) {
     document.getElementById('subtab-vis-gen').classList.remove('active');
     document.getElementById('subtab-aud-gen').classList.remove('active');
     document.getElementById('subtab-' + tabId).classList.add('active');
@@ -2562,7 +2560,7 @@ window.switchVisAudioTab = function(tabId) {
 
 // Foto Profesi Functions
 let selectedAspekRatio = '';
-window.selectAspekRatio = function(btn, ratio) {
+window.selectAspekRatio = function (btn, ratio) {
     document.querySelectorAll('#foto-profesi .aspek-ratio-btn').forEach(b => {
         b.style.background = 'var(--bg-body)';
         b.style.color = 'var(--text-main)';
@@ -2574,53 +2572,53 @@ window.selectAspekRatio = function(btn, ratio) {
     selectedAspekRatio = ratio;
 };
 
-window.handleFotoProfeesiUpload = function(e) {
+window.handleFotoProfeesiUpload = function (e) {
     const file = e.target.files[0];
-    if(!file) return;
+    if (!file) return;
     const fileName = document.getElementById('foto-profesi-file-name');
-    if(!fileName) return;
+    if (!fileName) return;
     fileName.innerText = 'File: ' + file.name;
     fileName.style.display = 'inline-block';
     const reader = new FileReader();
-    reader.onload = function(event) {
+    reader.onload = function (event) {
         window.uploadedFotoProfeesiData = event.target.result;
     };
     reader.readAsDataURL(file);
 };
 
 const fotoProfesiInput = document.getElementById('foto-profesi-input');
-if(fotoProfesiInput) {
+if (fotoProfesiInput) {
     fotoProfesiInput.addEventListener('change', handleFotoProfeesiUpload);
 }
 
 // Drag and drop untuk foto profesi
 const fotoProfesiUploadBox = document.getElementById('foto-profesi-upload-box');
-if(fotoProfesiUploadBox) {
-    fotoProfesiUploadBox.addEventListener('dragover', function(e) {
+if (fotoProfesiUploadBox) {
+    fotoProfesiUploadBox.addEventListener('dragover', function (e) {
         e.preventDefault();
         this.style.background = 'var(--primary-light)';
         this.style.borderColor = 'var(--primary)';
     });
-    fotoProfesiUploadBox.addEventListener('dragleave', function() {
+    fotoProfesiUploadBox.addEventListener('dragleave', function () {
         this.style.background = '';
         this.style.borderColor = '';
     });
-    fotoProfesiUploadBox.addEventListener('drop', function(e) {
+    fotoProfesiUploadBox.addEventListener('drop', function (e) {
         e.preventDefault();
         const files = e.dataTransfer.files;
-        if(files.length > 0) {
+        if (files.length > 0) {
             const fotoProfesiInputElem = document.getElementById('foto-profesi-input');
-            if(fotoProfesiInputElem) {
+            if (fotoProfesiInputElem) {
                 fotoProfesiInputElem.files = files;
             }
             const file = files[0];
             const fileName = document.getElementById('foto-profesi-file-name');
-            if(fileName) {
+            if (fileName) {
                 fileName.innerText = 'File: ' + file.name;
                 fileName.style.display = 'inline-block';
             }
             const reader = new FileReader();
-            reader.onload = function(event) {
+            reader.onload = function (event) {
                 window.uploadedFotoProfeesiData = event.target.result;
             };
             reader.readAsDataURL(file);
@@ -2631,33 +2629,33 @@ if(fotoProfesiUploadBox) {
 }
 
 const btnGenFotoProfesi = document.getElementById('btn-gen-foto-profesi');
-if(btnGenFotoProfesi) {
-    btnGenFotoProfesi.addEventListener('click', async function() {
+if (btnGenFotoProfesi) {
+    btnGenFotoProfesi.addEventListener('click', async function () {
         const btn = this;
-        
+
         const usiaEl = document.getElementById('foto-profesi-usia');
         const profesiEl = document.getElementById('foto-profesi-profesi');
-        
-        if(!usiaEl || !usiaEl.value) {
+
+        if (!usiaEl || !usiaEl.value) {
             showToast('Pilih usia terlebih dahulu!', 'danger');
             return;
         }
-        
-        if(!selectedAspekRatio) {
+
+        if (!selectedAspekRatio) {
             showToast('Pilih rasio aspek terlebih dahulu!', 'danger');
             return;
         }
-        
+
         const usia = usiaEl.value;
         const profesi = profesiEl.value || 'professional';
         const fotoUploaded = window.uploadedFotoProfeesiData ? true : false;
-        
+
         btn.classList.add('loading');
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating 6 Photos...';
-        
+
         try {
             showToast('Menghasilkan 6 foto profesi dengan gaya berbeda...', 'info');
-            
+
             // Array of different realistic professional styles for the 6 photos
             const styles = [
                 'professional corporate headshot',
@@ -2667,25 +2665,25 @@ if(btnGenFotoProfesi) {
                 'corporate lifestyle portrait',
                 'professional environmental portrait'
             ];
-            
+
             const generatedImages = [];
-            
+
             // Generate 6 different realistic professional style photos
-            for(let i = 0; i < 6; i++) {
+            for (let i = 0; i < 6; i++) {
                 let prompt = `High-quality professional portrait photography of a ${usia} years old person in ${styles[i]} style. `;
-                
-                if(fotoUploaded && window.uploadedFotoProfeesiData) {
+
+                if (fotoUploaded && window.uploadedFotoProfeesiData) {
                     prompt += `Use the uploaded photo as a face reference - the person MUST look exactly like them with same facial features, face shape, eye color, skin tone, hair color and style. `;
                 }
-                
-                if(profesi) {
+
+                if (profesi) {
                     prompt += `Professional setting for ${profesi} role. `;
                 }
-                
+
                 prompt += `Aspect ratio: ${selectedAspekRatio}. Professional studio lighting, 8K resolution, confident professional expression, clean background, Canon EOS R5 quality, sharp focus on face, warm color grading.`;
-                
+
                 const imgUrl = await callImagen(prompt);
-                if(imgUrl) {
+                if (imgUrl) {
                     generatedImages.push({
                         url: imgUrl,
                         style: styles[i],
@@ -2693,23 +2691,23 @@ if(btnGenFotoProfesi) {
                     });
                 }
             }
-            
+
             const outputDiv = document.getElementById('res-foto-profesi-content');
             const actionDiv = document.getElementById('res-foto-profesi-actions');
             const resultDiv = document.getElementById('res-foto-profesi');
-            
-            if(generatedImages.length > 0 && outputDiv && actionDiv && resultDiv) {
+
+            if (generatedImages.length > 0 && outputDiv && actionDiv && resultDiv) {
                 // Display 6 generated images
                 outputDiv.innerHTML = generatedImages.map((img, idx) => `
                     <div style="display: flex; flex-direction: column; align-items: center;">
-                        <img src="${img.url}" style="width: 100%; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); aspect-ratio: ${selectedAspekRatio}; object-fit: cover;" alt="Foto ${idx+1}">
-                        <p style="margin-top: 10px; font-size: 0.9rem; color: var(--text-muted);"><strong>${img.style}</strong><br><small>Foto ${idx+1}</small></p>
+                        <img src="${img.url}" style="width: 100%; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); aspect-ratio: ${selectedAspekRatio}; object-fit: cover;" alt="Foto ${idx + 1}">
+                        <p style="margin-top: 10px; font-size: 0.9rem; color: var(--text-muted);"><strong>${img.style}</strong><br><small>Foto ${idx + 1}</small></p>
                     </div>
                 `).join('');
-                
+
                 // Store images for download
                 window.lastGeneratedFotoProfeesiImages = generatedImages;
-                
+
                 actionDiv.innerHTML = `
                     <button class="btn btn-primary btn-sm" onclick="downloadAllFotoProfeesi()">
                         <i class="fas fa-download"></i> Unduh Semua (ZIP)
@@ -2724,8 +2722,8 @@ if(btnGenFotoProfesi) {
             } else {
                 showToast('Gagal membuat beberapa foto. Silakan coba lagi.', 'warning');
             }
-            
-        } catch(err) {
+
+        } catch (err) {
             console.error('Error:', err);
             showToast('Gagal membuat foto profesi: ' + err.message, 'danger');
         } finally {
@@ -2735,20 +2733,20 @@ if(btnGenFotoProfesi) {
     });
 }
 
-window.downloadAllFotoProfeesi = function() {
-    if(!window.lastGeneratedFotoProfeesiImages || window.lastGeneratedFotoProfeesiImages.length === 0) {
+window.downloadAllFotoProfeesi = function () {
+    if (!window.lastGeneratedFotoProfeesiImages || window.lastGeneratedFotoProfeesiImages.length === 0) {
         showToast('Tidak ada gambar yang telah di-generate', 'warning');
         return;
     }
     showToast('Fitur download ZIP sedang dalam pengembangan. Gunakan tombol "Unduh Foto" untuk mengunduh satu per satu.', 'info');
 };
 
-window.downloadFotoProfeesiByIndex = function(index) {
-    if(!window.lastGeneratedFotoProfeesiImages || !window.lastGeneratedFotoProfeesiImages[index]) {
+window.downloadFotoProfeesiByIndex = function (index) {
+    if (!window.lastGeneratedFotoProfeesiImages || !window.lastGeneratedFotoProfeesiImages[index]) {
         showToast('Foto tidak ditemukan', 'warning');
         return;
     }
-    
+
     const img = window.lastGeneratedFotoProfeesiImages[index];
     const link = document.createElement('a');
     link.href = img.url;
@@ -2765,25 +2763,25 @@ async function generateTTSAudio(text, voiceType = 'narasi', voiceChoice = 'defau
     try {
         // Limit text length
         const limitedText = text.substring(0, 3000);
-        
+
         // Use Web Speech API (built-in browser API)
         return new Promise((resolve, reject) => {
-            if('speechSynthesis' in window) {
+            if ('speechSynthesis' in window) {
                 const utterance = new SpeechSynthesisUtterance(limitedText);
-                
+
                 // Get available voices
                 const voices = speechSynthesis.getVoices();
-                
+
                 // Select voice based on choice
                 let selectedVoice = null;
-                switch(voiceChoice) {
+                switch (voiceChoice) {
                     case 'female-professional':
                         selectedVoice = voices.find(v => v.lang.includes('id') && v.name.includes('Female'));
-                        if(!selectedVoice) selectedVoice = voices.find(v => v.lang.includes('id') && !v.name.includes('Male'));
+                        if (!selectedVoice) selectedVoice = voices.find(v => v.lang.includes('id') && !v.name.includes('Male'));
                         break;
                     case 'male-professional':
                         selectedVoice = voices.find(v => v.lang.includes('id') && v.name.includes('Male'));
-                        if(!selectedVoice) selectedVoice = voices.find(v => v.lang.includes('id') && !v.name.includes('Female'));
+                        if (!selectedVoice) selectedVoice = voices.find(v => v.lang.includes('id') && !v.name.includes('Female'));
                         break;
                     case 'female-warm':
                         selectedVoice = voices.find(v => v.lang.includes('id') && (v.name.includes('Female') || v.name.includes('Warm')));
@@ -2794,12 +2792,12 @@ async function generateTTSAudio(text, voiceType = 'narasi', voiceChoice = 'defau
                     default:
                         selectedVoice = voices.find(v => v.lang.includes('id'));
                 }
-                
+
                 // Use Indonesian voice if available, otherwise use default
-                if(selectedVoice) {
+                if (selectedVoice) {
                     utterance.voice = selectedVoice;
                 }
-                
+
                 // Apply voice settings based on type
                 const voiceSettings = {
                     'narasi': { pitch: 1, rate: speed * 0.9 },
@@ -2807,22 +2805,22 @@ async function generateTTSAudio(text, voiceType = 'narasi', voiceChoice = 'defau
                     'podcast-style': { pitch: pitch * 0.95, rate: speed * 0.85 },
                     'interview': { pitch: pitch * 0.98, rate: speed * 0.95 }
                 };
-                
+
                 const settings = voiceSettings[voiceType] || voiceSettings['narasi'];
                 utterance.pitch = settings.pitch;
                 utterance.rate = settings.rate;
                 utterance.volume = volume;
-                
+
                 utterance.onstart = () => {
                     console.log('Audio playback started');
                 };
-                
+
                 utterance.onend = () => {
                     // Calculate duration
                     const duration = limitedText.length / (150 * (speed || 1));
                     const minutes = Math.floor(duration / 60);
                     const seconds = Math.floor(duration % 60);
-                    
+
                     resolve({
                         type: voiceType,
                         duration: (minutes > 0 ? minutes + 'm ' : '') + (seconds || 1) + 's',
@@ -2837,21 +2835,21 @@ async function generateTTSAudio(text, voiceType = 'narasi', voiceChoice = 'defau
                         canPlay: true
                     });
                 };
-                
+
                 utterance.onerror = (e) => {
                     console.error('TTS Error:', e);
                     reject(new Error('Gagal memutar audio: ' + (e.error || 'Unknown error')));
                 };
-                
+
                 // Cancel any ongoing speech
                 speechSynthesis.cancel();
-                
+
                 // NOTE: Audio playback disabled - user must click play button manually
                 // Calculate duration for response
                 const duration = limitedText.length / (150 * (speed || 1));
                 const minutes = Math.floor(duration / 60);
                 const seconds = Math.floor(duration % 60);
-                
+
                 // Resolve immediately without speaking (user will click play manually)
                 resolve({
                     type: voiceType,
@@ -2870,7 +2868,7 @@ async function generateTTSAudio(text, voiceType = 'narasi', voiceChoice = 'defau
                 reject(new Error('Browser Anda tidak mendukung Text-to-Speech. Gunakan Chrome, Firefox, atau Edge.'));
             }
         });
-    } catch(err) {
+    } catch (err) {
         console.error('TTS generation failed:', err);
         throw err;
     }
@@ -2879,7 +2877,7 @@ async function generateTTSAudio(text, voiceType = 'narasi', voiceChoice = 'defau
 // Toggle Settings Panel
 function toggleKontenSettings() {
     const panel = document.getElementById('konten-settings-panel');
-    if(panel) {
+    if (panel) {
         panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
     }
 }
@@ -2891,16 +2889,16 @@ function applyKontenSettings() {
     const highlight = document.getElementById('konten-setting-highlight')?.checked || false;
     const lineNumbers = document.getElementById('konten-setting-line-numbers')?.checked || false;
     const spacing = document.getElementById('konten-setting-spacing')?.checked || false;
-    
+
     const contentDiv = document.getElementById('res-konten-kreator-content');
-    if(!contentDiv) return;
-    
+    if (!contentDiv) return;
+
     // Apply font size
     let fontSizeValue = '1rem';
-    if(fontSize === 'small') fontSizeValue = '0.9rem';
-    else if(fontSize === 'large') fontSizeValue = '1.15rem';
+    if (fontSize === 'small') fontSizeValue = '0.9rem';
+    else if (fontSize === 'large') fontSizeValue = '1.15rem';
     contentDiv.style.fontSize = fontSizeValue;
-    
+
     // Apply theme
     const themeColors = {
         'light': { bg: '#f1f5f9', color: '#1e293b', codeColor: '#0f172a' },
@@ -2910,22 +2908,22 @@ function applyKontenSettings() {
     const colors = themeColors[theme];
     contentDiv.style.backgroundColor = colors.bg;
     contentDiv.style.color = colors.color;
-    
+
     // Apply spacing
     contentDiv.style.lineHeight = spacing ? '2' : '1.6';
     contentDiv.style.letterSpacing = spacing ? '0.5px' : 'normal';
-    
+
     // Apply line numbers to code blocks
-    if(lineNumbers) {
+    if (lineNumbers) {
         const codeBlocks = contentDiv.querySelectorAll('pre, code');
         codeBlocks.forEach((block, idx) => {
             block.style.counterReset = 'line';
             block.style.whiteSpace = 'pre-wrap';
         });
     }
-    
+
     // Highlight important words
-    if(highlight) {
+    if (highlight) {
         let html = contentDiv.innerHTML;
         const importantWords = ['penting', 'perhatian', 'note', 'warning', 'success', 'error', 'important', 'critical'];
         importantWords.forEach(word => {
@@ -2939,7 +2937,7 @@ function applyKontenSettings() {
 function updateKontenFields() {
     const tipe = document.getElementById('konten-type').value;
     const socialSettings = document.getElementById('konten-social-settings');
-    
+
     // Show social media settings for social content types
     const socialTypes = ['social-media', 'instagram-captions', 'tiktok-captions', 'twitter-threads', 'linkedin-post'];
     socialSettings.style.display = socialTypes.includes(tipe) ? 'block' : 'none';
@@ -2960,105 +2958,105 @@ class GenerationStoppedError extends Error {
 }
 
 // Function to stop generation
-window.stopKontenGeneration = function() {
+window.stopKontenGeneration = function () {
     shouldStopGeneration = true;
     const btnStop = document.getElementById('btn-stop-gen-konten');
-    if(btnStop) {
+    if (btnStop) {
         btnStop.disabled = true;
         btnStop.textContent = '⏹️ Dibatalkan';
     }
 };
 
 const btnGenKonten = document.getElementById('btn-gen-konten');
-if(btnGenKonten) {
-    btnGenKonten.addEventListener('click', async function() {
+if (btnGenKonten) {
+    btnGenKonten.addEventListener('click', async function () {
         const btn = this;
-        
+
         const tipeEl = document.getElementById('konten-type');
         const topikEl = document.getElementById('konten-topik');
         const deskripsiEl = document.getElementById('konten-deskripsi');
         const durasiEl = document.getElementById('konten-durasi');
         const outputTextEl = document.getElementById('konten-output-text');
         const outputVisualEl = document.getElementById('konten-output-visual');
-        
-        if(!tipeEl || !tipeEl.value) {
+
+        if (!tipeEl || !tipeEl.value) {
             showToast('Pilih jenis konten terlebih dahulu!', 'danger');
             return;
         }
-        
-        if(!topikEl || !topikEl.value) {
+
+        if (!topikEl || !topikEl.value) {
             showToast('Masukkan topik/judul konten!', 'danger');
             return;
         }
-        
+
         const tipe = tipeEl.value;
         const topik = topikEl.value;
         const deskripsi = deskripsiEl.value || '';
         const durasi = durasiEl.value || 'sedang';
         const generateText = outputTextEl.checked;
         const generateVisual = outputVisualEl.checked;
-        
+
         // Get social media settings if applicable
         const platform = document.getElementById('konten-platform')?.value || 'multi';
         const tone = document.getElementById('konten-tone')?.value || 'profesional';
         const hashtags = document.getElementById('konten-hashtags')?.value || '';
         const audioType = document.getElementById('konten-audio-type')?.value || 'narasi';
-        
+
         btn.classList.add('loading');
         btn.disabled = true;
         const btnText = btn.innerHTML;
-        
+
         // Clear old content
         const outputDiv = document.getElementById('res-konten-kreator-content');
-        if(outputDiv) {
+        if (outputDiv) {
             outputDiv.innerHTML = '<p style="color: var(--text-muted); font-style: italic;">Sedang membuat konten...</p>';
         }
-        
+
         // Reset stop flag and show stop button
         shouldStopGeneration = false;
         isGeneratingKonten = true;
         const btnStop = document.getElementById('btn-stop-gen-konten');
-        if(btnStop) {
+        if (btnStop) {
             btnStop.style.display = 'inline-block';
             btnStop.disabled = false;
             btnStop.textContent = '⏹️ Stop Generate';
         }
-        
+
         const progressContainer = document.getElementById('konten-progress-container');
         progressContainer.style.display = 'block';
-        
+
         try {
             let currentProgress = 0;
             const progressFill = document.getElementById('konten-progress-fill');
             const progressText = document.getElementById('konten-progress-text');
-            
+
             const updateProgress = (percent) => {
                 currentProgress = Math.min(percent, 99);
                 progressFill.style.width = currentProgress + '%';
                 progressText.textContent = currentProgress + '%';
             };
-            
+
             showToast('Membuat konten berkualitas tinggi...', 'info');
             updateProgress(10);
-            
+
             let prompt = `Kamu adalah creative content creator profesional untuk kebutuhan pendidikan. `;
             prompt += `Buatlah ${tipe.replace(/(-|_)/g, ' ')} yang berkualitas tinggi dengan topik: "${topik}". `;
-            
-            if(deskripsi) {
+
+            if (deskripsi) {
                 prompt += `Detail tambahan: ${deskripsi}. `;
             }
-            
+
             // Duration-based adjustment
-            if(durasi.includes('pendek') || durasi.includes('sangat-pendek')) {
+            if (durasi.includes('pendek') || durasi.includes('sangat-pendek')) {
                 prompt += `Buatlah dalam format sangat singkat dan padat, maksimal 1-2 menit, fokus pada poin-poin kunci saja. `;
-            } else if(durasi.includes('panjang') || durasi.includes('sangat-panjang')) {
+            } else if (durasi.includes('panjang') || durasi.includes('sangat-panjang')) {
                 prompt += `Buatlah konten yang mendalam dan komprehensif, dengan penjelasan detail dan contoh konkret. `;
             } else {
                 prompt += `Buatlah konten berukuran sedang dengan keseimbangan antara ringkas dan detail. `;
             }
-            
+
             // Type-specific instructions
-            switch(tipe) {
+            switch (tipe) {
                 case 'video-script':
                 case 'shorts-script':
                     const isShorts = tipe === 'shorts-script';
@@ -3075,18 +3073,18 @@ if(btnGenKonten) {
                 case 'twitter-threads':
                 case 'linkedin-post':
                     let socialInstructions = `Buatlah konten media sosial yang viral-friendly tentang topik ini. `;
-                    if(tipe === 'instagram-captions') {
+                    if (tipe === 'instagram-captions') {
                         socialInstructions += `Buat 3 caption Instagram dengan emoji, hashtag relevan, dan call-to-action yang engaging.`;
-                    } else if(tipe === 'tiktok-captions') {
+                    } else if (tipe === 'tiktok-captions') {
                         socialInstructions += `Buat script TikTok (3-5 ide) dengan hook pertama 0.5 detik, trending sound suggestions, hashtag, dan transition tips.`;
-                    } else if(tipe === 'twitter-threads') {
+                    } else if (tipe === 'twitter-threads') {
                         socialInstructions += `Buat Twitter thread (7-10 tweet) dengan momentum flow, engaging penulisan, dan call-to-action.`;
-                    } else if(tipe === 'linkedin-post') {
+                    } else if (tipe === 'linkedin-post') {
                         socialInstructions += `Buat 2 professional LinkedIn post dengan story angle, insights, dan professional tone yang inspiring.`;
                     } else {
                         socialInstructions += `Buat campaign untuk ${platform === 'multi' ? 'multi-platform' : platform} dengan tone ${tone}.`;
                     }
-                    if(hashtags) socialInstructions += ` Gunakan hashtag: ${hashtags}.`;
+                    if (hashtags) socialInstructions += ` Gunakan hashtag: ${hashtags}.`;
                     prompt += socialInstructions;
                     break;
                 case 'blog-article':
@@ -3121,84 +3119,84 @@ if(btnGenKonten) {
                     prompt += `Format sebagai case study dengan: Background/context, Challenge/problem, Solution implemented, Results/metrics, Key learnings, Recommendations. Professional dan data-backed.`;
                     break;
             }
-            
+
             prompt += ` Gunakan bahasa Indonesia yang baik dan benar. Output harus siap digunakan dan bernilai tinggi untuk kebutuhan pendidikan modern.`;
-            
+
             updateProgress(20);
-            
+
             // Generate Text Content
             let textContent = null;
-            if(generateText) {
+            if (generateText) {
                 updateProgress(25);
-                if(shouldStopGeneration) throw new GenerationStoppedError();
+                if (shouldStopGeneration) throw new GenerationStoppedError();
                 textContent = await callGemini(prompt);
-                if(shouldStopGeneration) throw new GenerationStoppedError();
+                if (shouldStopGeneration) throw new GenerationStoppedError();
                 updateProgress(50);
             } else {
                 updateProgress(50);
             }
-            
+
             // Generate Visual - Multiple outputs based on content type
             let visualImages = [];
-            if(generateVisual) {
+            if (generateVisual) {
                 updateProgress(60);
-                
+
                 // Define 9 professional visual outputs with detailed specifications
                 const visualPrompts = [
                     // 1. Thumbnail / Cover Utama
-                    { 
-                        title: 'Thumbnail Utama (YouTube/TikTok/Reels)', 
-                        style: 'Professional main thumbnail untuk YouTube (1280×720px, 16:9) atau TikTok (1080×1920px, 9:16). Konten utama ditempatkan di safe area tengah 60%. Teks besar, warna cerah kontras, eye-catching design yang attention-grabbing.' 
+                    {
+                        title: 'Thumbnail Utama (YouTube/TikTok/Reels)',
+                        style: 'Professional main thumbnail untuk YouTube (1280×720px, 16:9) atau TikTok (1080×1920px, 9:16). Konten utama ditempatkan di safe area tengah 60%. Teks besar, warna cerah kontras, eye-catching design yang attention-grabbing.'
                     },
                     // 2. Thumbnail Kotak 1:1
-                    { 
-                        title: 'Thumbnail Kotak (Instagram/LinkedIn/Twitter)', 
-                        style: 'Square thumbnail 1080×1080px (1:1 ratio) untuk Instagram post, LinkedIn, Twitter/X. Desain profesional, teks jelas, cocok untuk feed preview. Alternatif landscape 1200×630px untuk Facebook feed sharing.' 
+                    {
+                        title: 'Thumbnail Kotak (Instagram/LinkedIn/Twitter)',
+                        style: 'Square thumbnail 1080×1080px (1:1 ratio) untuk Instagram post, LinkedIn, Twitter/X. Desain profesional, teks jelas, cocok untuk feed preview. Alternatif landscape 1200×630px untuk Facebook feed sharing.'
                     },
                     // 3. Teaser Poster Vertikal Story
-                    { 
-                        title: 'Teaser Poster Vertikal (Story/Status)', 
-                        style: 'Vertical poster 1080×1920px (9:16) untuk Instagram Story, Facebook Story, WhatsApp Status. 2-3 variasi warna/headline untuk A/B testing. Full-bleed background dengan elemen di safe area, ready untuk A/B testing.' 
+                    {
+                        title: 'Teaser Poster Vertikal (Story/Status)',
+                        style: 'Vertical poster 1080×1920px (9:16) untuk Instagram Story, Facebook Story, WhatsApp Status. 2-3 variasi warna/headline untuk A/B testing. Full-bleed background dengan elemen di safe area, ready untuk A/B testing.'
                     },
                     // 4. Poster Horizontal Header
-                    { 
-                        title: 'Poster Horizontal (YouTube/LinkedIn/Twitter Header)', 
-                        style: 'Horizontal banner 1920×1080px (16:9 standar). Twitter header 1500×500px. LinkedIn blog link preview 1200×627px. Logo dan headline di area aman tengah. Cocok untuk header/cover profil.' 
+                    {
+                        title: 'Poster Horizontal (YouTube/LinkedIn/Twitter Header)',
+                        style: 'Horizontal banner 1920×1080px (16:9 standar). Twitter header 1500×500px. LinkedIn blog link preview 1200×627px. Logo dan headline di area aman tengah. Cocok untuk header/cover profil.'
                     },
                     // 5. Carousel / Slide Images
-                    { 
-                        title: 'Carousel Slide (Instagram/Facebook/LinkedIn)', 
-                        style: 'Carousel slide 1080×1350px (4:5 portrait ratio) - format dominan 2025. Elemen utama di area tengah 1:1. Maksimum 10 slide per postingan. Desain konsisten dengan branding, mudah dibaca di preview grid.' 
+                    {
+                        title: 'Carousel Slide (Instagram/Facebook/LinkedIn)',
+                        style: 'Carousel slide 1080×1350px (4:5 portrait ratio) - format dominan 2025. Elemen utama di area tengah 1:1. Maksimum 10 slide per postingan. Desain konsisten dengan branding, mudah dibaca di preview grid.'
                     },
                     // 6. Mockup Produk 3D
-                    { 
-                        title: 'Mockup Produk 3D', 
-                        style: 'Product mockup 3D scene - Vertikal 1080×1920px untuk Reels/Story, atau Square 2000×2000px untuk feed & marketplace (Shopee, Tokopedia). Professional 3D rendering dengan pencahayaan optimal, mudah di-swap produk dan lighting.' 
+                    {
+                        title: 'Mockup Produk 3D',
+                        style: 'Product mockup 3D scene - Vertikal 1080×1920px untuk Reels/Story, atau Square 2000×2000px untuk feed & marketplace (Shopee, Tokopedia). Professional 3D rendering dengan pencahayaan optimal, mudah di-swap produk dan lighting.'
                     },
                     // 7. Frame Hook / Quote Card
-                    { 
-                        title: 'Frame Hook / Quote Card', 
-                        style: 'Quote/Hook card 1080×1920px (9:16), full-bleed background dengan teks besar di safe-zone. Export 2 versi: dengan dan tanpa logo untuk hindari watermark ganda saat cross-post. Impact design untuk menyisipkan di video atau jadikan story.' 
+                    {
+                        title: 'Frame Hook / Quote Card',
+                        style: 'Quote/Hook card 1080×1920px (9:16), full-bleed background dengan teks besar di safe-zone. Export 2 versi: dengan dan tanpa logo untuk hindari watermark ganda saat cross-post. Impact design untuk menyisipkan di video atau jadikan story.'
                     },
                     // 8. Highlight Cover & Channel Banner
-                    { 
-                        title: 'Highlight Cover & Channel Banner', 
-                        style: 'Instagram Highlight Cover 1080×1920px tampil bulat kecil (ikon 500×500px tengah). YouTube Channel Banner 2560×1440px dengan logo/headline di safe area 1546×423px tengah. Professional branding untuk channel profile.' 
+                    {
+                        title: 'Highlight Cover & Channel Banner',
+                        style: 'Instagram Highlight Cover 1080×1920px tampil bulat kecil (ikon 500×500px tengah). YouTube Channel Banner 2560×1440px dengan logo/headline di safe area 1546×423px tengah. Professional branding untuk channel profile.'
                     },
                     // 9. Iklan/Ads Creative
-                    { 
-                        title: 'Iklan/Ads Creative (TikTok/Facebook/LinkedIn)', 
-                        style: 'Multi-platform ads creative: TikTok Ads 540×960px (9:16 minimum), Facebook/Instagram Ads 1080×1080px (feed) atau 1080×1920px (story), LinkedIn Ads 1200×627px landscape. Engaging copy, clear CTA, professional conversion-focused design.' 
+                    {
+                        title: 'Iklan/Ads Creative (TikTok/Facebook/LinkedIn)',
+                        style: 'Multi-platform ads creative: TikTok Ads 540×960px (9:16 minimum), Facebook/Instagram Ads 1080×1080px (feed) atau 1080×1920px (story), LinkedIn Ads 1200×627px landscape. Engaging copy, clear CTA, professional conversion-focused design.'
                     }
                 ];
-                
+
                 // Generate 9 professional visual outputs
-                for(let i = 0; i < visualPrompts.length && i < 9; i++) {
-                    if(shouldStopGeneration) throw new GenerationStoppedError();
+                for (let i = 0; i < visualPrompts.length && i < 9; i++) {
+                    if (shouldStopGeneration) throw new GenerationStoppedError();
                     try {
                         const vPrompt = `Buat ${visualPrompts[i].title} dengan spesifikasi: ${visualPrompts[i].style}. Untuk topik: "${topik}". Desain professional, modern, high-quality resolution, sesuai untuk konten marketing dan sosial media tahun 2025.`;
                         const imgUrl = await callImagen(vPrompt);
-                        if(imgUrl) {
+                        if (imgUrl) {
                             visualImages.push({
                                 url: imgUrl,
                                 title: visualPrompts[i].title,
@@ -3207,7 +3205,7 @@ if(btnGenKonten) {
                         }
                         // Update progress incrementally (60% to 78% for 9 visuals)
                         updateProgress(60 + (i + 1) * 2);
-                    } catch(e) {
+                    } catch (e) {
                         console.error(`Failed to generate ${visualPrompts[i].title}:`, e);
                     }
                 }
@@ -3215,17 +3213,17 @@ if(btnGenKonten) {
             } else {
                 updateProgress(78);
             }
-            
+
             updateProgress(100);
-            
+
             // Display results
-            if(textContent) {
+            if (textContent) {
                 const outputDiv = document.getElementById('res-konten-kreator-content');
                 const resultDiv = document.getElementById('res-konten-kreator');
-                
-                if(outputDiv && resultDiv) {
+
+                if (outputDiv && resultDiv) {
                     outputDiv.innerHTML = marked.parse(textContent);
-                    
+
                     // Store generated content
                     const generatedAt = new Date();
                     window.lastGeneratedKonten = {
@@ -3235,17 +3233,17 @@ if(btnGenKonten) {
                         visualImages: visualImages,
                         generatedAt: generatedAt.toLocaleString('id-ID')
                     };
-                    
+
                     // Update metadata display
                     const metaEl = document.getElementById('res-konten-meta');
-                    if(metaEl) {
+                    if (metaEl) {
                         const typeLabel = tipe.replace(/(-|_)/g, ' ').charAt(0).toUpperCase() + tipe.replace(/(-|_)/g, ' ').slice(1);
                         const contentStats = {
                             wordCount: textContent.split(/\s+/).length,
                             charCount: textContent.length,
                             visualCount: visualImages.length
                         };
-                        
+
                         metaEl.innerHTML = `
                             <i class="fas fa-tag"></i> ${typeLabel} • 
                             <i class="fas fa-clock"></i> ${generatedAt.toLocaleTimeString('id-ID')} • 
@@ -3253,9 +3251,9 @@ if(btnGenKonten) {
                             <i class="fas fa-image"></i> ${contentStats.visualCount} visual
                         `;
                     }
-                    
+
                     // Populate Visual tab if available (5+ outputs)
-                    if(visualImages.length > 0) {
+                    if (visualImages.length > 0) {
                         const visualDiv = document.getElementById('res-konten-kreator-visual');
                         const visualHTML = `
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
@@ -3275,7 +3273,7 @@ if(btnGenKonten) {
                             </div>
                         `;
                         visualDiv.innerHTML = visualHTML;
-                    } else if(generateVisual) {
+                    } else if (generateVisual) {
                         const visualDiv = document.getElementById('res-konten-kreator-visual');
                         visualDiv.innerHTML = `
                             <div style="text-align: center; color: var(--text-muted); padding: 40px 20px;">
@@ -3284,7 +3282,7 @@ if(btnGenKonten) {
                             </div>
                         `;
                     }
-                    
+
                     resultDiv.style.display = 'block';
                     resultDiv.scrollIntoView({ behavior: 'smooth' });
                     showToast(`✅ Konten berhasil dibuat!`, 'success');
@@ -3292,9 +3290,9 @@ if(btnGenKonten) {
             } else {
                 showToast('Gagal membuat konten. Silakan coba lagi.', 'warning');
             }
-            
-        } catch(err) {
-            if(err instanceof GenerationStoppedError || err.isStopped) {
+
+        } catch (err) {
+            if (err instanceof GenerationStoppedError || err.isStopped) {
                 showToast('⏹️ Generation dibatalkan', 'info');
             } else {
                 console.error('Error:', err);
@@ -3307,7 +3305,7 @@ if(btnGenKonten) {
             btn.disabled = false;
             btn.innerHTML = btnText;
             const btnStop = document.getElementById('btn-stop-gen-konten');
-            if(btnStop) {
+            if (btnStop) {
                 btnStop.style.display = 'none';
             }
             setTimeout(() => {
@@ -3317,12 +3315,12 @@ if(btnGenKonten) {
     });
 }
 
-window.downloadKontenAsText = function() {
-    if(!window.lastGeneratedKonten) {
+window.downloadKontenAsText = function () {
+    if (!window.lastGeneratedKonten) {
         showToast('Tidak ada konten yang telah di-generate', 'warning');
         return;
     }
-    
+
     const data = window.lastGeneratedKonten;
     const text = `KONTEN KREATOR - ${data.type.toUpperCase()}
 ================================
@@ -3330,7 +3328,7 @@ Topik: ${data.topik}
 Dibuat pada: ${data.generatedAt}
 
 ${data.content}`;
-    
+
     const link = document.createElement('a');
     link.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
     link.download = `Konten_${data.type}_${new Date().getTime()}.txt`;
@@ -3340,7 +3338,7 @@ ${data.content}`;
     showToast('✅ Konten berhasil diunduh!', 'success');
 };
 
-window.downloadImage = function(imageUrl, title) {
+window.downloadImage = function (imageUrl, title) {
     const link = document.createElement('a');
     link.href = imageUrl;
     link.download = `Visual_${title}_${new Date().getTime()}.jpg`;
@@ -3350,7 +3348,7 @@ window.downloadImage = function(imageUrl, title) {
     showToast('✅ Gambar berhasil diunduh!', 'success');
 };
 
-window.downloadAudio = function(audioUrl, title) {
+window.downloadAudio = function (audioUrl, title) {
     const link = document.createElement('a');
     link.href = audioUrl;
     link.download = `Audio_${title}_${new Date().getTime()}.mp3`;
@@ -3361,26 +3359,26 @@ window.downloadAudio = function(audioUrl, title) {
 };
 
 // Enhanced audio player function
-window.playAudio = function(idx) {
+window.playAudio = function (idx) {
     // Get audio data from the generated content
-    if(!window.lastGeneratedKonten || !window.lastGeneratedKonten.audioOutputs) {
+    if (!window.lastGeneratedKonten || !window.lastGeneratedKonten.audioOutputs) {
         showToast('Audio data tidak ditemukan', 'warning');
         return;
     }
-    
+
     const audioData = window.lastGeneratedKonten.audioOutputs[idx];
-    if(!audioData) {
+    if (!audioData) {
         showToast('Audio tidak ditemukan', 'warning');
         return;
     }
-    
+
     const icon = document.getElementById(`play-icon-${idx}`);
     const isPlaying = icon?.classList.contains('fa-pause');
-    
-    if(isPlaying) {
+
+    if (isPlaying) {
         // Stop audio
         speechSynthesis.cancel();
-        if(icon) {
+        if (icon) {
             icon.classList.remove('fa-pause');
             icon.classList.add('fa-play');
         }
@@ -3388,22 +3386,22 @@ window.playAudio = function(idx) {
         // Play audio using Web Speech API
         try {
             const utterance = new SpeechSynthesisUtterance(audioData.text || '');
-            
+
             // Get voices
             const voices = speechSynthesis.getVoices();
-            
+
             // Select voice based on stored voiceChoice
             let selectedVoice = null;
             const voiceChoice = audioData.voiceChoice || 'default';
-            
-            switch(voiceChoice) {
+
+            switch (voiceChoice) {
                 case 'female-professional':
                     selectedVoice = voices.find(v => v.lang.includes('id') && v.name.includes('Female'));
-                    if(!selectedVoice) selectedVoice = voices.find(v => v.lang.includes('id') && !v.name.includes('Male'));
+                    if (!selectedVoice) selectedVoice = voices.find(v => v.lang.includes('id') && !v.name.includes('Male'));
                     break;
                 case 'male-professional':
                     selectedVoice = voices.find(v => v.lang.includes('id') && v.name.includes('Male'));
-                    if(!selectedVoice) selectedVoice = voices.find(v => v.lang.includes('id') && !v.name.includes('Female'));
+                    if (!selectedVoice) selectedVoice = voices.find(v => v.lang.includes('id') && !v.name.includes('Female'));
                     break;
                 case 'female-warm':
                     selectedVoice = voices.find(v => v.lang.includes('id') && (v.name.includes('Female') || v.name.includes('Warm')));
@@ -3414,42 +3412,42 @@ window.playAudio = function(idx) {
                 default:
                     selectedVoice = voices.find(v => v.lang.includes('id'));
             }
-            
-            if(selectedVoice) {
+
+            if (selectedVoice) {
                 utterance.voice = selectedVoice;
             }
-            
+
             // Apply settings from stored data
             utterance.pitch = audioData.pitch || 1;
             utterance.rate = audioData.speed || 1;
             utterance.volume = audioData.volume || 1;
-            
+
             // Update icon when speaking ends
             utterance.onend = () => {
-                if(icon) {
+                if (icon) {
                     icon.classList.remove('fa-pause');
                     icon.classList.add('fa-play');
                 }
             };
-            
+
             utterance.onerror = (e) => {
                 console.error('TTS playback error:', e);
                 showToast('Gagal memutar audio: ' + (e.error || 'Unknown error'), 'warning');
-                if(icon) {
+                if (icon) {
                     icon.classList.remove('fa-pause');
                     icon.classList.add('fa-play');
                 }
             };
-            
+
             // Cancel any ongoing speech and play
             speechSynthesis.cancel();
             speechSynthesis.speak(utterance);
-            
-            if(icon) {
+
+            if (icon) {
                 icon.classList.remove('fa-play');
                 icon.classList.add('fa-pause');
             }
-        } catch(err) {
+        } catch (err) {
             console.error('Audio playback error:', err);
             showToast('Gagal memutar audio: ' + err.message, 'warning');
         }
@@ -3457,25 +3455,25 @@ window.playAudio = function(idx) {
 };
 
 // Download audio file with proper format
-window.downloadAudioFile = function(title, idx) {
-    if(!window.lastGeneratedKonten || !window.lastGeneratedKonten.audioOutputs) {
+window.downloadAudioFile = function (title, idx) {
+    if (!window.lastGeneratedKonten || !window.lastGeneratedKonten.audioOutputs) {
         showToast('Audio data tidak ditemukan', 'warning');
         return;
     }
-    
+
     const audioData = window.lastGeneratedKonten.audioOutputs[idx];
-    if(!audioData) {
+    if (!audioData) {
         showToast('Audio tidak ditemukan', 'warning');
         return;
     }
-    
+
     try {
         const timestamp = new Date().getTime();
         const filename = `Audio_${title.replace(/\s+/g, '_')}_${timestamp}`;
-        
+
         // Create downloadable text file with audio script
         const content = `AUDIO SCRIPT: ${title}\n${'='.repeat(50)}\n\n${audioData.text}\n\n${'='.repeat(50)}\nDurasi: ${audioData.duration}\nTipe Suara: ${audioData.voiceChoice}\nKecepatan: ${audioData.speed}x\nPitch: ${audioData.pitch}\nVolume: ${audioData.volume * 100}%\n\nNota: Ini adalah script audio. Untuk mendengarkan, klik tombol "Putar Audio".`;
-        
+
         // Create blob and download
         const blob = new Blob([content], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
@@ -3486,24 +3484,24 @@ window.downloadAudioFile = function(title, idx) {
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
-        
+
         showToast('✅ Audio script berhasil diunduh: ' + filename + '.txt', 'success');
-    } catch(err) {
+    } catch (err) {
         console.error('Download error:', err);
         showToast('Gagal mengunduh audio. Coba yang lain.', 'danger');
     }
 };
 
 // Copy audio information
-window.copyAudioInfo = function(title, idx) {
+window.copyAudioInfo = function (title, idx) {
     const audioPlayer = document.getElementById(`audio-player-${idx}`);
-    if(!audioPlayer) {
+    if (!audioPlayer) {
         showToast('Audio tidak ditemukan', 'warning');
         return;
     }
-    
+
     const info = `Audio: ${title}\nSource: ${audioPlayer.querySelector('source')?.src || 'N/A'}`;
-    
+
     navigator.clipboard.writeText(info).then(() => {
         showToast('✅ Info audio disalin ke clipboard!', 'success');
     }).catch(err => {
@@ -3512,83 +3510,83 @@ window.copyAudioInfo = function(title, idx) {
     });
 };
 
-window.switchKontenTab = function(tabName) {
+window.switchKontenTab = function (tabName) {
     // Hide all tabs
     document.querySelectorAll('.konten-tab-content').forEach(tab => {
         tab.style.display = 'none';
     });
-    
+
     // Remove active class from all tab buttons
     document.querySelectorAll('[data-tab]').forEach(btn => {
         btn.classList.remove('active');
     });
-    
+
     // Show selected tab
     const selectedTab = document.getElementById('konten-tab-' + tabName);
-    if(selectedTab) {
+    if (selectedTab) {
         selectedTab.style.display = 'block';
     }
-    
+
     // Add active class to clicked button
     const activeBtn = document.querySelector(`[data-tab="${tabName}"]`);
-    if(activeBtn) {
+    if (activeBtn) {
         activeBtn.classList.add('active');
     }
 };
 
 const btnGenMedia = document.getElementById('btn-gen-media');
-if(btnGenMedia) {
-    btnGenMedia.addEventListener('click', async function() {
+if (btnGenMedia) {
+    btnGenMedia.addEventListener('click', async function () {
         const btn = this;
         const promptEl = document.getElementById('media-prompt');
-        if(!promptEl) return showToast("Form tidak lengkap");
+        if (!promptEl) return showToast("Form tidak lengkap");
         const p = promptEl.value;
-        if(!p) return showToast("Isi deskripsi gambar");
+        if (!p) return showToast("Isi deskripsi gambar");
         btn.classList.add('loading');
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating Image...';
         const imgUrl = await callImagen(p);
         const resMediaContent = document.getElementById('res-media-content');
         const resMediaActions = document.getElementById('res-media-actions');
         const resMedia = document.getElementById('res-media');
-        if(imgUrl && resMediaContent && resMediaActions) {
+        if (imgUrl && resMediaContent && resMediaActions) {
             resMediaContent.innerHTML = `<img src="${imgUrl}" class="generated-image" alt="Generated Image">`;
             resMediaActions.innerHTML = `<a href="${imgUrl}" download="Ilustrasi_DigiArju.png" class="btn btn-primary btn-sm"><i class="fas fa-download"></i> Unduh Gambar</a>`;
-        } else if(resMediaContent && resMediaActions) {
+        } else if (resMediaContent && resMediaActions) {
             resMediaContent.innerHTML = `<p style="color:red">Gagal membuat gambar.</p>`;
             resMediaActions.innerHTML = '';
         }
-        if(resMedia) resMedia.style.display = 'block';
+        if (resMedia) resMedia.style.display = 'block';
         btn.classList.remove('loading');
         btn.innerHTML = '<i class="fas fa-paint-brush"></i> Generate Ilustrasi';
     });
 }
 const btnGenAudio = document.getElementById('btn-gen-audio');
-if(btnGenAudio) {
-    btnGenAudio.addEventListener('click', async function() {
+if (btnGenAudio) {
+    btnGenAudio.addEventListener('click', async function () {
         const btn = this;
         const textEl = document.getElementById('audio-prompt');
         const voiceEl = document.getElementById('tts-voice');
         const styleSelectEl = document.getElementById('audio-style');
         const styleCustomEl = document.getElementById('audio-style-custom');
-        
-        if(!textEl || !voiceEl || !styleSelectEl) {
+
+        if (!textEl || !voiceEl || !styleSelectEl) {
             return showToast("Form tidak lengkap");
         }
-        
+
         const text = textEl.value;
         const voice = voiceEl.value;
         const styleSelect = styleSelectEl.value;
         const styleCustom = styleCustomEl ? styleCustomEl.value : '';
         const style = styleSelect === 'Kustom' ? styleCustom : styleSelect;
-        
-        if(!text) return showToast("Isi teks narasi!");
+
+        if (!text) return showToast("Isi teks narasi!");
         btn.classList.add('loading');
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating Audio...';
         const base64PCM = await callTTS(text, voice, style, undefined, undefined, undefined);
         const resMediaContent = document.getElementById('res-media-content');
         const resMediaActions = document.getElementById('res-media-actions');
         const resMedia = document.getElementById('res-media');
-        if(base64PCM && resMediaContent && resMediaActions && resMedia) {
+        if (base64PCM && resMediaContent && resMediaActions && resMedia) {
             const pcmBuffer = base64ToArrayBuffer(base64PCM);
             const wavBuffer = pcmToWav(pcmBuffer);
             const blob = new Blob([wavBuffer], { type: 'audio/wav' });
@@ -3605,26 +3603,26 @@ if(btnGenAudio) {
             `;
             resMediaActions.innerHTML = `<a href="${url}" download="Audio_DigiArju.wav" class="btn btn-primary btn-sm"><i class="fas fa-download"></i> Unduh Audio</a>`;
             resMedia.style.display = 'block';
-        } else if(resMediaContent && resMediaActions) {
+        } else if (resMediaContent && resMediaActions) {
             resMediaContent.innerHTML = `<p style="color:red">Gagal membuat audio.</p>`;
             resMediaActions.innerHTML = '';
-            if(resMedia) resMedia.style.display = 'block';
+            if (resMedia) resMedia.style.display = 'block';
         }
         btn.classList.remove('loading');
         btn.innerHTML = '<i class="fas fa-microphone-alt"></i> Generate Audio';
     });
 }
 const btnKoreksi = document.getElementById('btn-koreksi');
-if(btnKoreksi) {
-    btnKoreksi.addEventListener('click', function() {
+if (btnKoreksi) {
+    btnKoreksi.addEventListener('click', function () {
         const fileInput = document.getElementById('ljk-file-upload');
-        if(!fileInput || !fileInput.files[0]) return showToast("Upload foto LJK dulu!");
+        if (!fileInput || !fileInput.files[0]) return showToast("Upload foto LJK dulu!");
         this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengscan...';
         setTimeout(() => {
             const score = Math.floor(Math.random() * (100 - 60 + 1) + 60);
             const resContent = document.getElementById('res-koreksi-content');
             const resKoreksi = document.getElementById('res-koreksi');
-            if(resContent && resKoreksi) {
+            if (resContent && resKoreksi) {
                 resContent.innerHTML = `
                     <h4>Hasil Scan AI</h4>
                     <p>Nama: <strong>Terdeteksi (Budi Santoso)</strong> | Skor: <span style="font-size:1.5rem; font-weight:bold;">${score}</span> / 100</p>
@@ -3636,23 +3634,23 @@ if(btnKoreksi) {
     });
 }
 const btnAnalisis = document.getElementById('btn-analisis');
-if(btnAnalisis) {
-    btnAnalisis.addEventListener('click', async function() {
+if (btnAnalisis) {
+    btnAnalisis.addEventListener('click', async function () {
         const nilaiInput = document.getElementById('nilai-input');
-        if(!nilaiInput) return showToast("Form tidak lengkap");
+        if (!nilaiInput) return showToast("Form tidak lengkap");
         const nilai = nilaiInput.value;
-        if(!nilai) return showToast("Masukkan data nilai!");
+        if (!nilai) return showToast("Masukkan data nilai!");
         this.classList.add('loading');
         const prompt = `Analisis data nilai: [${nilai}]. Berikan Mean, Median, Modus, dan saran perbaikan.`;
         const res = await callGemini(prompt);
         const resAnalisisContent = document.getElementById('res-analisis-content');
         const resAnalisis = document.getElementById('res-analisis');
         const statAnalyzed = document.getElementById('stat-analyzed');
-        if(resAnalisisContent && resAnalisis) {
+        if (resAnalisisContent && resAnalisis) {
             resAnalisisContent.innerHTML = marked.parse(res);
             resAnalisis.style.display = 'block';
         }
-        if(statAnalyzed) {
+        if (statAnalyzed) {
             statAnalyzed.innerText = parseInt(statAnalyzed.innerText) + 1;
         }
         this.classList.remove('loading');
@@ -3665,20 +3663,20 @@ const simpleGenerators = [
 ];
 simpleGenerators.forEach(gen => {
     const el = document.getElementById(gen.btn);
-    if(el) {
-        el.addEventListener('click', async function() {
+    if (el) {
+        el.addEventListener('click', async function () {
             const inputEl = document.getElementById(gen.input);
-            if(!inputEl) {
+            if (!inputEl) {
                 showToast("Form tidak lengkap");
                 return;
             }
             const val = inputEl.value;
-            if(!val) return showToast("Isi input dulu!");
+            if (!val) return showToast("Isi input dulu!");
             this.classList.add('loading');
             const result = await callGemini(gen.prompt + val);
             const contentEl = document.getElementById(gen.content);
             const resEl = document.getElementById(gen.res);
-            if(contentEl && resEl) {
+            if (contentEl && resEl) {
                 contentEl.innerHTML = marked.parse(result);
                 resEl.style.display = 'block';
             }
@@ -3724,18 +3722,18 @@ function prepareContentForWord(htmlContent, orientation = 'Portrait') {
 }
 function getExportOrientation(divId) {
     try {
-        if(divId) {
+        if (divId) {
             const sel = document.querySelector(`#${divId} .output-actions select.export-orientation-select`);
-            if(sel && sel.value) return sel.value;
+            if (sel && sel.value) return sel.value;
         }
         const anySel = document.querySelector('select.export-orientation-select');
-        if(anySel && anySel.value) return anySel.value;
+        if (anySel && anySel.value) return anySel.value;
         const globalSel = document.getElementById('export-orientation-select');
-        if(globalSel && globalSel.value) return globalSel.value;
-    } catch(e) { console.error('Error getting export orientation', e); }
+        if (globalSel && globalSel.value) return globalSel.value;
+    } catch (e) { console.error('Error getting export orientation', e); }
     return 'Portrait';
 }
-window.downloadPPT = function(divId, filename) {
+window.downloadPPT = function (divId, filename) {
     if (typeof PptxGenJS === 'undefined') {
         showToast("Library PPT belum siap. Coba refresh.");
         return;
@@ -3749,8 +3747,8 @@ window.downloadPPT = function(divId, filename) {
     let pptx = new PptxGenJS();
     pptx.layout = (orientation && orientation.toLowerCase().startsWith('l')) ? 'LAYOUT_16x9' : 'LAYOUT_9x16';
     let slide = pptx.addSlide();
-    slide.addText("Dokumen DigiArju", { x:0.5, y:2.5, w:'90%', fontSize:28, bold:true, align:'center', color:'2d3748' });
-    slide.addText("Dibuat pada: " + new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }), { x:0.5, y:3.5, w:'90%', fontSize:14, align:'center', color:'718096' });
+    slide.addText("Dokumen DigiArju", { x: 0.5, y: 2.5, w: '90%', fontSize: 28, bold: true, align: 'center', color: '2d3748' });
+    slide.addText("Dibuat pada: " + new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }), { x: 0.5, y: 3.5, w: '90%', fontSize: 14, align: 'center', color: '718096' });
     const allElements = element.querySelectorAll('h1, h2, h3, h4, h5, p, ul, ol, table, div');
     slide = pptx.addSlide();
     let yPos = 0.5;
@@ -3765,11 +3763,11 @@ window.downloadPPT = function(divId, filename) {
             if (src) {
                 if (yPos + 2.8 > maxY) { slide = pptx.addSlide(); yPos = 0.5; }
                 try {
-                    slide.addImage({ data: src, x:0.6, y:yPos, w:3.0 });
+                    slide.addImage({ data: src, x: 0.6, y: yPos, w: 3.0 });
                     yPos += 3.2;
                 } catch (e) {
                     if (yPos > 5.0) { slide = pptx.addSlide(); yPos = 0.5; }
-                    slide.addText(innerImg.alt || '(Gambar)', { x:0.6, y:yPos, w:'80%', fontSize:12 });
+                    slide.addText(innerImg.alt || '(Gambar)', { x: 0.6, y: yPos, w: '80%', fontSize: 12 });
                     yPos += 0.6;
                 }
                 return;
@@ -3781,21 +3779,21 @@ window.downloadPPT = function(divId, filename) {
         const tagName = el.tagName;
         const text = el.innerText.trim();
         if (!text && tagName !== 'TABLE') return;
-        if (['H1','H2'].includes(tagName)) {
+        if (['H1', 'H2'].includes(tagName)) {
             slide = pptx.addSlide();
-            slide.addText(text, { x:0.5, y:0.5, w:'90%', fontSize:22, bold:true, color:'2b6cb0' });
+            slide.addText(text, { x: 0.5, y: 0.5, w: '90%', fontSize: 22, bold: true, color: '2b6cb0' });
             yPos = 1.2;
         }
-        else if (['H3','H4','H5'].includes(tagName)) {
+        else if (['H3', 'H4', 'H5'].includes(tagName)) {
             if (yPos > 5.0) { slide = pptx.addSlide(); yPos = 0.5; }
-            slide.addText(text, { x:0.5, y:yPos, w:'90%', fontSize:16, bold:true, color:'2d3748' });
+            slide.addText(text, { x: 0.5, y: yPos, w: '90%', fontSize: 16, bold: true, color: '2d3748' });
             yPos += 0.7;
         }
         else if (tagName === 'P' || tagName === 'DIV') {
             const lines = Math.ceil(text.length / 95) || 1;
             const h = lines * 0.3;
             if (yPos + h > maxY) { slide = pptx.addSlide(); yPos = 0.5; }
-            slide.addText(text, { x:0.5, y:yPos, w:9, fontSize:12, color:'4a5568', align:'justify' });
+            slide.addText(text, { x: 0.5, y: yPos, w: 9, fontSize: 12, color: '4a5568', align: 'justify' });
             yPos += h + 0.2;
         }
         else if (tagName === 'UL' || tagName === 'OL') {
@@ -3805,7 +3803,7 @@ window.downloadPPT = function(divId, filename) {
                 const lines = Math.ceil(liText.length / 90) || 1;
                 const h = lines * 0.3;
                 if (yPos + h > maxY) { slide = pptx.addSlide(); yPos = 0.5; }
-                slide.addText(liText, { x:0.8, y:yPos, w:8.5, fontSize:12, color:'4a5568', bullet:true });
+                slide.addText(liText, { x: 0.8, y: yPos, w: 8.5, fontSize: 12, color: '4a5568', bullet: true });
                 yPos += h + 0.1;
             });
             yPos += 0.2;
@@ -3815,27 +3813,27 @@ window.downloadPPT = function(divId, filename) {
             let rows = [];
             el.querySelectorAll('thead tr').forEach(tr => {
                 let row = [];
-                tr.querySelectorAll('th, td').forEach(c => row.push({ text: c.innerText.trim(), options: { bold:true, fill:'3182ce', color:'ffffff' } }));
-                if(row.length) rows.push(row);
+                tr.querySelectorAll('th, td').forEach(c => row.push({ text: c.innerText.trim(), options: { bold: true, fill: '3182ce', color: 'ffffff' } }));
+                if (row.length) rows.push(row);
             });
             el.querySelectorAll('tbody tr').forEach(tr => {
                 let row = [];
                 tr.querySelectorAll('td, th').forEach(c => row.push(c.innerText.trim()));
-                if(row.length) rows.push(row);
+                if (row.length) rows.push(row);
             });
-            if(rows.length === 0) {
-                 el.querySelectorAll('tr').forEach(tr => {
+            if (rows.length === 0) {
+                el.querySelectorAll('tr').forEach(tr => {
                     let row = [];
                     tr.querySelectorAll('td, th').forEach(c => row.push(c.innerText.trim()));
-                    if(row.length) rows.push(row);
+                    if (row.length) rows.push(row);
                 });
             }
             if (rows.length > 0) {
-                slide.addTable(rows, { 
-                    x:0.5, y:0.5, w:9, 
-                    fontSize:10, color:'2d3748',
-                    border:{pt:1, color:'cbd5e0'}, 
-                    autoPage:true,
+                slide.addTable(rows, {
+                    x: 0.5, y: 0.5, w: 9,
+                    fontSize: 10, color: '2d3748',
+                    border: { pt: 1, color: 'cbd5e0' },
+                    autoPage: true,
                     newPageStartY: 0.5
                 });
                 slide = pptx.addSlide();
@@ -3846,7 +3844,7 @@ window.downloadPPT = function(divId, filename) {
     pptx.writeFile({ fileName: filename + ".pptx" });
     showToast("PPT berhasil diunduh!");
 };
-window.downloadSpecificDiv = function(divId, filename) {
+window.downloadSpecificDiv = function (divId, filename) {
     if (typeof htmlDocx === 'undefined' || typeof saveAs === 'undefined') {
         showToast("Library Word belum siap. Coba refresh.");
         return;
@@ -3863,9 +3861,9 @@ window.downloadSpecificDiv = function(divId, filename) {
     saveAs(converted, `${filename}.docx`);
     showToast("Word berhasil diunduh!");
 };
-window.downloadCurrentTabAsWord = function() {
+window.downloadCurrentTabAsWord = function () {
     const activePane = document.querySelector('.content-section.active .tab-pane.active');
-    if(activePane) {
+    if (activePane) {
         const orientation = getExportOrientation(activePane.id);
         const finalHtml = prepareContentForWord(activePane.innerHTML, orientation);
         const converted = htmlDocx.asBlob(finalHtml);
@@ -3874,7 +3872,7 @@ window.downloadCurrentTabAsWord = function() {
         showToast("Tidak ada tab aktif untuk diunduh");
     }
 };
-window.downloadPDF = function(divId, filename) {
+window.downloadPDF = function (divId, filename) {
     if (typeof html2pdf === 'undefined') {
         showToast("Library PDF belum siap. Coba refresh.");
         return;
@@ -3907,28 +3905,28 @@ window.downloadPDF = function(divId, filename) {
     const allElements = clone.querySelectorAll('*');
     allElements.forEach(el => {
         el.style.color = 'black';
-        if(el.tagName === 'TABLE') {
+        if (el.tagName === 'TABLE') {
             el.style.width = '100%';
             el.style.borderCollapse = 'collapse';
             el.style.marginBottom = '15px';
             el.style.border = '1px solid black';
-            el.style.fontSize = '10pt'; 
+            el.style.fontSize = '10pt';
         }
-        if(el.tagName === 'TH' || el.tagName === 'TD') {
+        if (el.tagName === 'TH' || el.tagName === 'TD') {
             el.style.border = '1px solid black';
             el.style.padding = '6px';
             el.style.verticalAlign = 'top';
         }
-        if(el.tagName === 'TH') {
+        if (el.tagName === 'TH') {
             el.style.backgroundColor = '#f0f0f0';
             el.style.fontWeight = 'bold';
         }
-        if(['H1','H2','H3','H4','H5'].includes(el.tagName)) {
+        if (['H1', 'H2', 'H3', 'H4', 'H5'].includes(el.tagName)) {
             el.style.marginTop = '15px';
             el.style.marginBottom = '10px';
             el.style.color = 'black';
         }
-        if(el.tagName === 'UL' || el.tagName === 'OL') {
+        if (el.tagName === 'UL' || el.tagName === 'OL') {
             el.style.paddingLeft = '20px';
             el.style.marginBottom = '10px';
         }
@@ -3945,18 +3943,18 @@ window.downloadPDF = function(divId, filename) {
     container.style.position = 'absolute';
     container.style.left = '-9999px';
     container.style.top = '0';
-    container.style.width = '800px'; 
+    container.style.width = '800px';
     container.appendChild(clone);
     document.body.appendChild(container);
     const orientation = getExportOrientation(divId);
     const jsPdfOrientation = (orientation && orientation.toLowerCase().startsWith('l')) ? 'landscape' : 'portrait';
     const opt = {
-        margin:       0.5,
-        filename:     filename + '.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
-        jsPDF:        { unit: 'in', format: 'letter', orientation: jsPdfOrientation },
-        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+        margin: 0.5,
+        filename: filename + '.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: jsPdfOrientation },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
     };
     html2pdf().set(opt).from(clone).save().then(() => {
         document.body.removeChild(container);
@@ -3967,53 +3965,53 @@ window.downloadPDF = function(divId, filename) {
         showToast("Gagal membuat PDF.");
     });
 };
-window.printSection = function(divId) {
+window.printSection = function (divId) {
     document.querySelectorAll('.print-area').forEach(el => el.classList.remove('print-area'));
     const target = document.getElementById(divId);
-    if(target) {
+    if (target) {
         target.classList.add('print-area');
         window.print();
         target.classList.remove('print-area');
     }
 };
-window.clearOutput = function(elementId) {
+window.clearOutput = function (elementId) {
     document.getElementById(elementId).style.display = 'none';
 };
-window.openSaveModal = function() { document.getElementById('modal-save-confirm').style.display = 'flex'; };
-window.closeSaveModal = function() { document.getElementById('modal-save-confirm').style.display = 'none'; };
-window.printSection = function(divId) {
+window.openSaveModal = function () { document.getElementById('modal-save-confirm').style.display = 'flex'; };
+window.closeSaveModal = function () { document.getElementById('modal-save-confirm').style.display = 'none'; };
+window.printSection = function (divId) {
     document.querySelectorAll('.print-area').forEach(el => el.classList.remove('print-area'));
     const target = document.getElementById(divId);
-    if(target) {
+    if (target) {
         target.classList.add('print-area');
         window.print();
         target.classList.remove('print-area');
     }
 };
 const excelInput = document.getElementById('excel-input-file');
-if(excelInput) {
-    excelInput.addEventListener('change', function(e) {
+if (excelInput) {
+    excelInput.addEventListener('change', function (e) {
         const file = e.target.files[0];
-        if(!file) return;
+        if (!file) return;
         const fileNameSpan = document.getElementById('excel-file-name');
-        if(fileNameSpan) {
+        if (fileNameSpan) {
             fileNameSpan.innerText = 'File: ' + file.name;
             fileNameSpan.style.display = 'inline';
         }
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, {type: 'array'});
+            const workbook = XLSX.read(data, { type: 'array' });
             const firstSheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[firstSheetName];
-            const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
             let nilaiArray = [];
             jsonData.forEach(row => {
-                if(row[0] && !isNaN(row[0])) {
+                if (row[0] && !isNaN(row[0])) {
                     nilaiArray.push(row[0]);
                 }
             });
-            if(nilaiArray.length > 0) {
+            if (nilaiArray.length > 0) {
                 document.getElementById('nilai-input').value = nilaiArray.join(', ');
                 showToast(`Berhasil mengimpor ${nilaiArray.length} data nilai!`);
             } else {
@@ -4023,7 +4021,7 @@ if(excelInput) {
         reader.readAsArrayBuffer(file);
     });
 }
-window.exportToExcel = function(divId, filename) {
+window.exportToExcel = function (divId, filename) {
     const element = document.getElementById(divId);
     if (!element) return showToast("Konten tidak ditemukan!");
     const table = element.querySelector('table');
@@ -4039,7 +4037,7 @@ window.exportToExcel = function(divId, filename) {
     XLSX.writeFile(wb, filename + ".xlsx");
     showToast("Excel berhasil diunduh!");
 };
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const akademikFields = document.querySelectorAll('.akademik-field');
     const btnSaveAkademik = document.getElementById('btn-save-akademik');
     const validationStatus = document.getElementById('validation-status');
@@ -4051,32 +4049,32 @@ document.addEventListener('DOMContentLoaded', function() {
     const kelasSelect = document.getElementById('akad-kelas');
     const faseSelect = document.getElementById('akad-fase');
     const mapelSelect = document.getElementById('akad-mapel');
-    if(jenjangSelect) {
-        jenjangSelect.addEventListener('change', function() {
+    if (jenjangSelect) {
+        jenjangSelect.addEventListener('change', function () {
             updateKelasOptions(this.value);
-            if(kelasSelect) {
+            if (kelasSelect) {
                 kelasSelect.value = '';
                 faseSelect.value = '';
             }
             updateAkademikValidation();
         });
     }
-    if(kelasSelect) {
-        kelasSelect.addEventListener('change', function() {
+    if (kelasSelect) {
+        kelasSelect.addEventListener('change', function () {
             updateFaseAutomatis(this.value);
             updateMapelOptions();
             updateAkademikValidation();
         });
     }
-    if(mapelSelect) {
+    if (mapelSelect) {
         mapelSelect.addEventListener('change', updateAkademikValidation);
     }
     const btnToggleMapelKustom = document.getElementById('btn-toggle-mapel-kustom');
     const akadMapelKustom = document.getElementById('akad-mapel-kustom');
-    if(btnToggleMapelKustom) {
-        btnToggleMapelKustom.addEventListener('click', function() {
+    if (btnToggleMapelKustom) {
+        btnToggleMapelKustom.addEventListener('click', function () {
             const isHidden = akadMapelKustom.style.display === 'none';
-            if(isHidden) {
+            if (isHidden) {
                 mapelSelect.style.display = 'none';
                 mapelSelect.value = '';
                 akadMapelKustom.style.display = 'block';
@@ -4095,15 +4093,15 @@ document.addEventListener('DOMContentLoaded', function() {
             updateAkademikValidation();
         });
     }
-    if(akadMapelKustom) {
+    if (akadMapelKustom) {
         akadMapelKustom.addEventListener('input', debounce(updateAkademikValidation, 300));
         akadMapelKustom.addEventListener('change', updateAkademikValidation);
     }
     function updateKelasOptions(jenjang) {
         const kelasSelectEl = document.getElementById('akad-kelas');
-        if(!kelasSelectEl) return;
+        if (!kelasSelectEl) return;
         kelasSelectEl.innerHTML = '<option value="">-- Pilih Kelas --</option>';
-        if(jenjang && AKADEMIK_DATA[jenjang]) {
+        if (jenjang && AKADEMIK_DATA[jenjang]) {
             const kelas = AKADEMIK_DATA[jenjang].kelas;
             kelas.forEach(k => {
                 const opt = document.createElement('option');
@@ -4117,19 +4115,19 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateFaseAutomatis(kelas) {
         const faseSelectEl = document.getElementById('akad-fase');
         const jenjangSelectEl = document.getElementById('akad-jenjang');
-        if(!faseSelectEl || !kelas) {
-            if(faseSelectEl) faseSelectEl.value = '';
+        if (!faseSelectEl || !kelas) {
+            if (faseSelectEl) faseSelectEl.value = '';
             return;
         }
         const jenjang = jenjangSelectEl ? jenjangSelectEl.value : '';
-        if(!jenjang) {
+        if (!jenjang) {
             faseSelectEl.value = '';
             return;
         }
         const faseMapping = AKADEMIK_DATA[jenjang];
-        if(faseMapping && faseMapping.fase) {
+        if (faseMapping && faseMapping.fase) {
             const faseValue = faseMapping.fase[kelas];
-            if(faseValue) {
+            if (faseValue) {
                 faseSelectEl.value = faseValue;
             } else {
                 faseSelectEl.value = '';
@@ -4141,11 +4139,11 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateMapelOptions() {
         const mapelSelectEl = document.getElementById('akad-mapel');
         const jenjangSelectEl = document.getElementById('akad-jenjang');
-        if(!mapelSelectEl) return;
+        if (!mapelSelectEl) return;
         mapelSelectEl.innerHTML = '<option value="">-- Pilih Mata Pelajaran --</option>';
-        if(jenjangSelectEl) {
+        if (jenjangSelectEl) {
             const jenjang = jenjangSelectEl.value;
-            if(jenjang && MAPEL_BY_JENJANG[jenjang]) {
+            if (jenjang && MAPEL_BY_JENJANG[jenjang]) {
                 const mapel = MAPEL_BY_JENJANG[jenjang];
                 mapel.forEach(m => {
                     const opt = document.createElement('option');
@@ -4170,10 +4168,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const tahunRegex = /^\d{4}\/\d{4}$/;
         const isTahunValid = tahunRegex.test(tahun) && tahun !== '';
         const errorTahun = document.getElementById('error-tahun');
-        if(errorTahun) {
-            if(tahun === '') {
+        if (errorTahun) {
+            if (tahun === '') {
                 errorTahun.style.display = 'none';
-            } else if(!isTahunValid) {
+            } else if (!isTahunValid) {
                 errorTahun.style.display = 'block';
                 errorTahun.textContent = '❌ Format tidak valid. Gunakan YYYY/YYYY (contoh: 2025/2026)';
             } else {
@@ -4184,8 +4182,8 @@ document.addEventListener('DOMContentLoaded', function() {
         errorFields.forEach(field => {
             const errorEl = document.getElementById(`error-${field}`);
             const fieldValue = document.getElementById(`akad-${field}`).value;
-            if(errorEl) {
-                if(fieldValue === '') {
+            if (errorEl) {
+                if (fieldValue === '') {
                     errorEl.style.display = 'block';
                     errorEl.textContent = '❌ Wajib dipilih';
                 } else {
@@ -4194,8 +4192,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         const errorMapel = document.getElementById('error-mapel');
-        if(errorMapel) {
-            if(isMapelValid) {
+        if (errorMapel) {
+            if (isMapelValid) {
                 errorMapel.style.display = 'none';
             } else {
                 errorMapel.style.display = 'block';
@@ -4210,7 +4208,7 @@ document.addEventListener('DOMContentLoaded', function() {
             'Semester': semester !== '',
             'Mata Pelajaran': isMapelValid
         };
-        if(validationStatus) {
+        if (validationStatus) {
             let html = '';
             Object.entries(status).forEach(([key, valid]) => {
                 const icon = valid ? '<i class="fas fa-check-circle" style="color: var(--success);"></i>' : '<i class="fas fa-circle" style="color: var(--danger);"></i>';
@@ -4221,17 +4219,17 @@ document.addEventListener('DOMContentLoaded', function() {
             validationStatus.innerHTML = html;
         }
         const allValid = Object.values(status).every(v => v === true);
-        if(btnSaveAkademik) {
+        if (btnSaveAkademik) {
             btnSaveAkademik.disabled = !allValid;
             btnSaveAkademik.style.opacity = allValid ? '1' : '0.5';
             btnSaveAkademik.style.cursor = allValid ? 'pointer' : 'not-allowed';
         }
         return allValid;
     }
-    if(btnSaveAkademik) {
-        btnSaveAkademik.addEventListener('click', function() {
+    if (btnSaveAkademik) {
+        btnSaveAkademik.addEventListener('click', function () {
             const isValid = updateAkademikValidation();
-            if(!isValid) {
+            if (!isValid) {
                 showToast('❌ Silakan lengkapi semua field yang diperlukan');
                 return;
             }
@@ -4261,24 +4259,24 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     const savedData = localStorage.getItem('akademik_data');
-    if(savedData) {
+    if (savedData) {
         try {
             const data = JSON.parse(savedData);
-            if(document.getElementById('akad-tahun')) document.getElementById('akad-tahun').value = data.tahun || '';
-            if(document.getElementById('akad-jenjang')) {
+            if (document.getElementById('akad-tahun')) document.getElementById('akad-tahun').value = data.tahun || '';
+            if (document.getElementById('akad-jenjang')) {
                 document.getElementById('akad-jenjang').value = data.jenjang || '';
                 updateKelasOptions(data.jenjang);
             }
-            if(document.getElementById('akad-kelas')) {
+            if (document.getElementById('akad-kelas')) {
                 document.getElementById('akad-kelas').value = data.kelas || '';
                 setTimeout(() => {
                     updateFaseAutomatis(data.kelas);
                 }, 50);
             }
-            if(document.getElementById('akad-fase')) document.getElementById('akad-fase').value = data.fase || '';
-            if(document.getElementById('akad-semester')) document.getElementById('akad-semester').value = data.semester || '';
+            if (document.getElementById('akad-fase')) document.getElementById('akad-fase').value = data.fase || '';
+            if (document.getElementById('akad-semester')) document.getElementById('akad-semester').value = data.semester || '';
             updateMapelOptions();
-            if(data.mapel_kustom) {
+            if (data.mapel_kustom) {
                 document.getElementById('akad-mapel-kustom').value = data.mapel || '';
                 document.getElementById('akad-mapel-kustom').style.display = 'block';
                 document.getElementById('akad-mapel').style.display = 'none';
@@ -4287,60 +4285,60 @@ document.addEventListener('DOMContentLoaded', function() {
                 btnToggle.classList.remove('btn-secondary');
                 btnToggle.classList.add('btn-danger');
             } else {
-                if(document.getElementById('akad-mapel')) document.getElementById('akad-mapel').value = data.mapel || '';
+                if (document.getElementById('akad-mapel')) document.getElementById('akad-mapel').value = data.mapel || '';
             }
-        } catch(e) {
+        } catch (e) {
             console.error('Error loading akademik data:', e);
         }
     }
     updateAkademikValidation();
-    window.showDataLoaderSpinner = function(message = 'Mengambil data...') {
+    window.showDataLoaderSpinner = function (message = 'Mengambil data...') {
         const spinner = document.getElementById('data-loader-spinner');
         const text = document.getElementById('loader-text');
-        if(spinner) {
+        if (spinner) {
             text.textContent = message;
             spinner.classList.add('active');
         }
     };
-    window.hideDataLoaderSpinner = function() {
+    window.hideDataLoaderSpinner = function () {
         const spinner = document.getElementById('data-loader-spinner');
-        if(spinner) {
+        if (spinner) {
             spinner.classList.remove('active');
         }
     };
-    window.showProgressBar = function(title = 'Sedang Membuat...', message = 'Harap tunggu, jangan tutup halaman ini...') {
+    window.showProgressBar = function (title = 'Sedang Membuat...', message = 'Harap tunggu, jangan tutup halaman ini...') {
         const container = document.getElementById('progress-container');
         const backdrop = document.getElementById('progress-backdrop');
         const info = document.getElementById('progress-info');
         const titleEl = document.getElementById('progress-title');
         const textEl = document.getElementById('progress-text');
-        if(container) container.classList.add('active');
-        if(backdrop) backdrop.classList.add('active');
-        if(info) info.classList.add('active');
-        if(titleEl) titleEl.textContent = title;
-        if(textEl) textEl.textContent = message;
+        if (container) container.classList.add('active');
+        if (backdrop) backdrop.classList.add('active');
+        if (info) info.classList.add('active');
+        if (titleEl) titleEl.textContent = title;
+        if (textEl) textEl.textContent = message;
         updateProgressBar(0);
     };
-    window.hideProgressBar = function() {
+    window.hideProgressBar = function () {
         const container = document.getElementById('progress-container');
         const backdrop = document.getElementById('progress-backdrop');
         const info = document.getElementById('progress-info');
-        if(container) container.classList.remove('active');
-        if(backdrop) backdrop.classList.remove('active');
-        if(info) info.classList.remove('active');
+        if (container) container.classList.remove('active');
+        if (backdrop) backdrop.classList.remove('active');
+        if (info) info.classList.remove('active');
     };
-    window.updateProgressBar = function(percentage) {
+    window.updateProgressBar = function (percentage) {
         const fill = document.getElementById('progress-fill');
         const percentageEl = document.getElementById('progress-percentage');
-        if(fill) fill.style.width = Math.min(percentage, 100) + '%';
-        if(percentageEl) percentageEl.textContent = Math.round(percentage) + '%';
+        if (fill) fill.style.width = Math.min(percentage, 100) + '%';
+        if (percentageEl) percentageEl.textContent = Math.round(percentage) + '%';
     };
-    window.animateProgressBar = function(duration = 30000) {
+    window.animateProgressBar = function (duration = 30000) {
         let progress = 0;
         const interval = setInterval(() => {
             const increment = Math.random() * 15;
             progress += increment;
-            if(progress >= 95) {
+            if (progress >= 95) {
                 progress = 95;
                 clearInterval(interval);
             }
@@ -4348,7 +4346,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 500);
         return interval;
     };
-    window.autoLoadAllData = async function() {
+    window.autoLoadAllData = async function () {
         showDataLoaderSpinner('Mengambil data dari profil guru...');
         try {
             await new Promise(r => setTimeout(r, 500));
@@ -4360,303 +4358,303 @@ document.addEventListener('DOMContentLoaded', function() {
             await new Promise(r => setTimeout(r, 500));
             showDataLoaderSpinner('Mengambil data akademik...');
             await new Promise(r => setTimeout(r, 500));
-            if(akademikData) {
+            if (akademikData) {
                 autoPopulateCurrentSection();
             }
             hideDataLoaderSpinner();
             return true;
-        } catch(e) {
+        } catch (e) {
             console.error('Error auto-loading data:', e);
             hideDataLoaderSpinner();
             return false;
         }
     };
-    window.autoPopulateCurrentSection = function() {
+    window.autoPopulateCurrentSection = function () {
         const akademikData = localStorage.getItem('akademik_data');
-        if(!akademikData) return;
+        if (!akademikData) return;
         try {
             const data = JSON.parse(akademikData);
             const activeSection = document.querySelector('.content-section.active');
-            if(!activeSection) return;
+            if (!activeSection) return;
             const sectionId = activeSection.id;
-            if(sectionId === 'materi-ajar') {
+            if (sectionId === 'materi-ajar') {
                 autoPopulateModul(data);
-            } else if(sectionId === 'media-ajar') {
+            } else if (sectionId === 'media-ajar') {
                 autoPopulateMedia(data);
-            } else if(sectionId === 'kokurikuler') {
+            } else if (sectionId === 'kokurikuler') {
                 autoPopulateKokurikuler(data);
-            } else if(sectionId === 'soal') {
+            } else if (sectionId === 'soal') {
                 autoPopulateSoal(data);
-            } else if(sectionId === 'rapor-siswa') {
+            } else if (sectionId === 'rapor-siswa') {
                 autoPopulateRapor(data);
             }
-        } catch(e) {
+        } catch (e) {
             console.error('Error auto-populating section:', e);
         }
     };
-    window.autoPopulateModul = function(data) {
-        if(document.getElementById('modul-tahun')) document.getElementById('modul-tahun').value = data.tahun;
-        if(document.getElementById('modul-jenjang')) {
+    window.autoPopulateModul = function (data) {
+        if (document.getElementById('modul-tahun')) document.getElementById('modul-tahun').value = data.tahun;
+        if (document.getElementById('modul-jenjang')) {
             document.getElementById('modul-jenjang').value = data.jenjang;
             document.getElementById('modul-jenjang').dispatchEvent(new Event('change'));
         }
         setTimeout(() => {
-            if(document.getElementById('modul-kelas-select')) {
+            if (document.getElementById('modul-kelas-select')) {
                 document.getElementById('modul-kelas-select').value = data.kelas;
                 document.getElementById('modul-kelas-select').dispatchEvent(new Event('change'));
             }
         }, 100);
         setTimeout(() => {
-            if(document.getElementById('modul-sem-select')) {
+            if (document.getElementById('modul-sem-select')) {
                 document.getElementById('modul-sem-select').value = data.semester;
             }
-            if(document.getElementById('modul-mapel-select')) {
+            if (document.getElementById('modul-mapel-select')) {
                 document.getElementById('modul-mapel-select').value = data.mapel;
             }
         }, 200);
     };
-    window.autoPopulateMedia = function(data) {
-        if(document.getElementById('bahan-tahun')) document.getElementById('bahan-tahun').value = data.tahun;
-        if(document.getElementById('bahan-jenjang')) {
+    window.autoPopulateMedia = function (data) {
+        if (document.getElementById('bahan-tahun')) document.getElementById('bahan-tahun').value = data.tahun;
+        if (document.getElementById('bahan-jenjang')) {
             document.getElementById('bahan-jenjang').value = data.jenjang;
             document.getElementById('bahan-jenjang').dispatchEvent(new Event('change'));
         }
     };
-    window.autoPopulateKokurikuler = function(data) {
-        if(document.getElementById('kokul-tahun')) document.getElementById('kokul-tahun').value = data.tahun;
-        if(document.getElementById('kokul-jenjang')) {
+    window.autoPopulateKokurikuler = function (data) {
+        if (document.getElementById('kokul-tahun')) document.getElementById('kokul-tahun').value = data.tahun;
+        if (document.getElementById('kokul-jenjang')) {
             document.getElementById('kokul-jenjang').value = data.jenjang;
             document.getElementById('kokul-jenjang').dispatchEvent(new Event('change'));
         }
     };
-    window.autoPopulateSoal = function(data) {
-        if(document.getElementById('soal-tahun')) document.getElementById('soal-tahun').value = data.tahun;
-        if(document.getElementById('soal-jenjang')) {
+    window.autoPopulateSoal = function (data) {
+        if (document.getElementById('soal-tahun')) document.getElementById('soal-tahun').value = data.tahun;
+        if (document.getElementById('soal-jenjang')) {
             document.getElementById('soal-jenjang').value = data.jenjang;
-            if(window.updateKelasOptions) window.updateKelasOptions();
+            if (window.updateKelasOptions) window.updateKelasOptions();
         }
-        if(document.getElementById('soal-kelas')) {
+        if (document.getElementById('soal-kelas')) {
             document.getElementById('soal-kelas').value = data.kelas.match(/\d+/)?.[0] || '';
         }
-        if(document.getElementById('soal-sem')) document.getElementById('soal-sem').value = data.semester;
+        if (document.getElementById('soal-sem')) document.getElementById('soal-sem').value = data.semester;
     };
-    window.autoPopulateRapor = function(data) {
-        if(document.getElementById('rapor-tahun')) document.getElementById('rapor-tahun').value = data.tahun;
-        if(document.getElementById('rapor-kelas')) document.getElementById('rapor-kelas').value = data.kelas;
-        if(document.getElementById('rapor-fase')) document.getElementById('rapor-fase').value = data.fase;
-        if(document.getElementById('rapor-semester')) document.getElementById('rapor-semester').value = data.semester;
+    window.autoPopulateRapor = function (data) {
+        if (document.getElementById('rapor-tahun')) document.getElementById('rapor-tahun').value = data.tahun;
+        if (document.getElementById('rapor-kelas')) document.getElementById('rapor-kelas').value = data.kelas;
+        if (document.getElementById('rapor-fase')) document.getElementById('rapor-fase').value = data.fase;
+        if (document.getElementById('rapor-semester')) document.getElementById('rapor-semester').value = data.semester;
     };
-    window.onSectionSwitch = function(sectionId) {
-        if(['materi-ajar', 'media-ajar', 'kokurikuler', 'soal', 'rapor-siswa'].includes(sectionId)) {
+    window.onSectionSwitch = function (sectionId) {
+        if (['materi-ajar', 'media-ajar', 'kokurikuler', 'soal', 'rapor-siswa'].includes(sectionId)) {
             setTimeout(() => {
                 autoPopulateCurrentSection();
             }, 300);
         }
     };
-    window.tarikDataAkademikKeModul = function() {
+    window.tarikDataAkademikKeModul = function () {
         const akademikData = localStorage.getItem('akademik_data');
-        if(!akademikData) {
+        if (!akademikData) {
             showToast('❌ Data Akademik belum disimpan. Silakan isi Akademik terlebih dahulu.');
             return;
         }
         try {
             const data = JSON.parse(akademikData);
-            if(document.getElementById('modul-tahun')) document.getElementById('modul-tahun').value = data.tahun;
-            if(document.getElementById('modul-jenjang')) {
+            if (document.getElementById('modul-tahun')) document.getElementById('modul-tahun').value = data.tahun;
+            if (document.getElementById('modul-jenjang')) {
                 document.getElementById('modul-jenjang').value = data.jenjang;
                 document.getElementById('modul-jenjang').dispatchEvent(new Event('change'));
             }
             setTimeout(() => {
-                if(document.getElementById('modul-kelas-select')) {
+                if (document.getElementById('modul-kelas-select')) {
                     document.getElementById('modul-kelas-select').value = data.kelas;
                     document.getElementById('modul-kelas-select').dispatchEvent(new Event('change'));
                 }
             }, 100);
             setTimeout(() => {
-                if(document.getElementById('modul-sem-select')) {
+                if (document.getElementById('modul-sem-select')) {
                     document.getElementById('modul-sem-select').value = data.semester;
                 }
-                if(document.getElementById('modul-mapel-select')) {
+                if (document.getElementById('modul-mapel-select')) {
                     document.getElementById('modul-mapel-select').value = data.mapel;
                 }
             }, 200);
             showToast('✅ Data Akademik berhasil ditarik ke Modul Ajar!');
-        } catch(e) {
+        } catch (e) {
             console.error('Error tarik data:', e);
             showToast('❌ Gagal tarik data akademik');
         }
     };
-    window.tarikDataAkademikKeMedia = function() {
+    window.tarikDataAkademikKeMedia = function () {
         const akademikData = localStorage.getItem('akademik_data');
-        if(!akademikData) {
+        if (!akademikData) {
             showToast('❌ Data Akademik belum disimpan. Silakan isi Akademik terlebih dahulu.');
             return;
         }
         try {
             const data = JSON.parse(akademikData);
-            if(document.getElementById('bahan-tahun')) document.getElementById('bahan-tahun').value = data.tahun;
-            if(document.getElementById('bahan-jenjang')) {
+            if (document.getElementById('bahan-tahun')) document.getElementById('bahan-tahun').value = data.tahun;
+            if (document.getElementById('bahan-jenjang')) {
                 document.getElementById('bahan-jenjang').value = data.jenjang;
                 document.getElementById('bahan-jenjang').dispatchEvent(new Event('change'));
             }
             showToast('✅ Data Akademik berhasil ditarik ke Media Ajar!');
-        } catch(e) {
+        } catch (e) {
             console.error('Error tarik data:', e);
             showToast('❌ Gagal tarik data akademik');
         }
     };
-    window.tarikDataAkademikKeKokurikuler = function() {
+    window.tarikDataAkademikKeKokurikuler = function () {
         const akademikData = localStorage.getItem('akademik_data');
-        if(!akademikData) {
+        if (!akademikData) {
             showToast('❌ Data Akademik belum disimpan. Silakan isi Akademik terlebih dahulu.');
             return;
         }
         try {
             const data = JSON.parse(akademikData);
-            if(document.getElementById('kokul-tahun')) document.getElementById('kokul-tahun').value = data.tahun;
-            if(document.getElementById('kokul-jenjang')) {
+            if (document.getElementById('kokul-tahun')) document.getElementById('kokul-tahun').value = data.tahun;
+            if (document.getElementById('kokul-jenjang')) {
                 document.getElementById('kokul-jenjang').value = data.jenjang;
                 document.getElementById('kokul-jenjang').dispatchEvent(new Event('change'));
             }
             showToast('✅ Data Akademik berhasil ditarik ke Kokurikuler!');
-        } catch(e) {
+        } catch (e) {
             console.error('Error tarik data:', e);
             showToast('❌ Gagal tarik data akademik');
         }
     };
-    window.tarikDataAkademikKeSoal = function() {
+    window.tarikDataAkademikKeSoal = function () {
         const akademikData = localStorage.getItem('akademik_data');
-        if(!akademikData) {
+        if (!akademikData) {
             showToast('❌ Data Akademik belum disimpan. Silakan isi Akademik terlebih dahulu.');
             return;
         }
         try {
             const data = JSON.parse(akademikData);
-            if(document.getElementById('soal-tahun')) document.getElementById('soal-tahun').value = data.tahun;
-            if(document.getElementById('soal-jenjang')) {
+            if (document.getElementById('soal-tahun')) document.getElementById('soal-tahun').value = data.tahun;
+            if (document.getElementById('soal-jenjang')) {
                 document.getElementById('soal-jenjang').value = data.jenjang;
-                if(window.updateKelasOptions) window.updateKelasOptions();
+                if (window.updateKelasOptions) window.updateKelasOptions();
             }
-            if(document.getElementById('soal-kelas')) {
+            if (document.getElementById('soal-kelas')) {
                 document.getElementById('soal-kelas').value = data.kelas.match(/\d+/)?.[0] || '';
             }
-            if(document.getElementById('soal-sem')) document.getElementById('soal-sem').value = data.semester;
+            if (document.getElementById('soal-sem')) document.getElementById('soal-sem').value = data.semester;
             showToast('✅ Data Akademik berhasil ditarik ke Soal!');
-        } catch(e) {
+        } catch (e) {
             console.error('Error tarik data:', e);
             showToast('❌ Gagal tarik data akademik');
         }
     };
-    window.tarikDataAkademikKeRapor = function() {
+    window.tarikDataAkademikKeRapor = function () {
         const akademikData = localStorage.getItem('akademik_data');
-        if(!akademikData) {
+        if (!akademikData) {
             showToast('❌ Data Akademik belum disimpan. Silakan isi Akademik terlebih dahulu.');
             return;
         }
         try {
             const data = JSON.parse(akademikData);
-            if(document.getElementById('rapor-tahun')) document.getElementById('rapor-tahun').value = data.tahun;
-            if(document.getElementById('rapor-kelas')) document.getElementById('rapor-kelas').value = data.kelas;
-            if(document.getElementById('rapor-fase')) document.getElementById('rapor-fase').value = data.fase;
-            if(document.getElementById('rapor-semester')) document.getElementById('rapor-semester').value = data.semester;
+            if (document.getElementById('rapor-tahun')) document.getElementById('rapor-tahun').value = data.tahun;
+            if (document.getElementById('rapor-kelas')) document.getElementById('rapor-kelas').value = data.kelas;
+            if (document.getElementById('rapor-fase')) document.getElementById('rapor-fase').value = data.fase;
+            if (document.getElementById('rapor-semester')) document.getElementById('rapor-semester').value = data.semester;
             showToast('✅ Data Akademik berhasil ditarik ke E-Rapor!');
-        } catch(e) {
+        } catch (e) {
             console.error('Error tarik data:', e);
             showToast('❌ Gagal tarik data akademik');
         }
     };
     function romanToNumber(r) {
-        if(!r) return null;
-        const map = {I:1,II:2,III:3,IV:4,V:5,VI:6,VII:7,VIII:8,IX:9};
+        if (!r) return null;
+        const map = { I: 1, II: 2, III: 3, IV: 4, V: 5, VI: 6, VII: 7, VIII: 8, IX: 9 };
         const key = r.toUpperCase();
         return map[key] || null;
     }
     function getFaseFromKelas(kelasStr) {
-        if(!kelasStr) return '';
+        if (!kelasStr) return '';
         const m = kelasStr.match(/(\d{1,2})/);
         let num = null;
-        if(m) num = parseInt(m[1],10);
+        if (m) num = parseInt(m[1], 10);
         else {
             const mr = kelasStr.match(/\b(I|II|III|IV|V|VI|VII|VIII|IX)\b/i);
-            if(mr) num = romanToNumber(mr[1]);
+            if (mr) num = romanToNumber(mr[1]);
         }
-        if(!num) return '';
-        if(num <= 2) return 'A';
-        if(num <= 4) return 'B';
-        if(num <= 6) return 'C';
-        if(num <= 8) return 'D';
-        if(num === 9) return 'E';
+        if (!num) return '';
+        if (num <= 2) return 'A';
+        if (num <= 4) return 'B';
+        if (num <= 6) return 'C';
+        if (num <= 8) return 'D';
+        if (num === 9) return 'E';
         return '';
     }
     const kelasInput = document.getElementById('rapor-kelas');
     const faseInput = document.getElementById('rapor-fase');
     function syncFase() {
-        if(!kelasInput || !faseInput) return;
+        if (!kelasInput || !faseInput) return;
         const val = kelasInput.value || '';
         const fase = getFaseFromKelas(val.trim());
         faseInput.value = fase || '';
     }
-    if(kelasInput) {
+    if (kelasInput) {
         kelasInput.addEventListener('input', syncFase);
         syncFase();
     }
     function initMuatanLokalSync() {
         const container = document.getElementById('rapor-muatan-lokal-container');
         const capContainer = document.getElementById('rapor-capaian-kompetensi-mulok-container');
-        if(!container || !capContainer) return;
+        if (!container || !capContainer) return;
         const itemDivs = Array.from(container.querySelectorAll(':scope > div'));
         itemDivs.forEach(div => {
             const nameInput = div.querySelector('.rapor-muatan-lokal-nama');
             const nilaiInput = div.querySelector('.rapor-muatan-lokal-nilai');
             let muatanName = '';
-            if(nameInput) muatanName = (nameInput.value || '').trim();
-            if(!muatanName && nilaiInput) muatanName = nilaiInput.getAttribute('data-muatan') || '';
-            if(!muatanName) return; 
+            if (nameInput) muatanName = (nameInput.value || '').trim();
+            if (!muatanName && nilaiInput) muatanName = nilaiInput.getAttribute('data-muatan') || '';
+            if (!muatanName) return;
             let id = nilaiInput.getAttribute('data-muatan-id');
-            if(!id) {
+            if (!id) {
                 id = __genMuatanId();
-                if(nilaiInput) nilaiInput.setAttribute('data-muatan-id', id);
-                if(nameInput) nameInput.setAttribute('data-muatan-id', id);
+                if (nilaiInput) nilaiInput.setAttribute('data-muatan-id', id);
+                if (nameInput) nameInput.setAttribute('data-muatan-id', id);
             }
             let capTextarea = capContainer.querySelector(`.rapor-capaian-kompetensi-mulok-input[data-muatan-id="${id}"]`)
                 || capContainer.querySelector(`.rapor-capaian-kompetensi-mulok-input[data-muatan="${muatanName}"]`);
-            if(capTextarea) {
+            if (capTextarea) {
                 capTextarea.setAttribute('data-muatan-id', id);
                 capTextarea.setAttribute('data-muatan', muatanName);
                 const capLabel = capTextarea.parentElement && capTextarea.parentElement.querySelector('label');
-                if(capLabel) capLabel.textContent = muatanName;
+                if (capLabel) capLabel.textContent = muatanName;
             }
-            if(nameInput && nilaiInput) {
-                nameInput.addEventListener('input', function() {
+            if (nameInput && nilaiInput) {
+                nameInput.addEventListener('input', function () {
                     const newName = this.value.trim();
-                    if(!newName) return;
+                    if (!newName) return;
                     nilaiInput.setAttribute('data-muatan', newName);
                     const capById = capContainer.querySelector(`.rapor-capaian-kompetensi-mulok-input[data-muatan-id="${id}"]`);
-                    if(capById) {
+                    if (capById) {
                         capById.setAttribute('data-muatan', newName);
                         const lbl = capById.parentElement && capById.parentElement.querySelector('label');
-                        if(lbl) lbl.textContent = newName;
+                        if (lbl) lbl.textContent = newName;
                     }
                 });
             }
         });
     }
     initMuatanLokalSync();
-    syncMapelCapaian();  
+    syncMapelCapaian();
 });
 let __muatanIdCounter = Date.now();
 function __genMuatanId() { return 'mulok-' + (__muatanIdCounter++); }
-window.syncMapelCapaian = function() {
+window.syncMapelCapaian = function () {
     const nilaiContainer = document.getElementById('rapor-nilai-container');
     const capContainer = document.getElementById('rapor-capaian-kompetensi-container');
-    if(!nilaiContainer || !capContainer) return;
+    if (!nilaiContainer || !capContainer) return;
     const nilaiInputs = Array.from(nilaiContainer.querySelectorAll('.rapor-nilai-input'));
     const mapelNames = new Set(nilaiInputs.map(input => input.getAttribute('data-mapel')));
     const existingCapaian = new Set(
         Array.from(capContainer.querySelectorAll('.rapor-capaian-kompetensi-input')).map(ta => ta.getAttribute('data-mapel'))
     );
     mapelNames.forEach(mapel => {
-        if(!existingCapaian.has(mapel)) {
+        if (!existingCapaian.has(mapel)) {
             const div = document.createElement('div');
             div.style.padding = '12px';
             div.style.background = 'var(--bg-body)';
@@ -4678,24 +4676,24 @@ window.syncMapelCapaian = function() {
     });
     Array.from(capContainer.querySelectorAll('[data-mapel-capaian]')).forEach(div => {
         const mapel = div.getAttribute('data-mapel-capaian');
-        if(!mapelNames.has(mapel)) {
+        if (!mapelNames.has(mapel)) {
             div.remove();
         }
     });
 };
-window.removeMapelAndCapaian = function(mapelName, buttonEl) {
+window.removeMapelAndCapaian = function (mapelName, buttonEl) {
     buttonEl.parentElement.parentElement.remove();
     const capContainer = document.getElementById('rapor-capaian-kompetensi-container');
     const capDiv = capContainer.querySelector(`[data-mapel-capaian="${mapelName}"]`);
-    if(capDiv) capDiv.remove();
+    if (capDiv) capDiv.remove();
 };
-window.addMapelField = function() {
+window.addMapelField = function () {
     openAddMapelModal();
 };
-window.addMuatanLokalField = function() {
+window.addMuatanLokalField = function () {
     openAddMulokModal();
 };
-window.addEkstraField = function() {
+window.addEkstraField = function () {
     const list = document.getElementById('rapor-ekstrakurikuler-list');
     if (!list) return;
     const div = document.createElement('div');
@@ -4712,26 +4710,26 @@ window.addEkstraField = function() {
         </select>
         <button class="btn btn-danger btn-sm" type="button"><i class="fas fa-trash"></i></button>
     `;
-    div.querySelector('button').addEventListener('click', function() { div.remove(); updateEkstraSummary(); });
+    div.querySelector('button').addEventListener('click', function () { div.remove(); updateEkstraSummary(); });
     div.querySelectorAll('input, select').forEach(i => i.addEventListener('input', updateEkstraSummary));
     list.appendChild(div);
-    setTimeout(() => { const f = div.querySelector('.ekstra-name'); if(f) f.focus(); }, 10);
+    setTimeout(() => { const f = div.querySelector('.ekstra-name'); if (f) f.focus(); }, 10);
     updateEkstraSummary();
 };
 function updateEkstraSummary() {
     const list = document.getElementById('rapor-ekstrakurikuler-list');
     const summary = document.getElementById('rapor-ekstrakurikuler');
-    if(!summary) return;
-    if(!list) { summary.value = ''; return; }
+    if (!summary) return;
+    if (!list) { summary.value = ''; return; }
     const items = Array.from(list.querySelectorAll('.ekstra-item'));
     const lines = items.map(it => {
         const name = (it.querySelector('.ekstra-name') || {}).value || '';
         const role = (it.querySelector('.ekstra-role') || {}).value || '';
         const freq = (it.querySelector('.ekstra-freq') || {}).value || '';
         const parts = [];
-        if(name.trim()) parts.push(name.trim());
-        if(role.trim()) parts.push('(' + role.trim() + ')');
-        if(freq) parts.push('[' + freq + ']');
+        if (name.trim()) parts.push(name.trim());
+        if (role.trim()) parts.push('(' + role.trim() + ')');
+        if (freq) parts.push('[' + freq + ']');
         return parts.join(' ');
     }).filter(l => l.trim());
     summary.value = lines.join('\n');
@@ -4740,10 +4738,10 @@ function updateKokulNote() {
     const temaEl = document.getElementById('rapor-tema-kokul');
     const noteEl = document.getElementById('rapor-catatan-kokul');
     const switches = Array.from(document.querySelectorAll('.rapor-profil-switch'));
-    if(!noteEl) return;
+    if (!noteEl) return;
     const tema = temaEl ? (temaEl.value || '').trim() : '';
     const selected = switches.filter(s => s.checked).map(s => s.getAttribute('data-profil'));
-    if(!tema && selected.length === 0) return; 
+    if (!tema && selected.length === 0) return;
     const sampleNote = 'Ananda sudah cakap dalam penalaran kritis saat mencari solusi terhadap permasalahan terkait lingkungan dan masih perlu berlatih dalam mengomunikasikan gagasan';
     const temaLower = tema ? tema.toLowerCase() : '';
     if (temaLower.includes('lingkung') || selected.includes('Penalaran Kritis')) {
@@ -4762,26 +4760,26 @@ function updateKokulNote() {
     };
     const descriptors = selected.map(p => phraseMap[p] || p);
     let note = '';
-    if(tema) note += `Tema proyek: ${tema}. `;
-    if(descriptors.length) {
+    if (tema) note += `Tema proyek: ${tema}. `;
+    if (descriptors.length) {
         note += 'Dalam kegiatan kokurikuler, siswa ' + descriptors.join('; ') + '.';
     }
     noteEl.value = note;
 }
 function initKokulAutoNote() {
     const temaEl = document.getElementById('rapor-tema-kokul');
-    if(temaEl) temaEl.addEventListener('input', updateKokulNote);
+    if (temaEl) temaEl.addEventListener('input', updateKokulNote);
     document.querySelectorAll('.rapor-profil-switch').forEach(s => s.addEventListener('change', updateKokulNote));
     updateKokulNote();
 }
-try { initKokulAutoNote(); } catch(e){  }
+try { initKokulAutoNote(); } catch (e) { }
 const selectorCache = {
     nilaiInputs: null,
     mapelSwitches: null,
     profilSwitches: null,
     mulokSwitches: null,
     lastCacheTime: 0,
-    CACHE_DURATION: 500 
+    CACHE_DURATION: 500
 };
 function invalidateSelectorCache() {
     selectorCache.lastCacheTime = 0;
@@ -4795,7 +4793,7 @@ function getCachedSelector(selectorType) {
         selectorCache.nilaiInputs = null;
         selectorCache.mapelSwitches = null;
     }
-    switch(selectorType) {
+    switch (selectorType) {
         case 'nilaiInputs':
             if (!selectorCache.nilaiInputs) {
                 selectorCache.nilaiInputs = document.querySelectorAll('.rapor-nilai-input');
@@ -4818,7 +4816,7 @@ function getCachedSelector(selectorType) {
 function setupRaporEventDelegation() {
     const capaianContainer = document.getElementById('rapor-capaian-kompetensi-container');
     if (capaianContainer) {
-        const debouncedCapaianChange = debounce(function(e) {
+        const debouncedCapaianChange = debounce(function (e) {
             if (e.target.classList.contains('rapor-capaian-kompetensi-input')) {
                 invalidateSelectorCache();
             }
@@ -4829,13 +4827,13 @@ function setupRaporEventDelegation() {
 setupRaporEventDelegation();
 function nilaiToPredicate(nilai) {
     nilai = parseInt(nilai) || 0;
-    if(nilai >= 95) return 'Sangat Baik';
-    if(nilai >= 85) return 'Baik';
-    if(nilai >= 75) return 'Cukup';
-    if(nilai >= 60) return 'Kurang';
+    if (nilai >= 95) return 'Sangat Baik';
+    if (nilai >= 85) return 'Baik';
+    if (nilai >= 75) return 'Cukup';
+    if (nilai >= 60) return 'Kurang';
     return 'Sangat Kurang';
 }
-window.loadDataFromProfil = function() {
+window.loadDataFromProfil = function () {
     const nama_guru = localStorage.getItem('as_nama') || '';
     const nip_guru = localStorage.getItem('as_nip') || '';
     const alamat_sekolah = localStorage.getItem('as_alamat') || localStorage.getItem('as_sekolah') || '';
@@ -4847,7 +4845,7 @@ window.loadDataFromProfil = function() {
     document.getElementById('rapor-kepsek').value = kepsek;
     document.getElementById('rapor-nip-kepsek').value = nip_kepsek;
 };
-document.getElementById('btn-gen-rapor').addEventListener('click', function() {
+document.getElementById('btn-gen-rapor').addEventListener('click', function () {
     const nama = document.getElementById('rapor-nama').value || 'Siswa';
     const nisn = document.getElementById('rapor-nisn').value || '';
     const kelas = document.getElementById('rapor-kelas').value || '';
@@ -4921,7 +4919,7 @@ document.getElementById('btn-gen-rapor').addEventListener('click', function() {
         capaianKompetensiMap[muatan] = value;
     });
     const tglLaporanObj = new Date(tglLaporan);
-    const tglFormat = tglLaporanObj.toLocaleDateString('id-ID', {year: 'numeric', month: 'long', day: 'numeric'});
+    const tglFormat = tglLaporanObj.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
     const lokasiLaporan = (document.getElementById('rapor-lokasi-laporan') && document.getElementById('rapor-lokasi-laporan').value) ? document.getElementById('rapor-lokasi-laporan').value.trim() : '';
     const tglWithLokasi = lokasiLaporan ? `${lokasiLaporan}, ${tglFormat}` : tglFormat;
     let html = `
@@ -5008,9 +5006,9 @@ document.getElementById('btn-gen-rapor').addEventListener('click', function() {
                 <tbody>
         ` : ''}
         ${muatanLokal.map((item, idx) => {
-            const capaian = capaianKompetensiMap[item.muatan] || 'Siswa telah menguasai kompetensi dengan hasil ' + item.nilai + '/100';
-            const capaianLines = capaian.split('\n').slice(0, 2).join('<br>');
-            return `
+        const capaian = capaianKompetensiMap[item.muatan] || 'Siswa telah menguasai kompetensi dengan hasil ' + item.nilai + '/100';
+        const capaianLines = capaian.split('\n').slice(0, 2).join('<br>');
+        return `
                     <tr>
                         <td>${idx + 1}</td>
                         <td style="text-align: left;">${item.muatan}</td>
@@ -5018,7 +5016,7 @@ document.getElementById('btn-gen-rapor').addEventListener('click', function() {
                         <td style="text-align: left; font-size: 8pt; white-space: pre-wrap; word-break: break-word; max-height: 60px; overflow: hidden;">${capaianLines}</td>
                     </tr>
             `;
-        }).join('')}
+    }).join('')}
         ${muatanLokal.length > 0 ? `
                 </tbody>
             </table>
@@ -5050,7 +5048,7 @@ document.getElementById('btn-gen-rapor').addEventListener('click', function() {
                 <tbody>
     `;
     const ekskul = ekstrakurikuler ? ekstrakurikuler.split('\n').map(e => e.trim()).filter(e => e) : [];
-    if(ekskul.length === 0) {
+    if (ekskul.length === 0) {
         html += `
                     <tr>
                         <td colspan="3" style="text-align: center; color: #999; font-size: 9pt;">--</td>
@@ -5160,7 +5158,7 @@ document.getElementById('btn-gen-rapor').addEventListener('click', function() {
         document.getElementById('res-rapor').scrollIntoView({ behavior: 'smooth' });
     }, 100);
 });
-    try {
+try {
     const raporExcelInput = document.getElementById('rapor-multi-excel-input');
     const raporExcelSelectBtn = document.getElementById('rapor-excel-select-btn');
     const raporExcelTemplateBtn = document.getElementById('rapor-excel-download-template-btn');
@@ -5170,50 +5168,50 @@ document.getElementById('btn-gen-rapor').addEventListener('click', function() {
     const raporExcelGenerateAllBtn = document.getElementById('rapor-excel-generate-all');
     const raporExcelNote = document.getElementById('rapor-excel-note');
     window.raporExcelRows = window.raporExcelRows || [];
-    if(raporExcelSelectBtn && raporExcelInput) {
+    if (raporExcelSelectBtn && raporExcelInput) {
         raporExcelSelectBtn.addEventListener('click', () => raporExcelInput.click());
     }
-    if(raporExcelClearBtn) {
+    if (raporExcelClearBtn) {
         raporExcelClearBtn.addEventListener('click', () => {
             window.raporExcelRows = [];
-            if(raporExcelList) { raporExcelList.innerHTML = ''; raporExcelList.style.display = 'none'; }
-            if(raporExcelFilename) raporExcelFilename.innerText = '';
-            if(raporExcelClearBtn) raporExcelClearBtn.style.display = 'none';
-            if(raporExcelGenerateAllBtn) raporExcelGenerateAllBtn.style.display = 'none';
-            if(raporExcelNote) raporExcelNote.style.display = 'none';
+            if (raporExcelList) { raporExcelList.innerHTML = ''; raporExcelList.style.display = 'none'; }
+            if (raporExcelFilename) raporExcelFilename.innerText = '';
+            if (raporExcelClearBtn) raporExcelClearBtn.style.display = 'none';
+            if (raporExcelGenerateAllBtn) raporExcelGenerateAllBtn.style.display = 'none';
+            if (raporExcelNote) raporExcelNote.style.display = 'none';
             showToast('Data Excel dihapus');
         });
     }
-    if(raporExcelInput) {
-        raporExcelInput.addEventListener('change', function(e) {
+    if (raporExcelInput) {
+        raporExcelInput.addEventListener('change', function (e) {
             const f = e.target.files[0];
-            if(!f) return;
-            if(raporExcelFilename) raporExcelFilename.innerText = f.name;
+            if (!f) return;
+            if (raporExcelFilename) raporExcelFilename.innerText = f.name;
             const reader = new FileReader();
-            reader.onload = function(ev) {
+            reader.onload = function (ev) {
                 try {
                     const data = ev.target.result;
                     const workbook = XLSX.read(data, { type: 'binary' });
                     const sheetName = workbook.SheetNames[0];
                     const worksheet = workbook.Sheets[sheetName];
                     const json = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
-                    if(!json || json.length === 0) { showToast('Sheet kosong atau tidak terbaca'); return; }
+                    if (!json || json.length === 0) { showToast('Sheet kosong atau tidak terbaca'); return; }
                     window.raporExcelRows = json;
                     renderRaporExcelList();
-                    if(raporExcelClearBtn) raporExcelClearBtn.style.display = 'inline-flex';
-                    if(raporExcelGenerateAllBtn) raporExcelGenerateAllBtn.style.display = 'inline-flex';
-                    if(raporExcelNote) raporExcelNote.style.display = 'inline-block';
-                } catch(err) { console.error(err); showToast('Gagal membaca file Excel'); }
+                    if (raporExcelClearBtn) raporExcelClearBtn.style.display = 'inline-flex';
+                    if (raporExcelGenerateAllBtn) raporExcelGenerateAllBtn.style.display = 'inline-flex';
+                    if (raporExcelNote) raporExcelNote.style.display = 'inline-block';
+                } catch (err) { console.error(err); showToast('Gagal membaca file Excel'); }
             };
             reader.readAsBinaryString(f);
         });
     }
-    if(raporExcelTemplateBtn) {
-        raporExcelTemplateBtn.addEventListener('click', function() {
+    if (raporExcelTemplateBtn) {
+        raporExcelTemplateBtn.addEventListener('click', function () {
             try {
                 const wb = XLSX.utils.book_new();
                 const headers = [
-                    'Nama','NISN','Kelas','Fase','Semester','Tahun',
+                    'Nama', 'NISN', 'Kelas', 'Fase', 'Semester', 'Tahun',
                     'Mapel_PendidikanAgama_Nilai',
                     'Mapel_PendidikanPancasila_Nilai',
                     'Mapel_BahasaIndonesia_Nilai',
@@ -5230,21 +5228,21 @@ document.getElementById('btn-gen-rapor').addEventListener('click', function() {
                     'Mapel_PJOK_Capaian',
                     'Mapel_SeniBudaya_Capaian',
                     'Mapel_BahasaInggris_Capaian',
-                    'MuatanLocal1_Name','MuatanLocal1_Nilai',
-                    'MuatanLocal2_Name','MuatanLocal2_Nilai',
+                    'MuatanLocal1_Name', 'MuatanLocal1_Nilai',
+                    'MuatanLocal2_Name', 'MuatanLocal2_Nilai',
                     'MuatanLocal1_Capaian',
                     'MuatanLocal2_Capaian',
                     'TemaKokul',
-                    'Profil_Keimanan','Profil_Kewargaan','Profil_PenalaranKritis','Profil_Kreativitas','Profil_Kolaborasi','Profil_Kemandirian','Profil_Kesehatan','Profil_Komunikasi',
+                    'Profil_Keimanan', 'Profil_Kewargaan', 'Profil_PenalaranKritis', 'Profil_Kreativitas', 'Profil_Kolaborasi', 'Profil_Kemandirian', 'Profil_Kesehatan', 'Profil_Komunikasi',
                     'CatatanKokul',
                     'Ekstrakurikuler',
-                    'Sakit','Izin','Alfa',
+                    'Sakit', 'Izin', 'Alfa',
                     'Catatan',
-                    'Walikelas','NIP_Walikelas','AlamatSekolah','Kepsek','NIP_Kepsek','LokasiLaporan','TanggalLaporan'
+                    'Walikelas', 'NIP_Walikelas', 'AlamatSekolah', 'Kepsek', 'NIP_Kepsek', 'LokasiLaporan', 'TanggalLaporan'
                 ];
                 const example = [
-                    'Budi Santoso','1234567890','VI A','C','Ganjil','2025/2026',
-                    '85','85','88','90','85','92','88','86',
+                    'Budi Santoso', '1234567890', 'VI A', 'C', 'Ganjil', '2025/2026',
+                    '85', '85', '88', '90', '85', '92', '88', '86',
                     'Ananda menunjukkan pemahaman yang kuat tentang nilai-nilai keagamaan dan mampu mengintegrasikannya dalam kehidupan sehari-hari.',
                     'Ananda mampu menganalisis isu-isu nasional dengan kritis dan memberikan solusi yang konstruktif.',
                     'Ananda mampu menguasai tata bahasa dan menciptakan karya tulis yang kohesif dan komunikatif.',
@@ -5253,17 +5251,17 @@ document.getElementById('btn-gen-rapor').addEventListener('click', function() {
                     'Ananda menunjukkan kebugaran jasmani yang optimal dan memiliki pemahaman mendalam tentang gaya hidup sehat.',
                     'Ananda mampu mengekspresikan ide-ide kreatif melalui berbagai medium seni dengan teknik yang baik.',
                     'Ananda mampu berkomunikasi dalam bahasa Inggris dengan baik meskipun masih perlu peningkatan dalam vocabulary.',
-                    'Budaya Lokal','85',
-                    'Bahasa Daerah','80',
+                    'Budaya Lokal', '85',
+                    'Bahasa Daerah', '80',
                     'Ananda menunjukkan apresiasi yang tinggi terhadap warisan budaya lokal dan mampu melestarikannya.',
                     'Ananda mampu menggunakan bahasa daerah dalam komunikasi sehari-hari dengan baik.',
                     'Aku Cinta Tanaman',
-                    'Terpenuhi','Terpenuhi','Terpenuhi','Terpenuhi','Terpenuhi','Terpenuhi','Terpenuhi','Terpenuhi',
+                    'Terpenuhi', 'Terpenuhi', 'Terpenuhi', 'Terpenuhi', 'Terpenuhi', 'Terpenuhi', 'Terpenuhi', 'Terpenuhi',
                     'Ananda sangat aktif dalam kegiatan proyek dan menunjukkan dedikasi yang tinggi.',
                     'Pramuka;Robotika',
-                    '0','0','0',
+                    '0', '0', '0',
                     'Siswa menunjukkan potensi akademik yang baik terutama dalam mata pelajaran Matematika dan Bahasa Indonesia. Disarankan untuk lebih fokus pada pengembangan keterampilan kolaborasi.',
-                    'Ibu Siti Nurhaliza','198765432','Jl. Merdeka No.1','Drs. Kepala Sekolah','987654321','Kab. Tangerang','2025-12-03'
+                    'Ibu Siti Nurhaliza', '198765432', 'Jl. Merdeka No.1', 'Drs. Kepala Sekolah', '987654321', 'Kab. Tangerang', '2025-12-03'
                 ];
                 const sheetData = [headers, example];
                 const ws = XLSX.utils.aoa_to_sheet(sheetData);
@@ -5341,27 +5339,27 @@ document.getElementById('btn-gen-rapor').addEventListener('click', function() {
                 XLSX.utils.book_append_sheet(wb, ws2, 'INSTRUKSI');
                 XLSX.writeFile(wb, 'template_import_rapor.xlsx');
                 showToast('Template Excel diunduh. Ikuti instruksi di sheet "INSTRUKSI".');
-            } catch(err) { console.error('Gagal membuat template', err); showToast('Gagal membuat template'); }
+            } catch (err) { console.error('Gagal membuat template', err); showToast('Gagal membuat template'); }
         });
     }
     function renderRaporExcelList() {
-        if(!window.raporExcelRows || window.raporExcelRows.length === 0) { if(raporExcelList) raporExcelList.style.display = 'none'; return; }
-        if(!raporExcelList) return;
+        if (!window.raporExcelRows || window.raporExcelRows.length === 0) { if (raporExcelList) raporExcelList.style.display = 'none'; return; }
+        if (!raporExcelList) return;
         raporExcelList.style.display = 'block';
         const BATCH_SIZE = 50;
         const totalRows = window.raporExcelRows.length;
         const displayRows = Math.min(totalRows, BATCH_SIZE);
         let html = '<table style="width:100%; border-collapse:collapse; font-size:0.9rem;">';
         html += '<thead><tr><th style="text-align:left; padding:6px; border-bottom:1px solid var(--border);">#</th><th style="text-align:left; padding:6px; border-bottom:1px solid var(--border);">Nama</th><th style="text-align:left; padding:6px; border-bottom:1px solid var(--border);">NISN</th><th style="text-align:left; padding:6px; border-bottom:1px solid var(--border);">Kelas</th><th style="text-align:left; padding:6px; border-bottom:1px solid var(--border);">Aksi</th></tr></thead><tbody>';
-        for(let i = 0; i < displayRows; i++) {
+        for (let i = 0; i < displayRows; i++) {
             const r = window.raporExcelRows[i];
             const nama = r['Nama'] || r['name'] || r['NAMA'] || r['nama'] || '';
             const nisn = r['NISN'] || r['nisn'] || '';
             const kelas = r['Kelas'] || r['kelas'] || r['Class'] || r['class'] || '';
-            html += `<tr><td style="padding:6px; border-bottom:1px solid var(--border);">${i+1}</td><td style="padding:6px; border-bottom:1px solid var(--border);">${nama}</td><td style="padding:6px; border-bottom:1px solid var(--border);">${nisn}</td><td style="padding:6px; border-bottom:1px solid var(--border);">${kelas}</td><td style="padding:6px; border-bottom:1px solid var(--border);"><button class="btn btn-secondary btn-sm" onclick="fillRaporForm(${i})">Isi ke Form</button> <button class="btn btn-primary btn-sm" onclick="previewRaporRow(${i})">Preview</button></td></tr>`;
+            html += `<tr><td style="padding:6px; border-bottom:1px solid var(--border);">${i + 1}</td><td style="padding:6px; border-bottom:1px solid var(--border);">${nama}</td><td style="padding:6px; border-bottom:1px solid var(--border);">${nisn}</td><td style="padding:6px; border-bottom:1px solid var(--border);">${kelas}</td><td style="padding:6px; border-bottom:1px solid var(--border);"><button class="btn btn-secondary btn-sm" onclick="fillRaporForm(${i})">Isi ke Form</button> <button class="btn btn-primary btn-sm" onclick="previewRaporRow(${i})">Preview</button></td></tr>`;
         }
         html += '</tbody></table>';
-        if(totalRows > BATCH_SIZE) {
+        if (totalRows > BATCH_SIZE) {
             html += `<div style="padding:10px; background:#fff3cd; border-radius:4px; margin-top:10px; font-size:0.9rem;">
                 <strong>⚠️ Optimasi Performa:</strong> Menampilkan ${displayRows} dari ${totalRows} siswa. 
                 Untuk efisiensi, anda bisa proses dalam batch atau generate per siswa.
@@ -5369,30 +5367,30 @@ document.getElementById('btn-gen-rapor').addEventListener('click', function() {
         }
         raporExcelList.innerHTML = html;
     }
-    window.fillRaporForm = function(index, suppressToast = false) {
+    window.fillRaporForm = function (index, suppressToast = false) {
         const row = window.raporExcelRows[index];
-        if(!row) return;
-        const get = (keys) => { for(const k of keys) if(row[k] !== undefined) return row[k]; return ''; };
-        document.getElementById('rapor-nama').value = get(['Nama','name','NAMA','nama']);
-        document.getElementById('rapor-nisn').value = get(['NISN','nisn']);
-        document.getElementById('rapor-kelas').value = get(['Kelas','kelas','Class','class']);
-        const faseVal = get(['Fase','fase']); if(faseVal) document.getElementById('rapor-fase').value = faseVal;
-        const semVal = get(['Semester','semester']); if(semVal) document.getElementById('rapor-semester').value = semVal;
-        const thVal = get(['Tahun','Tahun Ajaran','tahun']); if(thVal) document.getElementById('rapor-tahun').value = thVal;
-        const sVal = get(['Sakit','sakit']); if(sVal !== '') document.getElementById('rapor-sakit').value = sVal;
-        const iVal = get(['Izin','izin']); if(iVal !== '') document.getElementById('rapor-izin').value = iVal;
-        const aVal = get(['Alfa','alfa']); if(aVal !== '') document.getElementById('rapor-alfa').value = aVal;
-        const temaVal = get(['TemaKokul','temakokul']); if(temaVal) document.getElementById('rapor-tema-kokul').value = temaVal;
-        const catKokulVal = get(['CatatanKokul','catatan_kokul','catatankokul']); if(catKokulVal) document.getElementById('rapor-catatan-kokul').value = catKokulVal;
-        const eksVal = get(['Ekstrakurikuler','ekstrakurikuler']); if(eksVal) document.getElementById('rapor-ekstrakurikuler').value = eksVal;
-        const catVal = get(['Catatan','catatan']); if(catVal) document.getElementById('rapor-catatan').value = catVal;
-        const waliVal = get(['Walikelas','walikelas']); if(waliVal) document.getElementById('rapor-walikelas').value = waliVal;
-        const nipWaliVal = get(['NIP_Walikelas','nip_walikelas']); if(nipWaliVal) document.getElementById('rapor-nip').value = nipWaliVal;
-        const alamatVal = get(['AlamatSekolah','alamatsekolah']); if(alamatVal) document.getElementById('rapor-alamat-sekolah').value = alamatVal;
-        const kepsekVal = get(['Kepsek','kepsek']); if(kepsekVal) document.getElementById('rapor-kepsek').value = kepsekVal;
-        const nipKepsekVal = get(['NIP_Kepsek','nip_kepsek']); if(nipKepsekVal) document.getElementById('rapor-nip-kepsek').value = nipKepsekVal;
-        const lokasiVal = get(['LokasiLaporan','lokasi_laporan']); if(lokasiVal) document.getElementById('rapor-lokasi-laporan').value = lokasiVal;
-        const tglVal = get(['TanggalLaporan','tanggal_laporan']); if(tglVal) document.getElementById('rapor-tanggal-laporan').value = tglVal;
+        if (!row) return;
+        const get = (keys) => { for (const k of keys) if (row[k] !== undefined) return row[k]; return ''; };
+        document.getElementById('rapor-nama').value = get(['Nama', 'name', 'NAMA', 'nama']);
+        document.getElementById('rapor-nisn').value = get(['NISN', 'nisn']);
+        document.getElementById('rapor-kelas').value = get(['Kelas', 'kelas', 'Class', 'class']);
+        const faseVal = get(['Fase', 'fase']); if (faseVal) document.getElementById('rapor-fase').value = faseVal;
+        const semVal = get(['Semester', 'semester']); if (semVal) document.getElementById('rapor-semester').value = semVal;
+        const thVal = get(['Tahun', 'Tahun Ajaran', 'tahun']); if (thVal) document.getElementById('rapor-tahun').value = thVal;
+        const sVal = get(['Sakit', 'sakit']); if (sVal !== '') document.getElementById('rapor-sakit').value = sVal;
+        const iVal = get(['Izin', 'izin']); if (iVal !== '') document.getElementById('rapor-izin').value = iVal;
+        const aVal = get(['Alfa', 'alfa']); if (aVal !== '') document.getElementById('rapor-alfa').value = aVal;
+        const temaVal = get(['TemaKokul', 'temakokul']); if (temaVal) document.getElementById('rapor-tema-kokul').value = temaVal;
+        const catKokulVal = get(['CatatanKokul', 'catatan_kokul', 'catatankokul']); if (catKokulVal) document.getElementById('rapor-catatan-kokul').value = catKokulVal;
+        const eksVal = get(['Ekstrakurikuler', 'ekstrakurikuler']); if (eksVal) document.getElementById('rapor-ekstrakurikuler').value = eksVal;
+        const catVal = get(['Catatan', 'catatan']); if (catVal) document.getElementById('rapor-catatan').value = catVal;
+        const waliVal = get(['Walikelas', 'walikelas']); if (waliVal) document.getElementById('rapor-walikelas').value = waliVal;
+        const nipWaliVal = get(['NIP_Walikelas', 'nip_walikelas']); if (nipWaliVal) document.getElementById('rapor-nip').value = nipWaliVal;
+        const alamatVal = get(['AlamatSekolah', 'alamatsekolah']); if (alamatVal) document.getElementById('rapor-alamat-sekolah').value = alamatVal;
+        const kepsekVal = get(['Kepsek', 'kepsek']); if (kepsekVal) document.getElementById('rapor-kepsek').value = kepsekVal;
+        const nipKepsekVal = get(['NIP_Kepsek', 'nip_kepsek']); if (nipKepsekVal) document.getElementById('rapor-nip-kepsek').value = nipKepsekVal;
+        const lokasiVal = get(['LokasiLaporan', 'lokasi_laporan']); if (lokasiVal) document.getElementById('rapor-lokasi-laporan').value = lokasiVal;
+        const tglVal = get(['TanggalLaporan', 'tanggal_laporan']); if (tglVal) document.getElementById('rapor-tanggal-laporan').value = tglVal;
         document.querySelectorAll('.rapor-profil-switch').forEach(switchEl => {
             const profilName = switchEl.getAttribute('data-profil');
             const profilKey = `Profil_${profilName.replace(/\s+/g, '')}`;
@@ -5403,67 +5401,67 @@ document.getElementById('btn-gen-rapor').addEventListener('click', function() {
             const mapel = nilaiInput.getAttribute('data-mapel');
             const nilaiKey = `Mapel_${mapel.replace(/\s+/g, '')}_Nilai`;
             const nilaiVal = row[nilaiKey] || row[mapel] || '';
-            if(nilaiVal) nilaiInput.value = nilaiVal;
+            if (nilaiVal) nilaiInput.value = nilaiVal;
         });
         document.querySelectorAll('.rapor-capaian-kompetensi-input').forEach(capaianInput => {
             const mapel = capaianInput.getAttribute('data-mapel');
             const capaianKey = `Mapel_${mapel.replace(/\s+/g, '')}_Capaian`;
             const capaianVal = row[capaianKey];
-            if(capaianVal) capaianInput.value = capaianVal;
+            if (capaianVal) capaianInput.value = capaianVal;
         });
         document.querySelectorAll('.rapor-muatan-lokal-nilai').forEach((muatanInput, idx) => {
             const muatanNameInput = muatanInput.parentElement.querySelector('.rapor-muatan-lokal-nama');
-            const muatanNameKey = `MuatanLocal${idx+1}_Name`;
+            const muatanNameKey = `MuatanLocal${idx + 1}_Name`;
             const muatanName = row[muatanNameKey];
-            if(muatanName) {
+            if (muatanName) {
                 muatanNameInput.value = muatanName;
                 muatanInput.setAttribute('data-muatan', muatanName);
             }
-            const muatanValueKey = `MuatanLocal${idx+1}_Nilai`;
+            const muatanValueKey = `MuatanLocal${idx + 1}_Nilai`;
             const muatanValue = row[muatanValueKey];
-            if(muatanValue) muatanInput.value = muatanValue;
+            if (muatanValue) muatanInput.value = muatanValue;
         });
         document.querySelectorAll('.rapor-capaian-kompetensi-mulok-input').forEach((capaianInput, idx) => {
-            const capaianKey = `MuatanLocal${idx+1}_Capaian`;
+            const capaianKey = `MuatanLocal${idx + 1}_Capaian`;
             const capaianVal = row[capaianKey];
-            if(capaianVal) capaianInput.value = capaianVal;
+            if (capaianVal) capaianInput.value = capaianVal;
         });
-        if(!suppressToast) {
+        if (!suppressToast) {
             showToast('Data siswa dimuat ke form. Klik "Buat & Preview E-Rapor" untuk menampilkan rapor.');
         }
     };
-    window.previewRaporRow = function(index) {
-        window.fillRaporForm(index, true);  
+    window.previewRaporRow = function (index) {
+        window.fillRaporForm(index, true);
         document.getElementById('btn-gen-rapor').click();
     };
-    if(raporExcelGenerateAllBtn) {
-        raporExcelGenerateAllBtn.addEventListener('click', async function() {
-            if(!window.raporExcelRows || window.raporExcelRows.length === 0) { showToast('Tidak ada data'); return; }
+    if (raporExcelGenerateAllBtn) {
+        raporExcelGenerateAllBtn.addEventListener('click', async function () {
+            if (!window.raporExcelRows || window.raporExcelRows.length === 0) { showToast('Tidak ada data'); return; }
             showBatchProgress(window.raporExcelRows.length);
             showToast('🎬 Memulai preview semua rapor (berurutan)...');
-            for(let i = 0; i < window.raporExcelRows.length; i++) {
-                if(batchProcessState.abortRequested) {
+            for (let i = 0; i < window.raporExcelRows.length; i++) {
+                if (batchProcessState.abortRequested) {
                     showToast('⏹️ Preview dibatalkan oleh user');
                     break;
                 }
-                while(batchProcessState.isPaused && !batchProcessState.abortRequested) {
+                while (batchProcessState.isPaused && !batchProcessState.abortRequested) {
                     await new Promise(r => setTimeout(r, 500));
                 }
                 try {
-                    const siswaName = window.raporExcelRows[i]['Nama'] || `Siswa ${i+1}`;
+                    const siswaName = window.raporExcelRows[i]['Nama'] || `Siswa ${i + 1}`;
                     batchProcessState.currentSiswaName = siswaName;
-                    window.fillRaporForm(i, true);  
+                    window.fillRaporForm(i, true);
                     document.getElementById('btn-gen-rapor').click();
                     batchProcessState.successCount++;
                     batchProcessState.processedCount++;
                     updateBatchProgress();
                     const delay = 700;
                     await new Promise(r => setTimeout(r, delay));
-                } catch(err) {
-                    console.error(`Gagal preview siswa ke-${i+1}:`, err);
+                } catch (err) {
+                    console.error(`Gagal preview siswa ke-${i + 1}:`, err);
                     batchProcessState.failedCount++;
                     batchProcessState.failedList.push({
-                        index: i+1,
+                        index: i + 1,
                         nama: window.raporExcelRows[i]['Nama'] || 'Unknown',
                         error: err.message
                     });
@@ -5473,14 +5471,14 @@ document.getElementById('btn-gen-rapor').addEventListener('click', function() {
             }
             const totalTime = ((Date.now() - batchProcessState.startTime) / 1000).toFixed(1);
             showToast(`✅ Selesai! Preview ${batchProcessState.successCount}/${window.raporExcelRows.length} siswa (${totalTime}s)`);
-            if(batchProcessState.failedCount > 0) {
+            if (batchProcessState.failedCount > 0) {
                 showToast(`⚠️ Ada ${batchProcessState.failedCount} siswa yang gagal`);
             }
             hideBatchProgress();
         });
     }
-    document.getElementById('rapor-batch-pause').addEventListener('click', function() {
-        if(batchProcessState.isPaused) {
+    document.getElementById('rapor-batch-pause').addEventListener('click', function () {
+        if (batchProcessState.isPaused) {
             batchProcessState.isPaused = false;
             this.innerHTML = '<i class="fas fa-pause"></i> Pause';
             this.classList.remove('btn-warning');
@@ -5492,13 +5490,13 @@ document.getElementById('btn-gen-rapor').addEventListener('click', function() {
             showToast('⏸️  Preview dijeda');
         }
     });
-    document.getElementById('rapor-batch-stop').addEventListener('click', function() {
+    document.getElementById('rapor-batch-stop').addEventListener('click', function () {
         batchProcessState.abortRequested = true;
         batchProcessState.isPaused = false;
         showToast('🛑 Menghentikan preview...');
     });
-} catch(e) { console.warn('Import Excel init skipped:', e); }
-window.printRapor = function(divId) {
+} catch (e) { console.warn('Import Excel init skipped:', e); }
+window.printRapor = function (divId) {
     const element = document.getElementById(divId);
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
@@ -5530,7 +5528,7 @@ window.printRapor = function(divId) {
     printWindow.document.close();
     setTimeout(() => printWindow.print(), 250);
 };
-document.getElementById('btn-gen-catatan-wali').addEventListener('click', async function() {
+document.getElementById('btn-gen-catatan-wali').addEventListener('click', async function () {
     const btn = this;
     const nama = document.getElementById('rapor-nama').value || 'Siswa';
     const nilaiInputs = document.querySelectorAll('.rapor-nilai-input');
@@ -5540,7 +5538,7 @@ document.getElementById('btn-gen-catatan-wali').addEventListener('click', async 
         const nilai = parseInt(input.value) || 0;
         mapelNilai.push({ mapel, nilai });
     });
-    if(mapelNilai.length === 0) {
+    if (mapelNilai.length === 0) {
         showToast('Silakan isi minimal satu nilai mata pelajaran terlebih dahulu');
         return;
     }
@@ -5558,7 +5556,7 @@ document.getElementById('btn-gen-catatan-wali').addEventListener('click', async 
         const result = await callGemini(prompt);
         document.getElementById('rapor-catatan').value = result.trim();
         showToast('Catatan Wali Kelas berhasil di-generate!');
-    } catch(err) {
+    } catch (err) {
         console.error(err);
         showToast('Gagal generate catatan wali kelas');
     } finally {
@@ -5566,7 +5564,7 @@ document.getElementById('btn-gen-catatan-wali').addEventListener('click', async 
         btn.innerHTML = '<i class="fas fa-magic"></i> Generate dengan AI';
     }
 });
-document.getElementById('btn-gen-catatan-kokul').addEventListener('click', async function() {
+document.getElementById('btn-gen-catatan-kokul').addEventListener('click', async function () {
     const btn = this;
     const nama = document.getElementById('rapor-nama').value || 'Siswa';
     const temakokul = document.getElementById('rapor-tema-kokul').value || 'proyek kokurikuler';
@@ -5585,7 +5583,7 @@ document.getElementById('btn-gen-catatan-kokul').addEventListener('click', async
         const result = await callGemini(prompt);
         document.getElementById('rapor-catatan-kokul').value = result.trim();
         showToast('Catatan Kokurikuler berhasil di-generate!');
-    } catch(err) {
+    } catch (err) {
         console.error(err);
         showToast('Gagal generate catatan kokurikuler');
     } finally {
@@ -5593,7 +5591,7 @@ document.getElementById('btn-gen-catatan-kokul').addEventListener('click', async
         btn.innerHTML = '<i class="fas fa-magic"></i> Generate dengan AI';
     }
 });
-document.getElementById('btn-gen-capaian-kompetensi').addEventListener('click', async function() {
+document.getElementById('btn-gen-capaian-kompetensi').addEventListener('click', async function () {
     const btn = this;
     const nama = document.getElementById('rapor-nama').value || 'Siswa';
     const nilaiInputs = document.querySelectorAll('.rapor-nilai-input');
@@ -5604,22 +5602,22 @@ document.getElementById('btn-gen-capaian-kompetensi').addEventListener('click', 
         const mapelSwitch = Array.from(document.querySelectorAll('.rapor-mapel-switch')).find(
             s => s.getAttribute('data-mapel') === mapel
         );
-        if(mapelSwitch && mapelSwitch.checked) {
+        if (mapelSwitch && mapelSwitch.checked) {
             mapelNilai.push({ mapel, nilai });
         }
     });
-    if(mapelNilai.length === 0) {
+    if (mapelNilai.length === 0) {
         showToast('Silakan isi minimal satu nilai mata pelajaran terlebih dahulu');
         return;
     }
     btn.classList.add('loading');
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
     try {
-        for(let mapel of mapelNilai) {
+        for (let mapel of mapelNilai) {
             let kategori = 'cukup';
-            if(mapel.nilai >= 90) kategori = 'sangat baik';
-            else if(mapel.nilai >= 80) kategori = 'baik';
-            else if(mapel.nilai >= 70) kategori = 'cukup';
+            if (mapel.nilai >= 90) kategori = 'sangat baik';
+            else if (mapel.nilai >= 80) kategori = 'baik';
+            else if (mapel.nilai >= 70) kategori = 'cukup';
             else kategori = 'perlu ditingkatkan';
             const prompt = `
 Buatkan ringkasan capaian kompetensi untuk siswa bernama ${nama} di mata pelajaran ${mapel.mapel} dengan nilai ${mapel.nilai} (${kategori}).
@@ -5633,10 +5631,10 @@ Mulai dengan "Ananda..." jika cocok. Hindari nama spesifik tempat/kota.
             try {
                 const result = await callGemini(prompt);
                 const textarea = document.querySelector(`.rapor-capaian-kompetensi-input[data-mapel="${mapel.mapel}"]`);
-                if(textarea) {
+                if (textarea) {
                     textarea.value = result.trim();
                 }
-            } catch(err) {
+            } catch (err) {
                 console.error(`Error generating for ${mapel.mapel}:`, err);
             }
         }
@@ -5670,16 +5668,16 @@ Mulai dengan "Ananda..." jika cocok. Hindari nama spesifik tempat/kota.
             </div>
         `;
         const container = document.getElementById('rapor-capaian-kompetensi-container');
-        if(container) {
+        if (container) {
             const existingPreview = container.parentElement.querySelector('.capaian-preview-container');
-            if(existingPreview) existingPreview.remove();
+            if (existingPreview) existingPreview.remove();
             const previewDiv = document.createElement('div');
             previewDiv.className = 'capaian-preview-container';
             previewDiv.innerHTML = previewHtml;
             container.parentElement.appendChild(previewDiv);
         }
         showToast('Capaian Kompetensi per Mapel berhasil di-generate!');
-    } catch(err) {
+    } catch (err) {
         console.error(err);
         showToast('Gagal generate capaian kompetensi');
     } finally {
@@ -5687,7 +5685,7 @@ Mulai dengan "Ananda..." jika cocok. Hindari nama spesifik tempat/kota.
         btn.innerHTML = '<i class="fas fa-magic"></i> Generate Capaian Kompetensi untuk Semua Mapel';
     }
 });
-document.getElementById('btn-gen-capaian-kompetensi-mulok').addEventListener('click', async function() {
+document.getElementById('btn-gen-capaian-kompetensi-mulok').addEventListener('click', async function () {
     const btn = this;
     const nama = document.getElementById('rapor-nama').value || 'Siswa';
     const muatanInputs = document.querySelectorAll('.rapor-muatan-lokal-nilai');
@@ -5697,18 +5695,18 @@ document.getElementById('btn-gen-capaian-kompetensi-mulok').addEventListener('cl
         const nilai = parseInt(input.value) || 0;
         muatanNilai.push({ muatan, nilai });
     });
-    if(muatanNilai.length === 0) {
+    if (muatanNilai.length === 0) {
         showToast('Silakan isi minimal satu nilai muatan lokal terlebih dahulu');
         return;
     }
     btn.classList.add('loading');
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
     try {
-        for(let muatan of muatanNilai) {
+        for (let muatan of muatanNilai) {
             let kategori = 'cukup';
-            if(muatan.nilai >= 90) kategori = 'sangat baik';
-            else if(muatan.nilai >= 80) kategori = 'baik';
-            else if(muatan.nilai >= 70) kategori = 'cukup';
+            if (muatan.nilai >= 90) kategori = 'sangat baik';
+            else if (muatan.nilai >= 80) kategori = 'baik';
+            else if (muatan.nilai >= 70) kategori = 'cukup';
             else kategori = 'perlu ditingkatkan';
             const prompt = `
 Buatkan ringkasan capaian kompetensi untuk siswa bernama ${nama} di muatan lokal ${muatan.muatan} dengan nilai ${muatan.nilai} (${kategori}).
@@ -5722,15 +5720,15 @@ Mulai dengan "Ananda..." jika cocok. Hindari nama spesifik tempat/kota.
             try {
                 const result = await callGemini(prompt);
                 const textarea = document.querySelector(`.rapor-capaian-kompetensi-mulok-input[data-muatan="${muatan.muatan}"]`);
-                if(textarea) {
+                if (textarea) {
                     textarea.value = result.trim();
                 }
-            } catch(err) {
+            } catch (err) {
                 console.error(`Error generating for ${muatan.muatan}:`, err);
             }
         }
         showToast('Capaian Kompetensi Muatan Lokal berhasil di-generate!');
-    } catch(err) {
+    } catch (err) {
         console.error(err);
         showToast('Gagal generate capaian kompetensi muatan lokal');
     } finally {
@@ -5739,7 +5737,7 @@ Mulai dengan "Ananda..." jika cocok. Hindari nama spesifik tempat/kota.
     }
 });
 function initAddItemModals() {
-    if(document.getElementById('add-mapel-modal')) return; 
+    if (document.getElementById('add-mapel-modal')) return;
     const modalHTML = `
     <div id="add-mapel-modal" class="add-item-modal">
         <div class="add-item-dialog">
@@ -5810,7 +5808,7 @@ function initAddItemModals() {
 }
 const MAPEL_KURIKULUM_MERDEKA = {
     'SD': [
-        'Bahasa Indonesia', 'Matematika', 'IPAS', 'Bahasa Inggris', 
+        'Bahasa Indonesia', 'Matematika', 'IPAS', 'Bahasa Inggris',
         'PJOK', 'Seni & Budaya', 'Informatika', 'Pendidikan Pancasila'
     ],
     'SMP': [
@@ -5825,7 +5823,7 @@ const MAPEL_KURIKULUM_MERDEKA = {
 };
 function populateMapelSelect() {
     const select = document.getElementById('add-mapel-select');
-    if(!select) return;
+    if (!select) return;
     const allMapel = new Set();
     Object.values(MAPEL_KURIKULUM_MERDEKA).forEach(arr => {
         arr.forEach(m => allMapel.add(m));
@@ -5838,7 +5836,7 @@ function populateMapelSelect() {
     });
 }
 function openAddMapelModal() {
-    if(!document.getElementById('add-mapel-modal')) {
+    if (!document.getElementById('add-mapel-modal')) {
         initAddItemModals();
     }
     document.getElementById('add-mapel-modal').classList.add('show');
@@ -5848,19 +5846,19 @@ function openAddMapelModal() {
 }
 function closeAddMapelModal() {
     const modal = document.getElementById('add-mapel-modal');
-    if(modal) modal.classList.remove('show');
+    if (modal) modal.classList.remove('show');
 }
 function onMapelSelectChange() {
     const select = document.getElementById('add-mapel-select');
     const customInput = document.getElementById('add-mapel-custom-input');
-    if(select.value) {
+    if (select.value) {
         customInput.value = select.value;
     }
 }
 function saveAddMapel() {
     const mapelName = document.getElementById('add-mapel-custom-input').value.trim();
     const nilai = parseInt(document.getElementById('add-mapel-nilai').value) || 75;
-    if(!mapelName) {
+    if (!mapelName) {
         showToast('Silakan masukkan nama mata pelajaran');
         return;
     }
@@ -5901,7 +5899,7 @@ function saveAddMapel() {
     closeAddMapelModal();
 }
 function openAddMulokModal() {
-    if(!document.getElementById('add-mulok-modal')) {
+    if (!document.getElementById('add-mulok-modal')) {
         initAddItemModals();
     }
     document.getElementById('add-mulok-modal').classList.add('show');
@@ -5911,19 +5909,19 @@ function openAddMulokModal() {
 }
 function closeAddMulokModal() {
     const modal = document.getElementById('add-mulok-modal');
-    if(modal) modal.classList.remove('show');
+    if (modal) modal.classList.remove('show');
 }
 function onMulokSelectChange() {
     const select = document.getElementById('add-mulok-select');
     const customInput = document.getElementById('add-mulok-custom-input');
-    if(select.value) {
+    if (select.value) {
         customInput.value = select.value;
     }
 }
 function saveAddMulok() {
     const muatanName = document.getElementById('add-mulok-custom-input').value.trim();
     const nilai = parseInt(document.getElementById('add-mulok-nilai').value) || 75;
-    if(!muatanName) {
+    if (!muatanName) {
         showToast('Silakan masukkan nama muatan lokal');
         return;
     }
@@ -5963,20 +5961,20 @@ function saveAddMulok() {
     const nameInput = div.querySelector('.rapor-muatan-lokal-nama');
     const nilaiInput = div.querySelector('.rapor-muatan-lokal-nilai');
     const removeBtn = div.querySelector('.remove-mulok');
-    removeBtn.addEventListener('click', function() {
+    removeBtn.addEventListener('click', function () {
         div.remove();
         const cap = capContainer.querySelector(`.rapor-capaian-kompetensi-mulok-input[data-muatan-id="${id}"]`);
-        if(cap && cap.parentElement) cap.parentElement.remove();
+        if (cap && cap.parentElement) cap.parentElement.remove();
     });
-    nameInput.addEventListener('input', function() {
+    nameInput.addEventListener('input', function () {
         const newName = this.value.trim();
-        if(!newName) return;
+        if (!newName) return;
         nilaiInput.setAttribute('data-muatan', newName);
         const capTextarea = capContainer.querySelector(`.rapor-capaian-kompetensi-mulok-input[data-muatan-id="${id}"]`);
-        if(capTextarea) {
+        if (capTextarea) {
             capTextarea.setAttribute('data-muatan', newName);
             const lbl = capTextarea.parentElement && capTextarea.parentElement.querySelector('label');
-            if(lbl) lbl.textContent = newName;
+            if (lbl) lbl.textContent = newName;
         }
     });
     showToast(`Muatan Lokal "${muatanName}" berhasil ditambahkan!`);
@@ -6006,41 +6004,41 @@ function downloadTemplateGoogleSheet() {
             ['1234567891011122', 'Siti Aisyah', 'Bahasa Indonesia', 'Sumatif', 88, 'Sangat Bagus']
         ];
         const workbook = XLSX.utils.book_new();
-        
+
         // Sheet 1: Data Siswa
         const dataSiswaSheet = XLSX.utils.aoa_to_sheet([dataSiswaHeader, ...dataSiswaRows]);
         dataSiswaSheet['!cols'] = [
-            { wch: 10 }, 
-            { wch: 15 }, 
-            { wch: 20 }, 
-            { wch: 15 }, 
-            { wch: 15 }, 
-            { wch: 15 }, 
-            { wch: 12 }, 
-            { wch: 18 }, 
-            { wch: 20 }, 
-            { wch: 15 }, 
-            { wch: 15 }, 
-            { wch: 15 }, 
-            { wch: 15 }, 
-            { wch: 20 }, 
-            { wch: 15 }, 
-            { wch: 15 }, 
-            { wch: 20 }, 
-            { wch: 15 }  
+            { wch: 10 },
+            { wch: 15 },
+            { wch: 20 },
+            { wch: 15 },
+            { wch: 15 },
+            { wch: 15 },
+            { wch: 12 },
+            { wch: 18 },
+            { wch: 20 },
+            { wch: 15 },
+            { wch: 15 },
+            { wch: 15 },
+            { wch: 15 },
+            { wch: 20 },
+            { wch: 15 },
+            { wch: 15 },
+            { wch: 20 },
+            { wch: 15 }
         ];
         XLSX.utils.book_append_sheet(workbook, dataSiswaSheet, 'Data Siswa');
-        
+
         // Sheet 2: Absensi
         const absensiSheet = XLSX.utils.aoa_to_sheet([absensiHeader, ...absensiRows]);
         absensiSheet['!cols'] = [
-            { wch: 15 }, 
-            { wch: 20 }, 
-            { wch: 12 }, 
-            { wch: 12 }  
+            { wch: 15 },
+            { wch: 20 },
+            { wch: 12 },
+            { wch: 12 }
         ];
         XLSX.utils.book_append_sheet(workbook, absensiSheet, 'Absensi');
-        
+
         // Sheet 3: Nilai Siswa
         const nilaiSheet = XLSX.utils.aoa_to_sheet([nilaiHeader, ...nilaiRows]);
         nilaiSheet['!cols'] = [
@@ -6052,10 +6050,10 @@ function downloadTemplateGoogleSheet() {
             { wch: 20 }
         ];
         XLSX.utils.book_append_sheet(workbook, nilaiSheet, 'Nilai Siswa');
-        
+
         XLSX.writeFile(workbook, 'Template_DigiArju.xlsx');
         showToast('✓ Template Excel dengan 3 sheet (Data Siswa, Absensi, Nilai Siswa) berhasil diunduh! Buat Google Sheet kemudian import file ini ke Google Sheets.', 'success');
-    } catch(error) {
+    } catch (error) {
         console.error('Error downloading template:', error);
         showToast('❌ Gagal membuat template: ' + error.message, 'danger');
     }
@@ -6073,11 +6071,11 @@ const statusColor = {
 };
 function validateGoogleSheetUrl(url) {
     const trimmed = url.trim();
-    if(!trimmed.includes('docs.google.com/spreadsheets')) {
+    if (!trimmed.includes('docs.google.com/spreadsheets')) {
         return { valid: false, error: 'URL harus dari Google Spreadsheet (docs.google.com/spreadsheets)' };
     }
     const sheetIdMatch = trimmed.match(/\/d\/([a-zA-Z0-9-_]+)/);
-    if(!sheetIdMatch) {
+    if (!sheetIdMatch) {
         return { valid: false, error: 'Tidak ada Sheet ID ditemukan dalam URL' };
     }
     const gidMatch = trimmed.match(/[#&]gid=([0-9]+)/);
@@ -6088,13 +6086,13 @@ function convertGoogleSheetToCSV(spreadsheetUrl, gid = null) {
     try {
         let sheetId = null;
         const sheetIdMatch = spreadsheetUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
-        if(sheetIdMatch) {
+        if (sheetIdMatch) {
             sheetId = sheetIdMatch[1];
         } else {
             return null;
         }
         let selectedGid = '0';
-        if(gid !== null && gid !== undefined) {
+        if (gid !== null && gid !== undefined) {
             selectedGid = gid.toString();
         } else {
             const gidMatch = spreadsheetUrl.match(/[#&]gid=([0-9]+)/);
@@ -6104,7 +6102,7 @@ function convertGoogleSheetToCSV(spreadsheetUrl, gid = null) {
         console.log(`📄 Converting Sheet (sheetId=${sheetId}, gid=${selectedGid}) to CSV`);
         console.log(`🔗 CSV URL:`, csvUrl);
         return csvUrl;
-    } catch(e) {
+    } catch (e) {
         console.error('Error in convertGoogleSheetToCSV:', e);
         return null;
     }
@@ -6113,17 +6111,17 @@ function parseCSVLine(line) {
     const result = [];
     let current = '';
     let insideQuotes = false;
-    for(let i = 0; i < line.length; i++) {
+    for (let i = 0; i < line.length; i++) {
         const char = line[i];
         const nextChar = line[i + 1];
-        if(char === '"') {
-            if(insideQuotes && nextChar === '"') {
+        if (char === '"') {
+            if (insideQuotes && nextChar === '"') {
                 current += '"';
                 i++;
             } else {
                 insideQuotes = !insideQuotes;
             }
-        } else if(char === ',' && !insideQuotes) {
+        } else if (char === ',' && !insideQuotes) {
             result.push(current.trim());
             current = '';
         } else {
@@ -6135,12 +6133,12 @@ function parseCSVLine(line) {
 }
 async function syncDataSiswaFromGoogle() {
     const p1 = document.getElementById('ds-datasheet-link')?.value?.trim() || '';
-    if(!p1) {
+    if (!p1) {
         showToast('⚠️ Link Google Spreadsheet belum diisi di menu Data Siswa! Silakan isi terlebih dahulu.', 'danger');
         return;
     }
     const validation = validateGoogleSheetUrl(p1);
-    if(!validation.valid) {
+    if (!validation.valid) {
         showToast('❌ ' + validation.error, 'danger');
         console.error('URL Validation Error:', validation.error);
         return;
@@ -6148,12 +6146,12 @@ async function syncDataSiswaFromGoogle() {
     console.log('✅ URL Valid - SheetId:', validation.sheetId, '| gid:', validation.gid);
     try {
         const csvUrl = convertGoogleSheetToCSV(p1, validation.gid);
-        if(!csvUrl) {
+        if (!csvUrl) {
             showToast('❌ Gagal mengkonversi URL. Format URL tidak sesuai.', 'danger');
             return;
         }
         showToast(`⏳ Mengunduh data siswa dari Google Sheet (gid=${validation.gid})...`, 'info');
-        const response = await fetch(csvUrl, { 
+        const response = await fetch(csvUrl, {
             mode: 'cors',
             headers: {
                 'Accept': 'text/csv',
@@ -6161,42 +6159,42 @@ async function syncDataSiswaFromGoogle() {
                 'Cache-Control': 'no-cache'
             }
         });
-        if(!response.ok) {
+        if (!response.ok) {
             let errorMsg = `HTTP ${response.status}`;
-            if(response.status === 404) {
+            if (response.status === 404) {
                 errorMsg = `🔴 Sheet gid=${validation.gid} tidak ditemukan (404). Periksa apakah tab dengan ID ini ada di spreadsheet.`;
-            } else if(response.status === 403) {
+            } else if (response.status === 403) {
                 errorMsg = '🔴 Akses ditolak (403). Sheet harus di-share dengan "Siapa saja dengan link" atau "Publik".';
-            } else if(response.status === 400) {
+            } else if (response.status === 400) {
                 errorMsg = `🔴 Request tidak valid (400). Cek gid=${validation.gid}. Mungkin tab/sheet dengan ID ini tidak ada.`;
             }
             throw new Error(errorMsg);
         }
         const csv = await response.text();
-        if(!csv || csv.trim().length === 0) {
+        if (!csv || csv.trim().length === 0) {
             showToast('⚠️ Sheet kosong atau tidak dapat dibaca! Pastikan ada data di sheet dengan gid=' + validation.gid, 'danger');
             return;
         }
         const lines = csv.split('\n').filter(line => line.trim());
         console.log('📊 CSV Info - Total baris:', lines.length);
-        if(lines.length > 0) {
+        if (lines.length > 0) {
             console.log('📋 Header:', lines[0]);
-            if(lines.length > 1) console.log('📋 Row 1:', lines[1]);
+            if (lines.length > 1) console.log('📋 Row 1:', lines[1]);
         }
-        if(lines.length < 2) {
+        if (lines.length < 2) {
             showToast('⚠️ Sheet hanya memiliki header tanpa data! Pastikan ada data minimal 1 baris di sheet dengan gid=' + validation.gid, 'danger');
             return;
         }
         dataSiswa = [];
         let successCount = 0;
         let errorCount = 0;
-        for(let i = 1; i < lines.length; i++) {
+        for (let i = 1; i < lines.length; i++) {
             const cols = parseCSVLine(lines[i]);
-            if(cols.length === 0 || !cols[0] || cols[0].trim() === '') {
+            if (cols.length === 0 || !cols[0] || cols[0].trim() === '') {
                 continue;
             }
             try {
-                if(!cols[0] || !cols[1]) {
+                if (!cols[0] || !cols[1]) {
                     console.warn(`⚠️ Baris ${i}: NIS atau NISN kosong, skip`);
                     errorCount++;
                     continue;
@@ -6223,12 +6221,12 @@ async function syncDataSiswaFromGoogle() {
                     nomorTelepon: (cols[17] || '-').trim()
                 });
                 successCount++;
-            } catch(e) {
+            } catch (e) {
                 console.warn(`⚠️ Baris ${i} gagal diproses:`, e.message, cols);
                 errorCount++;
             }
         }
-        if(dataSiswa.length === 0) {
+        if (dataSiswa.length === 0) {
             showToast('❌ Tidak ada data siswa valid ditemukan. Periksa:\n1. Kolom 1 = NIS, Kolom 2 = NISN\n2. Ada data minimal 1 baris\n3. gid=' + validation.gid + ' (sheet ID benar)', 'danger');
             console.error('No valid data. Sample:', lines[1], 'Columns:', lines[1] ? parseCSVLine(lines[1]) : []);
             return;
@@ -6237,28 +6235,28 @@ async function syncDataSiswaFromGoogle() {
         tampilkanDataSiswa();
         tampilkanAbsensi();
         let message = `✅ ${dataSiswa.length} data siswa berhasil disinkronkan!`;
-        if(errorCount > 0) {
+        if (errorCount > 0) {
             message += ` (${errorCount} baris error)`;
         }
         showToast(message, 'success');
         console.log('✅ Sync berhasil - Total:', dataSiswa.length, 'Data:', dataSiswa);
-    } catch(error) {
+    } catch (error) {
         console.error('❌ Error sync:', error);
         showToast('❌ Gagal sinkronisasi:\n' + error.message, 'danger');
     }
 }
 async function simpanAbsensi() {
     const tanggal = document.getElementById('tanggal-absensi').value;
-    if(!tanggal) {
+    if (!tanggal) {
         showToast('⚠️ Pilih tanggal absensi terlebih dahulu!', 'danger');
         return;
     }
     const p1 = document.getElementById('ds-datasheet-link')?.value?.trim() || '';
-    if(!p1) {
+    if (!p1) {
         showToast('❌ Link Google Spreadsheet belum diisi di menu Data Siswa!', 'danger');
         return;
     }
-    if(dataSiswa.length === 0) {
+    if (dataSiswa.length === 0) {
         showToast('❌ Tidak ada data siswa! Sinkronisasi data siswa terlebih dahulu.', 'danger');
         return;
     }
@@ -6272,7 +6270,7 @@ async function simpanAbsensi() {
             csvData += `"${siswa.nisn}","${siswa.nama}","${tanggal}","${status}"\n`;
         });
         const validation = validateGoogleSheetUrl(p1);
-        if(!validation.valid) {
+        if (!validation.valid) {
             showToast(`❌ ${validation.error}`, 'danger');
             return;
         }
@@ -6283,11 +6281,11 @@ async function simpanAbsensi() {
         console.log('📤 Mencoba koneksi ke:', absensiUrl);
         console.log('📋 Data CSV:', csvData);
         const response = await fetch(absensiUrl);
-        if(!response.ok) {
-            if(response.status === 400 || response.status === 404) {
+        if (!response.ok) {
+            if (response.status === 400 || response.status === 404) {
                 showToast('ℹ️ Sheet "Absensi" (gid=1) tidak ditemukan.\n\nData absensi disimpan lokal ✅\n\nUntuk sinkronisasi ke Google:\n1. Buka Google Sheet Anda\n2. Tambah sheet baru bernama "Absensi"\n3. Copy-paste data CSV kemudian', 'info');
                 console.log('⚠️ Sheet Absensi tidak ada. Data disimpan lokal.');
-            } else if(response.status === 403) {
+            } else if (response.status === 403) {
                 showToast('❌ HTTP 403: Akses ditolak. Pastikan link dapat diakses publik.', 'danger');
             } else {
                 showToast(`❌ HTTP ${response.status}`, 'danger');
@@ -6297,7 +6295,7 @@ async function simpanAbsensi() {
         }
         showToast(`✅ Data absensi ${tanggal} berhasil diproses!`, 'success');
         console.log('✅ Absensi berhasil');
-    } catch(error) {
+    } catch (error) {
         console.error('❌ Error:', error);
         localStorage.setItem('dataAbsensi', JSON.stringify(dataAbsensi));
         showToast('✅ Data disimpan lokal (offline mode)', 'success');
@@ -6305,11 +6303,11 @@ async function simpanAbsensi() {
 }
 function downloadAbsensiCSV() {
     const tanggal = document.getElementById('tanggal-absensi').value;
-    if(!tanggal) {
+    if (!tanggal) {
         showToast('⚠️ Pilih tanggal absensi terlebih dahulu!', 'danger');
         return;
     }
-    if(dataSiswa.length === 0) {
+    if (dataSiswa.length === 0) {
         showToast('⚠️ Tidak ada data siswa! Sinkronisasi data siswa terlebih dahulu.', 'danger');
         return;
     }
@@ -6327,26 +6325,26 @@ function downloadAbsensiCSV() {
         link.click();
         showToast(`✅ File absensi ${tanggal} berhasil diunduh! File: Absensi_${tanggal}.csv`, 'success');
         console.log('📥 Absensi CSV diunduh:', csvData);
-    } catch(error) {
+    } catch (error) {
         console.error('Error download absensi:', error);
         showToast('❌ Gagal mengunduh absensi: ' + error.message, 'danger');
     }
 }
 async function syncAbsensiToGoogle() {
     const p1 = document.getElementById('ds-datasheet-link')?.value?.trim() || '';
-    if(!p1) {
+    if (!p1) {
         showToast('Link Google Spreadsheet belum diisi di menu Data Siswa!', 'danger');
         return;
     }
     try {
         const tanggal = document.getElementById('tanggal-absensi').value;
-        if(!tanggal) {
+        if (!tanggal) {
             showToast('Pilih tanggal absensi terlebih dahulu!', 'danger');
             return;
         }
         showToast('Menyiapkan data absensi untuk diunggah ke Google Sheet...', 'info');
         const csvUrl = convertGoogleSheetToCSV(p1, 1);
-        if(!csvUrl) {
+        if (!csvUrl) {
             showToast('Format URL Google Sheet tidak valid!', 'danger');
             return;
         }
@@ -6363,7 +6361,7 @@ async function syncAbsensiToGoogle() {
         link.download = `Absensi_${tanggal}.csv`;
         link.click();
         showToast('File absensi diunduh. Silakan upload ke Google Sheet secara manual atau copy-paste ke tab "Absensi".', 'info');
-    } catch(error) {
+    } catch (error) {
         console.error('Error sync absensi:', error);
         showToast('Gagal menyiapkan sinkronisasi: ' + error.message, 'danger');
     }
@@ -6398,7 +6396,7 @@ function simpanDataSiswa() {
         alamatWali: inputs[16].value,
         nomorTelepon: inputs[17].value
     };
-    if(!siswa.nama) {
+    if (!siswa.nama) {
         showToast('Nama siswa tidak boleh kosong!', 'danger');
         return;
     }
@@ -6411,8 +6409,8 @@ function simpanDataSiswa() {
 }
 function tampilkanDataSiswa() {
     const tbody = document.getElementById('tbody-siswa');
-    if(!tbody) return;
-    if(dataSiswa.length === 0) {
+    if (!tbody) return;
+    if (dataSiswa.length === 0) {
         tbody.innerHTML = '<tr style="text-align: center; color: var(--text-muted);"><td colspan="11" style="padding: 30px;"><i class="fas fa-inbox"></i> Belum ada data siswa. Gunakan tombol "Sinkronisasi dari Google Sheet" atau "Tambah Siswa Baru".</td></tr>';
         return;
     }
@@ -6436,7 +6434,7 @@ function tampilkanDataSiswa() {
     `).join('');
 }
 function hapusSiswa(id) {
-    if(!confirm('Hapus data siswa ini?')) return;
+    if (!confirm('Hapus data siswa ini?')) return;
     dataSiswa = dataSiswa.filter(s => s.id !== id);
     localStorage.setItem('dataSiswa', JSON.stringify(dataSiswa));
     tampilkanDataSiswa();
@@ -6446,7 +6444,7 @@ function importSiswaExcel() {
     document.getElementById('file-import-siswa').click();
 }
 function exportSiswaExcel() {
-    if(dataSiswa.length === 0) {
+    if (dataSiswa.length === 0) {
         showToast('Tidak ada data siswa untuk diexport!', 'danger');
         return;
     }
@@ -6463,13 +6461,13 @@ function exportSiswaExcel() {
 }
 function tampilkanAbsensi() {
     const grid = document.getElementById('grid-absensi');
-    if(!grid) return;
-    if(dataSiswa.length === 0) {
+    if (!grid) return;
+    if (dataSiswa.length === 0) {
         grid.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted); grid-column: 1 / -1;"><i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 10px;"></i><p>Belum ada data siswa. Sinkronisasi dari Google Sheet atau tambahkan data di menu "Data Siswa".</p></div>';
         return;
     }
     const tanggal = document.getElementById('tanggal-absensi').value;
-    if(!tanggal) {
+    if (!tanggal) {
         showToast('Pilih tanggal absensi terlebih dahulu!', 'danger');
         return;
     }
@@ -6512,7 +6510,7 @@ function ubahStatusAbsensi(key, status, event) {
 }
 function hadirSemua() {
     const tanggal = document.getElementById('tanggal-absensi').value;
-    if(!tanggal) {
+    if (!tanggal) {
         showToast('Pilih tanggal absensi terlebih dahulu!', 'danger');
         return;
     }
@@ -6531,22 +6529,22 @@ function simpanAbsensi() {
 // ========== CRUD OPERATIONS LENGKAP ==========
 
 // ===== 1. NILAI SISWA - CRUD LENGKAP =====
-window.addNilai = function() {
+window.addNilai = function () {
     const kelas = document.getElementById('nilai-filter-kelas')?.value;
     const mapel = document.getElementById('nilai-filter-mapel')?.value;
     const jenis = document.getElementById('nilai-filter-jenis')?.value;
-    
-    if(!mapel || !jenis) {
+
+    if (!mapel || !jenis) {
         showToast('Pilih Mata Pelajaran dan Jenis Asesmen terlebih dahulu!', 'danger');
         return;
     }
-    
+
     const modal = document.createElement('div');
     modal.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:10000;';
-    
+
     const form = document.createElement('div');
     form.style.cssText = 'background:white; padding:30px; border-radius:12px; box-shadow:0 4px 6px rgba(0,0,0,0.3); max-width:500px; width:90%;';
-    
+
     form.innerHTML = `
         <h3 style="margin-top:0; margin-bottom:20px; color:var(--primary);">Tambah Nilai Siswa</h3>
         <div class="form-group">
@@ -6569,37 +6567,37 @@ window.addNilai = function() {
             <button class="btn btn-primary" onclick="window.saveNewNilai('${mapel}', '${jenis}', '${kelas}')">Simpan</button>
         </div>
     `;
-    
+
     form.querySelector('#modal-siswa').focus();
     modal.appendChild(form);
     document.body.appendChild(modal);
-    modal.addEventListener('click', function(e) {
-        if(e.target === modal) modal.remove();
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) modal.remove();
     });
 };
 
-window.saveNewNilai = function(mapel, jenis, kelas) {
+window.saveNewNilai = function (mapel, jenis, kelas) {
     const nisn = document.getElementById('modal-siswa')?.value;
     const nilai = document.getElementById('modal-nilai')?.value;
     const catatan = document.getElementById('modal-catatan')?.value;
-    
-    if(!nisn || !nilai) {
+
+    if (!nisn || !nilai) {
         showToast('Siswa dan Nilai tidak boleh kosong!', 'danger');
         return;
     }
-    
+
     const nilaiNum = parseInt(nilai);
-    if(isNaN(nilaiNum) || nilaiNum < 0 || nilaiNum > 100) {
+    if (isNaN(nilaiNum) || nilaiNum < 0 || nilaiNum > 100) {
         showToast('Nilai harus angka 0-100!', 'danger');
         return;
     }
-    
+
     const siswa = dataSiswa.find(s => s.nisn === nisn);
-    if(!siswa) {
+    if (!siswa) {
         showToast('Siswa tidak ditemukan!', 'danger');
         return;
     }
-    
+
     const newNilai = {
         id: Date.now(),
         nisn: nisn,
@@ -6611,28 +6609,28 @@ window.saveNewNilai = function(mapel, jenis, kelas) {
         kelas: kelas,
         tanggalInput: new Date().toISOString().split('T')[0]
     };
-    
+
     dataNilaiSiswa.push(newNilai);
     localStorage.setItem('dataNilaiSiswa', JSON.stringify(dataNilaiSiswa));
-    
+
     document.querySelector('[style*=position]')?.remove();
     tampilkanNilaiByFilter();
     showToast('✅ Nilai berhasil ditambahkan!', 'success');
 };
 
-window.editNilai = function(id) {
+window.editNilai = function (id) {
     const nilai = dataNilaiSiswa.find(n => n.id === id);
-    if(!nilai) {
+    if (!nilai) {
         showToast('Data tidak ditemukan!', 'danger');
         return;
     }
-    
+
     const modal = document.createElement('div');
     modal.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:10000;';
-    
+
     const form = document.createElement('div');
     form.style.cssText = 'background:white; padding:30px; border-radius:12px; box-shadow:0 4px 6px rgba(0,0,0,0.3); max-width:500px; width:90%;';
-    
+
     form.innerHTML = `
         <h3 style="margin-top:0; margin-bottom:20px; color:var(--primary);">Edit Nilai Siswa</h3>
         <div class="form-group">
@@ -6656,60 +6654,60 @@ window.editNilai = function(id) {
             <button class="btn btn-primary" onclick="window.saveEditNilai(${id})">Simpan</button>
         </div>
     `;
-    
+
     modal.appendChild(form);
     document.body.appendChild(modal);
-    modal.addEventListener('click', function(e) {
-        if(e.target === modal) modal.remove();
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) modal.remove();
     });
 };
 
-window.saveEditNilai = function(id) {
+window.saveEditNilai = function (id) {
     const nilai = dataNilaiSiswa.find(n => n.id === id);
-    if(!nilai) return;
-    
+    if (!nilai) return;
+
     const nilaiNum = parseInt(document.getElementById('modal-nilai-edit')?.value || 0);
     const catatan = document.getElementById('modal-catatan-edit')?.value || '';
-    
-    if(isNaN(nilaiNum) || nilaiNum < 0 || nilaiNum > 100) {
+
+    if (isNaN(nilaiNum) || nilaiNum < 0 || nilaiNum > 100) {
         showToast('Nilai harus angka 0-100!', 'danger');
         return;
     }
-    
+
     nilai.nilai = nilaiNum;
     nilai.catatan = catatan;
-    
+
     localStorage.setItem('dataNilaiSiswa', JSON.stringify(dataNilaiSiswa));
     document.querySelector('[style*=position]')?.remove();
     tampilkanNilaiByFilter();
     showToast('✅ Nilai berhasil diupdate!', 'success');
 };
 
-window.deleteNilai = function(id) {
-    if(!confirm('Hapus nilai ini? Data tidak bisa dikembalikan!')) return;
-    
+window.deleteNilai = function (id) {
+    if (!confirm('Hapus nilai ini? Data tidak bisa dikembalikan!')) return;
+
     dataNilaiSiswa = dataNilaiSiswa.filter(n => n.id !== id);
     localStorage.setItem('dataNilaiSiswa', JSON.stringify(dataNilaiSiswa));
     tampilkanNilaiByFilter();
     showToast('✅ Nilai berhasil dihapus!', 'success');
 };
 
-window.tampilkanNilaiByFilter = function() {
+window.tampilkanNilaiByFilter = function () {
     const mapel = document.getElementById('nilai-filter-mapel')?.value;
     const jenis = document.getElementById('nilai-filter-jenis')?.value;
     const tbody = document.getElementById('tbody-input-nilai');
-    
-    if(!tbody) return;
-    
+
+    if (!tbody) return;
+
     let filtered = dataNilaiSiswa;
-    if(mapel) filtered = filtered.filter(n => n.mapel === mapel);
-    if(jenis) filtered = filtered.filter(n => n.jenisAsesmen === jenis);
-    
-    if(filtered.length === 0) {
+    if (mapel) filtered = filtered.filter(n => n.mapel === mapel);
+    if (jenis) filtered = filtered.filter(n => n.jenisAsesmen === jenis);
+
+    if (filtered.length === 0) {
         tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:30px; color:var(--text-muted);"><i class="fas fa-inbox"></i> Tidak ada data nilai.</td></tr>';
         return;
     }
-    
+
     let html = '';
     filtered.forEach((n, idx) => {
         html += `<tr style="border-bottom:1px solid var(--border);">
@@ -6727,19 +6725,19 @@ window.tampilkanNilaiByFilter = function() {
 };
 
 // ===== 2. DATA SISWA - TAMBAH EDIT =====
-window.editSiswa = function(id) {
+window.editSiswa = function (id) {
     const siswa = dataSiswa.find(s => s.id === id);
-    if(!siswa) {
+    if (!siswa) {
         showToast('Data siswa tidak ditemukan!', 'danger');
         return;
     }
-    
+
     const modal = document.createElement('div');
     modal.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:10000; overflow-y:auto;';
-    
+
     const form = document.createElement('div');
     form.style.cssText = 'background:white; padding:30px; border-radius:12px; box-shadow:0 4px 6px rgba(0,0,0,0.3); max-width:600px; width:95%; margin:20px auto;';
-    
+
     form.innerHTML = `
         <h3 style="margin-top:0; margin-bottom:20px; color:var(--primary);">Edit Data Siswa</h3>
         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:15px;">
@@ -6832,18 +6830,18 @@ window.editSiswa = function(id) {
             <button class="btn btn-primary" onclick="window.saveEditSiswa(${id})">Simpan Perubahan</button>
         </div>
     `;
-    
+
     modal.appendChild(form);
     document.body.appendChild(modal);
-    modal.addEventListener('click', function(e) {
-        if(e.target === modal) modal.remove();
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) modal.remove();
     });
 };
 
-window.saveEditSiswa = function(id) {
+window.saveEditSiswa = function (id) {
     const siswa = dataSiswa.find(s => s.id === id);
-    if(!siswa) return;
-    
+    if (!siswa) return;
+
     siswa.nis = document.getElementById('edit-nis')?.value || '';
     siswa.nisn = document.getElementById('edit-nisn')?.value || '';
     siswa.nama = document.getElementById('edit-nama')?.value || '';
@@ -6862,7 +6860,7 @@ window.saveEditSiswa = function(id) {
     siswa.pekerjaanWali = document.getElementById('edit-pek-wali')?.value || '';
     siswa.alamatWali = document.getElementById('edit-alamat-wali')?.value || '';
     siswa.nomorTelepon = document.getElementById('edit-tlp')?.value || '';
-    
+
     localStorage.setItem('dataSiswa', JSON.stringify(dataSiswa));
     document.querySelector('[style*=position]')?.remove();
     tampilkanDataSiswa();
@@ -6870,9 +6868,9 @@ window.saveEditSiswa = function(id) {
 };
 
 // ===== 3. ABSENSI SISWA - STRUKTUR DATA FIX + DELETE =====
-window.deleteAbsensi = function(tanggal, siswaId) {
-    if(!confirm('Hapus absensi ini?')) return;
-    
+window.deleteAbsensi = function (tanggal, siswaId) {
+    if (!confirm('Hapus absensi ini?')) return;
+
     const key = `${tanggal}_${siswaId}`;
     delete dataAbsensi[key];
     localStorage.setItem('dataAbsensi', JSON.stringify(dataAbsensi));
@@ -6880,11 +6878,11 @@ window.deleteAbsensi = function(tanggal, siswaId) {
     showToast('✅ Absensi berhasil dihapus!', 'success');
 };
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     tampilkanDataSiswa();
     const today = new Date().toISOString().split('T')[0];
     const tanggalInput = document.getElementById('tanggal-absensi');
-    if(tanggalInput) {
+    if (tanggalInput) {
         tanggalInput.value = today;
     }
     const btnDownloadTemplate = document.getElementById('btn-download-template');
@@ -6894,59 +6892,59 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnHadirSemua = document.getElementById('btn-hadir-semua');
     const btnSimpanAbsensi = document.getElementById('btn-simpan-absensi');
     const tanggalAbsensi = document.getElementById('tanggal-absensi');
-    if(btnDownloadTemplate) btnDownloadTemplate.addEventListener('click', downloadTemplateGoogleSheet);
-    if(btnImportSiswa) btnImportSiswa.addEventListener('click', importSiswaExcel);
-    if(btnExportSiswa) btnExportSiswa.addEventListener('click', exportSiswaExcel);
-    if(fileImport) {
-        fileImport.addEventListener('change', function(e) {
+    if (btnDownloadTemplate) btnDownloadTemplate.addEventListener('click', downloadTemplateGoogleSheet);
+    if (btnImportSiswa) btnImportSiswa.addEventListener('click', importSiswaExcel);
+    if (btnExportSiswa) btnExportSiswa.addEventListener('click', exportSiswaExcel);
+    if (fileImport) {
+        fileImport.addEventListener('change', function (e) {
             showToast('Fitur import Excel sedang dalam pengembangan. Gunakan tombol "Sinkronisasi dari Google Sheet" untuk import data.', 'info');
         });
     }
-    if(btnHadirSemua) btnHadirSemua.addEventListener('click', hadirSemua);
-    if(btnSimpanAbsensi) btnSimpanAbsensi.addEventListener('click', simpanAbsensi);
-    if(tanggalAbsensi) {
+    if (btnHadirSemua) btnHadirSemua.addEventListener('click', hadirSemua);
+    if (btnSimpanAbsensi) btnSimpanAbsensi.addEventListener('click', simpanAbsensi);
+    if (tanggalAbsensi) {
         tanggalAbsensi.addEventListener('change', tampilkanAbsensi);
         tampilkanAbsensi();
     }
-    
+
     // Fungsi untuk Tab Absensi Siswa
-    window.switchAbsensiTab = function(evt, tabId) {
+    window.switchAbsensiTab = function (evt, tabId) {
         const container = evt.currentTarget.closest('.card-body');
-        if(!container) return;
+        if (!container) return;
         container.querySelectorAll('.tab-pane').forEach(pane => {
             pane.style.display = 'none';
         });
         container.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         const target = container.querySelector('#' + tabId);
-        if(target) {
+        if (target) {
             target.style.display = 'block';
         }
         evt.currentTarget.classList.add('active');
     };
-    
+
     // Load Rekap Absensi dengan data dari dataAbsensi
-    window.loadRekapAbsensi = function() {
+    window.loadRekapAbsensi = function () {
         const tbody = document.getElementById('tbody-rekap-absensi');
-        if(!tbody) return;
-        
-        if(!dataAbsensi || dataAbsensi.length === 0) {
+        if (!tbody) return;
+
+        if (!dataAbsensi || dataAbsensi.length === 0) {
             tbody.innerHTML = '<tr style="text-align: center; color: var(--text-muted);"><td colspan="7" style="padding: 30px;"><i class="fas fa-inbox"></i> Belum ada data absensi. Mulai input absensi terlebih dahulu.</td></tr>';
             return;
         }
-        
+
         // Group data by siswa dan hitung status
         const absensiByStudent = {};
         dataAbsensi.forEach(a => {
             const key = a.nisn || a.nama;
-            if(!absensiByStudent[key]) {
+            if (!absensiByStudent[key]) {
                 absensiByStudent[key] = { nisn: a.nisn, nama: a.nama, Hadir: 0, Sakit: 0, Izin: 0, Alpa: 0 };
             }
             const status = a.status || 'Hadir';
-            if(absensiByStudent[key][status] !== undefined) {
+            if (absensiByStudent[key][status] !== undefined) {
                 absensiByStudent[key][status]++;
             }
         });
-        
+
         let html = '';
         let no = 1;
         Object.values(absensiByStudent).forEach(student => {
@@ -6960,22 +6958,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td style="padding:8px; border-bottom:1px solid #eee; text-align:center; color:#ef4444; font-weight:600;">${student.Alpa}</td>
             </tr>`;
         });
-        
+
         tbody.innerHTML = html;
     };
-    
+
     // Export Absensi to Excel
-    window.exportAbsensiToExcel = function() {
-        if(!dataAbsensi || dataAbsensi.length === 0) {
+    window.exportAbsensiToExcel = function () {
+        if (!dataAbsensi || dataAbsensi.length === 0) {
             showToast('Tidak ada data absensi untuk diexport', 'warning');
             return;
         }
-        
+
         try {
             const ws_data = [
                 ['NISN', 'Nama', 'Tanggal', 'Status']
             ];
-            
+
             dataAbsensi.forEach(a => {
                 ws_data.push([
                     a.nisn || '',
@@ -6984,7 +6982,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     a.status || 'Hadir'
                 ]);
             });
-            
+
             const workbook = XLSX.utils.book_new();
             const worksheet = XLSX.utils.aoa_to_sheet(ws_data);
             worksheet['!cols'] = [
@@ -6993,61 +6991,61 @@ document.addEventListener('DOMContentLoaded', function() {
                 { wch: 12 },
                 { wch: 12 }
             ];
-            
+
             XLSX.utils.book_append_sheet(workbook, worksheet, 'Absensi');
             XLSX.writeFile(workbook, `Absensi_${new Date().toISOString().split('T')[0]}.xlsx`);
             showToast('✅ Data absensi berhasil diexport ke Excel!', 'success');
-        } catch(error) {
+        } catch (error) {
             console.error('Error export:', error);
             showToast('❌ Gagal export: ' + error.message, 'danger');
         }
     };
-    
+
     // Fungsi untuk Tab Nilai Siswa
-    window.switchNilaiTab = function(evt, tabId) {
+    window.switchNilaiTab = function (evt, tabId) {
         const container = evt.currentTarget.closest('.card-body');
-        if(!container) return;
+        if (!container) return;
         container.querySelectorAll('.tab-pane').forEach(pane => {
             pane.style.display = 'none';
         });
         container.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         const target = container.querySelector('#' + tabId);
-        if(target) {
+        if (target) {
             target.style.display = 'block';
         }
         evt.currentTarget.classList.add('active');
     };
-    
+
     // Load Rekap Nilai dengan data dari localStorage
-    window.loadRekupNilai = function() {
+    window.loadRekupNilai = function () {
         const tabelRekap = document.getElementById('tbody-rekap-nilai');
-        if(!tabelRekap) return;
-        
-        if(!dataNilaiSiswa || dataNilaiSiswa.length === 0) {
+        if (!tabelRekap) return;
+
+        if (!dataNilaiSiswa || dataNilaiSiswa.length === 0) {
             tabelRekap.innerHTML = '<tr style="text-align: center; color: var(--text-muted);"><td colspan="6" style="padding: 30px;"><i class="fas fa-inbox"></i> Belum ada data nilai. Sinkronkan dari Google Sheet terlebih dahulu.</td></tr>';
             return;
         }
-        
+
         // Group data by siswa
         const nilaiByStudent = {};
         dataNilaiSiswa.forEach(n => {
             const key = n.nisn || n.nama;
-            if(!nilaiByStudent[key]) {
+            if (!nilaiByStudent[key]) {
                 nilaiByStudent[key] = { nisn: n.nisn, nama: n.nama, nilai: [] };
             }
             nilaiByStudent[key].nilai.push(n);
         });
-        
+
         let html = '';
         let no = 1;
         Object.values(nilaiByStudent).forEach(student => {
             const nilaiArray = student.nilai || [];
-            const rataRata = nilaiArray.length > 0 
+            const rataRata = nilaiArray.length > 0
                 ? (nilaiArray.reduce((sum, n) => sum + (n.nilai || 0), 0) / nilaiArray.length).toFixed(2)
                 : 0;
-            
+
             const predicate = rataRata >= 85 ? 'A' : rataRata >= 70 ? 'B' : rataRata >= 60 ? 'C' : 'D';
-            
+
             html += `<tr>
                 <td style="padding:8px; border-bottom:1px solid #eee;">${no++}</td>
                 <td style="padding:8px; border-bottom:1px solid #eee;">${student.nisn || '-'}</td>
@@ -7059,18 +7057,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 </td>
             </tr>`;
         });
-        
+
         tabelRekap.innerHTML = html;
     };
-    
+
     // View detail nilai siswa tertentu
-    window.viewDetailNilai = function(nisn) {
+    window.viewDetailNilai = function (nisn) {
         const nilaiSiswa = dataNilaiSiswa.filter(n => n.nisn === nisn);
-        if(nilaiSiswa.length === 0) {
+        if (nilaiSiswa.length === 0) {
             showToast('Data tidak ditemukan', 'warning');
             return;
         }
-        
+
         let detailHtml = `<h4>Detail Nilai: ${nilaiSiswa[0].nama} (${nisn})</h4><ul style="list-style:none; padding:0;">`;
         nilaiSiswa.forEach(n => {
             detailHtml += `<li style="padding:8px; border-bottom:1px solid #eee;">
@@ -7079,25 +7077,25 @@ document.addEventListener('DOMContentLoaded', function() {
             </li>`;
         });
         detailHtml += '</ul>';
-        
+
         const modal = document.createElement('div');
         modal.style.cssText = 'position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; border:1px solid #ddd; border-radius:8px; padding:20px; max-width:400px; z-index:10000; box-shadow:0 4px 6px rgba(0,0,0,0.2);';
         modal.innerHTML = detailHtml + '<button onclick="this.parentElement.remove()" class="btn btn-primary" style="margin-top:10px; width:100%;">Tutup</button>';
         document.body.appendChild(modal);
     };
-    
+
     // Export Nilai to Excel
-    window.exportNilaiToExcel = function() {
-        if(!dataNilaiSiswa || dataNilaiSiswa.length === 0) {
+    window.exportNilaiToExcel = function () {
+        if (!dataNilaiSiswa || dataNilaiSiswa.length === 0) {
             showToast('Tidak ada data nilai untuk diexport', 'warning');
             return;
         }
-        
+
         try {
             const ws_data = [
                 ['NISN', 'Nama', 'Mata Pelajaran', 'Jenis Asesmen', 'Nilai', 'Catatan']
             ];
-            
+
             dataNilaiSiswa.forEach(n => {
                 ws_data.push([
                     n.nisn || '',
@@ -7108,7 +7106,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     n.catatan || ''
                 ]);
             });
-            
+
             const workbook = XLSX.utils.book_new();
             const worksheet = XLSX.utils.aoa_to_sheet(ws_data);
             worksheet['!cols'] = [
@@ -7119,33 +7117,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 { wch: 10 },
                 { wch: 25 }
             ];
-            
+
             XLSX.utils.book_append_sheet(workbook, worksheet, 'Nilai Siswa');
             XLSX.writeFile(workbook, `Nilai_Siswa_${new Date().toISOString().split('T')[0]}.xlsx`);
             showToast('✅ Data nilai berhasil diexport ke Excel!', 'success');
-        } catch(error) {
+        } catch (error) {
             console.error('Error export:', error);
             showToast('❌ Gagal export: ' + error.message, 'danger');
         }
     };
-    
+
     // Tampilkan Analisis Nilai
-    document.getElementById('btn-tampilkan-analisis')?.addEventListener('click', function() {
-        if(!dataNilaiSiswa || dataNilaiSiswa.length === 0) {
+    document.getElementById('btn-tampilkan-analisis')?.addEventListener('click', function () {
+        if (!dataNilaiSiswa || dataNilaiSiswa.length === 0) {
             showToast('Belum ada data nilai untuk dianalisis', 'info');
             return;
         }
-        
+
         const analisisContainer = document.getElementById('content-analisis-nilai');
-        if(!analisisContainer) return;
-        
+        if (!analisisContainer) return;
+
         // Hitung statistik
         const nilaiArray = dataNilaiSiswa.map(n => n.nilai || 0);
         const rataRata = (nilaiArray.reduce((a, b) => a + b, 0) / nilaiArray.length).toFixed(2);
         const nilaiMin = Math.min(...nilaiArray);
         const nilaiMax = Math.max(...nilaiArray);
         const nilaiMed = nilaiArray.sort((a, b) => a - b)[Math.floor(nilaiArray.length / 2)];
-        
+
         // Kategorisasi
         const gradeDistribution = {
             'A (85-100)': nilaiArray.filter(n => n >= 85).length,
@@ -7153,7 +7151,7 @@ document.addEventListener('DOMContentLoaded', function() {
             'C (60-69)': nilaiArray.filter(n => n >= 60 && n < 70).length,
             'D (0-59)': nilaiArray.filter(n => n < 60).length
         };
-        
+
         let html = `
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px;">
                 <div style="background: #f0f4f8; padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6;">
@@ -7177,8 +7175,8 @@ document.addEventListener('DOMContentLoaded', function() {
             <h5 style="margin-top: 20px; margin-bottom: 10px;">Distribusi Grade</h5>
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
         `;
-        
-        Object.entries(gradeDistribution).forEach(function(entry) {
+
+        Object.entries(gradeDistribution).forEach(function (entry) {
             const grade = entry[0];
             const count = entry[1];
             const percentage = ((count / nilaiArray.length) * 100).toFixed(0);
@@ -7190,64 +7188,64 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
         });
-        
+
         html += '</div>';
         analisisContainer.innerHTML = html;
         showToast('✅ Analisis nilai berhasil ditampilkan!', 'success');
     });
-    
+
     // Sync Nilai dari Google
-    document.getElementById('btn-sync-nilai-from-google')?.addEventListener('click', function() {
+    document.getElementById('btn-sync-nilai-from-google')?.addEventListener('click', function () {
         syncNilaiSiswaFromGoogle(document.getElementById('ds-datasheet-link')?.value || '');
     });
-    
+
     // Tambah Nilai Baru
-    document.getElementById('btn-tambah-nilai')?.addEventListener('click', function() {
+    document.getElementById('btn-tambah-nilai')?.addEventListener('click', function () {
         window.addNilai();
     });
-    
+
     // Simpan Nilai
-    document.getElementById('btn-simpan-nilai')?.addEventListener('click', function() {
+    document.getElementById('btn-simpan-nilai')?.addEventListener('click', function () {
         localStorage.setItem('dataNilaiSiswa', JSON.stringify(dataNilaiSiswa));
         showToast('✅ Nilai berhasil disimpan!', 'success');
     });
-    
+
     // Clear Nilai Form
-    window.clearNilaiForm = function() {
+    window.clearNilaiForm = function () {
         document.getElementById('nilai-filter-kelas').value = '';
         document.getElementById('nilai-filter-mapel').value = '';
         document.getElementById('nilai-filter-jenis').value = '';
         document.getElementById('tbody-input-nilai').innerHTML = '<tr style="text-align: center; color: var(--text-muted);"><td colspan="5" style="padding: 30px;"><i class="fas fa-inbox"></i> Belum ada filter yang dipilih. Pilih Mata Pelajaran dan Jenis Asesmen.</td></tr>';
     };
-    
+
     // Event listener untuk filter Nilai Siswa
-    document.getElementById('nilai-filter-mapel')?.addEventListener('change', function() {
+    document.getElementById('nilai-filter-mapel')?.addEventListener('change', function () {
         window.tampilkanNilaiByFilter();
     });
-    
-    document.getElementById('nilai-filter-jenis')?.addEventListener('change', function() {
+
+    document.getElementById('nilai-filter-jenis')?.addEventListener('change', function () {
         window.tampilkanNilaiByFilter();
     });
-    
-    document.getElementById('nilai-filter-kelas')?.addEventListener('change', function() {
+
+    document.getElementById('nilai-filter-kelas')?.addEventListener('change', function () {
         window.tampilkanNilaiByFilter();
     });
-    
-    document.getElementById('nilai-filter-jenis')?.addEventListener('change', function() {
+
+    document.getElementById('nilai-filter-jenis')?.addEventListener('change', function () {
         const jenis = this.value;
-        if(!jenis) {
+        if (!jenis) {
             clearNilaiForm();
             return;
         }
-        
+
         const filteredData = dataNilaiSiswa.filter(n => n.jenisAsesmen === jenis);
         const tbody = document.getElementById('tbody-input-nilai');
-        
-        if(filteredData.length === 0) {
+
+        if (filteredData.length === 0) {
             tbody.innerHTML = '<tr style="text-align: center; color: var(--text-muted);"><td colspan="5" style="padding: 30px;"><i class="fas fa-inbox"></i> Tidak ada data nilai untuk jenis asesmen ini.</td></tr>';
             return;
         }
-        
+
         let html = '';
         filteredData.forEach((n, idx) => {
             html += `<tr>
@@ -7260,94 +7258,94 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         tbody.innerHTML = html;
     });
-    
+
     // ===== GOOGLE SHEETS API INTEGRATION =====
     // Async function untuk sinkronisasi Absensi
     async function syncAbsensiFromGoogle(sheetUrl) {
         try {
             const validation = validateGoogleSheetUrl(sheetUrl);
-            if(!validation.valid) throw new Error(validation.error);
-            
+            if (!validation.valid) throw new Error(validation.error);
+
             // Coba deteksi gid untuk sheet "Absensi"
             let csvsToTry = [
                 { gid: 1, label: 'gid=1 (default Absensi)' }
             ];
-            
+
             let lastError = null;
             let csvUrl = null;
             let successGid = null;
-            
-            for(let attempt of csvsToTry) {
+
+            for (let attempt of csvsToTry) {
                 try {
                     console.log(`🔍 Mencoba sync Absensi dengan ${attempt.label}...`);
                     csvUrl = convertGoogleSheetToCSV(sheetUrl, attempt.gid);
-                    if(!csvUrl) {
+                    if (!csvUrl) {
                         lastError = new Error('Gagal mengkonversi URL');
                         continue;
                     }
-                    
+
                     showToast(`⏳ Mengunduh data absensi dari Google Sheet (${attempt.label})...`, 'info');
                     const response = await fetch(csvUrl, {
                         mode: 'cors',
                         headers: { 'Accept': 'text/csv', 'Cache-Control': 'no-cache' }
                     });
-                    
-                    if(!response.ok) {
+
+                    if (!response.ok) {
                         lastError = new Error(`HTTP ${response.status}`);
-                        if(response.status === 400 || response.status === 404) {
+                        if (response.status === 400 || response.status === 404) {
                             console.warn(`⚠️ ${attempt.label} tidak valid...`);
                             continue;
-                        } else if(response.status === 403) {
+                        } else if (response.status === 403) {
                             throw new Error('Akses ditolak. Sheet harus di-share publik atau dengan link.');
                         }
                         throw lastError;
                     }
-                    
+
                     const csv = await response.text();
-                    if(!csv || csv.trim().length === 0) {
+                    if (!csv || csv.trim().length === 0) {
                         lastError = new Error('Sheet kosong atau tidak dapat dibaca');
                         console.warn('⚠️ Sheet kosong, coba gid lainnya...');
                         continue;
                     }
-                    
+
                     const lines = csv.split('\n').filter(line => line.trim());
-                    if(lines.length < 2) {
+                    if (lines.length < 2) {
                         lastError = new Error('Sheet hanya memiliki header');
                         console.warn('⚠️ Sheet hanya header, coba gid lainnya...');
                         continue;
                     }
-                    
+
                     successGid = attempt.gid;
                     lastError = null;
                     break;
-                    
-                } catch(error) {
+
+                } catch (error) {
                     lastError = error;
                     console.warn(`⚠️ Gagal dengan ${attempt.label}:`, error.message);
                     continue;
                 }
             }
-            
-            if(!csvUrl || lastError) {
+
+            if (!csvUrl || lastError) {
                 console.warn('⚠️ Sync Absensi gagal atau sheet kosong. Melanjutkan tanpa data absensi.');
                 showToast('⚠️ Sheet Absensi tidak ditemukan atau kosong. Data absensi tidak disinkronkan.', 'warning');
                 return { success: false, count: 0, message: 'Sheet Absensi tidak ditemukan' };
             }
-            
+
             // Parse CSV
             const csv = await (await fetch(csvUrl)).text();
             const lines = csv.split('\n').filter(line => line.trim());
-            
-            if(lines.length < 2) {
+
+            if (lines.length < 2) {
                 showToast('⚠️ Sheet Absensi hanya memiliki header (belum ada data)', 'info');
                 return { success: true, count: 0, message: 'Sheet Absensi masih kosong' };
             }
-            
+
             dataAbsensi = [];
-            for(let i = 1; i < lines.length; i++) {
+            for (let i = 1; i < lines.length; i++) {
                 const cols = parseCSVLine(lines[i]);
-                if(cols.length === 0 || !cols[0] || cols[0].trim() === '') continue;
-                
+                if (cols.length === 0 || !cols[0] || cols[0].trim() === '') continue;
+
                 dataAbsensi.push({
                     id: Date.now() + i,
                     nisn: (cols[0] || '').trim(),
@@ -7356,14 +7354,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     status: (cols[3] || 'Hadir').trim()
                 });
             }
-            
-            if(dataAbsensi.length > 0) {
+
+            if (dataAbsensi.length > 0) {
                 localStorage.setItem('dataAbsensi', JSON.stringify(dataAbsensi));
                 showToast(`✅ ${dataAbsensi.length} data absensi berhasil disinkronkan! (gid=${successGid})`, 'success');
                 return { success: true, count: dataAbsensi.length };
             }
             return { success: true, count: 0, message: 'Tidak ada data absensi ditemukan' };
-        } catch(error) {
+        } catch (error) {
             console.error('❌ Error sync absensi:', error);
             showToast('❌ Gagal sinkronisasi absensi: ' + error.message, 'danger');
             return { success: false, count: 0 };
@@ -7373,74 +7371,74 @@ document.addEventListener('DOMContentLoaded', function() {
     async function syncNilaiSiswaFromGoogle(sheetUrl) {
         try {
             const validation = validateGoogleSheetUrl(sheetUrl);
-            if(!validation.valid) throw new Error(validation.error);
-            
+            if (!validation.valid) throw new Error(validation.error);
+
             // Coba deteksi gid untuk sheet "Nilai Siswa"
             // Ketika import template ke Google Sheets, gid akan berbeda untuk setiap sheet
             // Kami coba gid=2 (default), jika gagal coba gid lainnya
-            
+
             let gidToUse = 2;
             let csvsToTry = [
                 { gid: 2, label: 'gid=2 (default Nilai Siswa)' },
                 { gid: validation.gid === '2' ? null : validation.gid, label: 'gid dari URL' }
             ].filter(g => g.gid !== null && g.gid !== undefined);
-            
+
             let lastError = null;
             let csvUrl = null;
             let successGid = null;
-            
+
             // Coba setiap gid sampai berhasil
-            for(let attempt of csvsToTry) {
+            for (let attempt of csvsToTry) {
                 try {
                     console.log(`🔍 Mencoba sync Nilai Siswa dengan ${attempt.label}...`);
                     csvUrl = convertGoogleSheetToCSV(sheetUrl, attempt.gid);
-                    if(!csvUrl) {
+                    if (!csvUrl) {
                         lastError = new Error('Gagal mengkonversi URL');
                         continue;
                     }
-                    
+
                     showToast(`⏳ Mengunduh data nilai siswa dari Google Sheet (${attempt.label})...`, 'info');
                     const response = await fetch(csvUrl, {
                         mode: 'cors',
                         headers: { 'Accept': 'text/csv', 'Cache-Control': 'no-cache' }
                     });
-                    
-                    if(!response.ok) {
+
+                    if (!response.ok) {
                         lastError = new Error(`HTTP ${response.status}`);
-                        if(response.status === 400 || response.status === 404) {
+                        if (response.status === 400 || response.status === 404) {
                             console.warn(`⚠️ ${attempt.label} tidak valid, coba gid lainnya...`);
                             continue;
-                        } else if(response.status === 403) {
+                        } else if (response.status === 403) {
                             throw new Error('Akses ditolak. Sheet harus di-share publik atau dengan link.');
                         }
                         throw lastError;
                     }
-                    
+
                     const csv = await response.text();
-                    if(!csv || csv.trim().length === 0) {
+                    if (!csv || csv.trim().length === 0) {
                         lastError = new Error('Sheet kosong atau tidak dapat dibaca');
                         continue;
                     }
-                    
+
                     const lines = csv.split('\n').filter(line => line.trim());
-                    if(lines.length < 1) {
+                    if (lines.length < 1) {
                         lastError = new Error('Sheet tidak memiliki header');
                         continue;
                     }
-                    
+
                     // Jika sampai sini, berarti berhasil
                     successGid = attempt.gid;
                     lastError = null;
                     break;
-                    
-                } catch(error) {
+
+                } catch (error) {
                     lastError = error;
                     console.warn(`⚠️ Gagal dengan ${attempt.label}:`, error.message);
                     continue;
                 }
             }
-            
-            if(!csvUrl || lastError) {
+
+            if (!csvUrl || lastError) {
                 throw new Error(`❌ Semua percobaan sync Nilai Siswa gagal. 
                 
 ⚠️ PENTING: Sheet "Nilai Siswa" mungkin memiliki gid yang berbeda.
@@ -7456,21 +7454,21 @@ Atau: Pastikan template di-import dengan benar dan ketiga tab (Data Siswa, Absen
 
 Error: ${lastError?.message || 'Tidak diketahui'}`);
             }
-            
+
             // Parse CSV dan simpan
             const csv = await (await fetch(csvUrl)).text();
             const lines = csv.split('\n').filter(line => line.trim());
-            
-            if(lines.length < 2) {
+
+            if (lines.length < 2) {
                 showToast('ℹ️ Sheet Nilai Siswa hanya memiliki header (belum ada data)', 'info');
                 return { success: true, count: 0, message: 'Sheet Nilai Siswa masih kosong' };
             }
-            
+
             dataNilaiSiswa = [];
-            for(let i = 1; i < lines.length; i++) {
+            for (let i = 1; i < lines.length; i++) {
                 const cols = parseCSVLine(lines[i]);
-                if(cols.length === 0 || !cols[0] || cols[0].trim() === '') continue;
-                
+                if (cols.length === 0 || !cols[0] || cols[0].trim() === '') continue;
+
                 dataNilaiSiswa.push({
                     id: Date.now() + i,
                     nisn: (cols[0] || '').trim(),
@@ -7481,15 +7479,15 @@ Error: ${lastError?.message || 'Tidak diketahui'}`);
                     catatan: (cols[5] || '').trim()
                 });
             }
-            
-            if(dataNilaiSiswa.length > 0) {
+
+            if (dataNilaiSiswa.length > 0) {
                 localStorage.setItem('dataNilaiSiswa', JSON.stringify(dataNilaiSiswa));
                 showToast(`✅ ${dataNilaiSiswa.length} data nilai siswa berhasil disinkronkan! (gid=${successGid})`, 'success');
                 loadRekupNilai();
                 return { success: true, count: dataNilaiSiswa.length };
             }
             return { success: true, count: 0, message: 'Tidak ada data nilai ditemukan' };
-        } catch(error) {
+        } catch (error) {
             console.error('❌ Error sync nilai:', error);
             showToast(error.message || ('❌ Gagal sinkronisasi nilai: ' + error.message), 'danger');
             return { success: false, count: 0 };
@@ -7497,36 +7495,36 @@ Error: ${lastError?.message || 'Tidak diketahui'}`);
     }
 
     // Fungsi untuk sinkronisasi semua data sekaligus
-    window.syncAllDataFromGoogle = async function() {
+    window.syncAllDataFromGoogle = async function () {
         const link = document.getElementById('ds-datasheet-link')?.value || '';
-        if(!link) {
+        if (!link) {
             showToast('⚠️ Link Google Spreadsheet belum diisi! Silakan isi di field atas.', 'warning');
             return;
         }
-        
+
         showToast('⏳ Memulai sinkronisasi data dari Google Sheet...', 'info');
         const btn = document.getElementById('btn-sync-from-google');
-        if(btn) {
+        if (btn) {
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sinkronisasi...';
         }
-        
+
         try {
             // Sync Data Siswa (gid=0, default)
             await syncDataSiswaFromGoogle();
-            
+
             // Sync Absensi (gid=1)
             const absensiResult = await syncAbsensiFromGoogle(link);
-            
+
             // Sync Nilai Siswa (gid=2)
             const nilaiResult = await syncNilaiSiswaFromGoogle(link);
-            
+
             showToast('✅ Semua data berhasil disinkronkan dari Google Sheet!', 'success');
-        } catch(error) {
+        } catch (error) {
             console.error('❌ Error during full sync:', error);
             showToast('❌ Ada error saat sinkronisasi: ' + error.message, 'danger');
         } finally {
-            if(btn) {
+            if (btn) {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-cloud-download-alt"></i> Sinkronisasi dari Google Sheet';
             }
@@ -7534,30 +7532,30 @@ Error: ${lastError?.message || 'Tidak diketahui'}`);
     };
 
     // Upload Nilai Siswa ke Google Sheet
-    window.uploadNilaiToGoogle = async function() {
+    window.uploadNilaiToGoogle = async function () {
         const link = document.getElementById('ds-datasheet-link')?.value || '';
-        if(!link) {
+        if (!link) {
             showToast('⚠️ Link Google Spreadsheet belum diisi!', 'warning');
             return;
         }
-        
-        if(!dataNilaiSiswa || dataNilaiSiswa.length === 0) {
+
+        if (!dataNilaiSiswa || dataNilaiSiswa.length === 0) {
             showToast('⚠️ Tidak ada data nilai untuk diupload!', 'warning');
             return;
         }
-        
+
         try {
             const validation = validateGoogleSheetUrl(link);
-            if(!validation.valid) throw new Error(validation.error);
-            
+            if (!validation.valid) throw new Error(validation.error);
+
             // Format data untuk diupload (CSV format)
             let csvContent = 'NISN,Nama,Mata Pelajaran,Jenis Asesmen,Nilai,Catatan\n';
             dataNilaiSiswa.forEach(n => {
                 csvContent += `"${n.nisn}","${n.nama}","${n.mapel}","${n.jenisAsesmen}",${n.nilai},"${n.catatan}"\n`;
             });
-            
+
             showToast('⏳ Persiapan upload... Instruksi: Copy data di bawah ke Google Sheet (gid=2)', 'info');
-            
+
             // Copy ke clipboard untuk memudahkan user
             navigator.clipboard.writeText(csvContent).then(() => {
                 showToast('✅ Data nilai copied to clipboard! Paste di Google Sheet tab "Nilai Siswa"', 'success');
@@ -7573,29 +7571,221 @@ Error: ${lastError?.message || 'Tidak diketahui'}`);
                 `;
                 document.body.appendChild(modal);
             });
-        } catch(error) {
+        } catch (error) {
             console.error('❌ Error upload nilai:', error);
             showToast('❌ Gagal upload nilai: ' + error.message, 'danger');
         }
     };
 
-    window.saveDatasheetLink = function() {
+    window.saveDatasheetLink = function () {
         const link = document.getElementById('ds-datasheet-link')?.value || '';
-        if(!link) {
+        if (!link) {
             showToast('Silakan masukkan link Google Spreadsheet', 'warning');
             return;
         }
         localStorage.setItem('ds_datasheet_link', link);
         showToast('Link Google Spreadsheet berhasil disimpan!', 'success');
     };
-    
+
     setTimeout(() => {
-        if(typeof autoLoadAllData === 'function') {
+        if (typeof autoLoadAllData === 'function') {
             autoLoadAllData().catch(e => console.error('Auto-load failed:', e));
         }
         // Initialize Konten Kreator form fields
-        if(typeof updateKontenFields === 'function') {
+        if (typeof updateKontenFields === 'function') {
             updateKontenFields();
         }
     }, 500);
 });
+/* =========================================
+   DYNAMIC DATA LOADING & MENU POPULATION
+   ========================================= */
+
+let GLOBAL_DATA_JSON = [];
+
+document.addEventListener('DOMContentLoaded', () => {
+    fetch('<script src="https://cdn.jsdelivr.net/gh/arhammazid/digiarju/data.json"></script>')
+        .then(res => res.json())
+        .then(data => {
+            GLOBAL_DATA_JSON = data;
+            console.log("Loaded data.json entries:", data.length);
+            refreshAllMenus();
+        })
+        .catch(err => console.error("Error loading data.json:", err));
+
+    setupMenuListeners('modul');
+    setupMenuListeners('kokul');
+    setupMenuListeners('soal');
+});
+
+
+function setupMenuListeners(prefix) {
+    const elJenjang = document.getElementById(`${prefix}-jenjang`);
+    const elKelas = document.getElementById(`${prefix}-kelas-select`) || document.getElementById(`${prefix}-kelas`);
+    const elSem = document.getElementById(`${prefix}-sem-select`) || document.getElementById(`${prefix}-semester`);
+
+    // Mapel & TP Selects
+    const elMapel = document.getElementById(`${prefix}-mapel-select`);
+    const elTP = document.getElementById(`${prefix}-tp-select`);
+
+    // Manual Inputs
+    const manualMapel = document.getElementById(`${prefix}-mapel-manual`) || document.getElementById(`${prefix}-mapel-kustom`);
+    const manualTP = document.getElementById(`${prefix}-tp-manual`);
+
+    const triggerUpdate = () => {
+        setTimeout(() => updateMapelOptions(prefix), 200);
+    };
+
+    if (elJenjang) elJenjang.addEventListener('change', triggerUpdate);
+    if (elKelas) elKelas.addEventListener('change', triggerUpdate);
+    if (elSem) elSem.addEventListener('change', triggerUpdate);
+
+    if (elMapel) {
+        elMapel.addEventListener('change', () => {
+            updateTPOptions(prefix);
+            toggleManualInput(elMapel, manualMapel);
+        });
+    }
+
+    if (elTP) {
+        elTP.addEventListener('change', () => {
+            toggleManualInput(elTP, manualTP);
+        });
+    }
+}
+
+function updateMapelOptions(prefix) {
+    if (!GLOBAL_DATA_JSON.length) return;
+
+    const elJenjang = document.getElementById(`${prefix}-jenjang`);
+    const elKelas = document.getElementById(`${prefix}-kelas-select`) || document.getElementById(`${prefix}-kelas`);
+    const elSem = document.getElementById(`${prefix}-sem-select`) || document.getElementById(`${prefix}-semester`);
+    const elMapel = document.getElementById(`${prefix}-mapel-select`);
+
+    if (!elMapel) return;
+
+    const valJenjang = elJenjang ? elJenjang.value : '';
+    const valKelas = elKelas ? elKelas.value : '';
+    const valSem = elSem ? elSem.value : '';
+
+    const relevant = GLOBAL_DATA_JSON.filter(item => {
+        const matchJenjang = !valJenjang || item.Jenjang === valJenjang;
+        const matchKelas = !valKelas || item.Kelas === valKelas;
+        const matchSem = !valSem || item.Semester === valSem;
+        return matchJenjang && matchKelas && matchSem;
+    });
+
+    const uniqueMapels = [...new Set(relevant.map(i => i['Mata Pelajaran']))].sort();
+    const currentVal = elMapel.value;
+
+    let html = '<option value="">-- Pilih Mata Pelajaran --</option>';
+    uniqueMapels.forEach(m => {
+        if (m) html += `<option value="${m}">${m}</option>`;
+    });
+    html += '<option value="Kustom">Kustom (Tulis Manual)</option>';
+
+    elMapel.innerHTML = html;
+    if (uniqueMapels.includes(currentVal)) {
+        elMapel.value = currentVal;
+    } else {
+        elMapel.value = "";
+    }
+
+    updateTPOptions(prefix);
+
+    const manualMapel = document.getElementById(`${prefix}-mapel-manual`) || document.getElementById(`${prefix}-mapel-kustom`);
+    toggleManualInput(elMapel, manualMapel);
+}
+
+function updateTPOptions(prefix) {
+    const elJenjang = document.getElementById(`${prefix}-jenjang`);
+    const elKelas = document.getElementById(`${prefix}-kelas-select`) || document.getElementById(`${prefix}-kelas`);
+    const elSem = document.getElementById(`${prefix}-sem-select`) || document.getElementById(`${prefix}-semester`);
+    const elMapel = document.getElementById(`${prefix}-mapel-select`);
+    const elTP = document.getElementById(`${prefix}-tp-select`);
+
+    if (!elMapel || !elTP) return;
+
+    const valJenjang = elJenjang ? elJenjang.value : '';
+    const valKelas = elKelas ? elKelas.value : '';
+    const valSem = elSem ? elSem.value : '';
+    const valMapel = elMapel.value;
+
+    if (!valMapel || valMapel === 'Kustom') {
+        elTP.innerHTML = '<option value="">-- Pilih Tujuan Pembelajaran --</option><option value="Kustom">Kustom</option>';
+        return;
+    }
+
+    const relevant = GLOBAL_DATA_JSON.filter(item => {
+        return (!valJenjang || item.Jenjang === valJenjang) &&
+            (!valKelas || item.Kelas === valKelas) &&
+            (!valSem || item.Semester === valSem) &&
+            (item['Mata Pelajaran'] === valMapel);
+    });
+
+    const uniqueTPs = [...new Set(relevant.map(i => i['Tujuan Pembelajaran']))].sort();
+
+    let html = '<option value="">-- Pilih Tujuan Pembelajaran --</option>';
+    uniqueTPs.forEach(tp => {
+        if (!tp) return;
+        const display = tp.length > 120 ? tp.substring(0, 120) + '...' : tp;
+        html += `<option value="${tp}">${display}</option>`;
+    });
+    html += '<option value="Kustom">Kustom (Tulis Manual)</option>';
+
+    elTP.innerHTML = html;
+}
+
+function toggleManualInput(selectEl, manualEl) {
+    if (!manualEl) return;
+    if (selectEl && selectEl.value === 'Kustom') {
+        manualEl.style.display = 'block';
+    } else {
+        manualEl.style.display = 'none';
+    }
+}
+
+function refreshAllMenus() {
+    updateMapelOptions('modul');
+    updateMapelOptions('kokul');
+    updateMapelOptions('soal');
+}
+
+/* =========================================
+   TOGGLE BUTTON DELEGATION FIX & LOGIC
+   ========================================= */
+document.addEventListener('click', function (e) {
+    if (e.target.matches('.btn-toggle') || e.target.closest('.btn-toggle')) {
+        const btn = e.target.matches('.btn-toggle') ? e.target : e.target.closest('.btn-toggle');
+        const group = btn.closest('.btn-group-custom');
+
+        if (group) {
+            group.querySelectorAll('.btn-toggle').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Handle Kustom Logic for Kurikulum Groups
+            const val = btn.getAttribute('data-value');
+            if (group.id === 'modul-kurikulum-group' || group.id === 'soal-kurikulum-group' || group.id === 'kokul-kurikulum-group') {
+                const kustomInputId = group.id.replace('-group', '-kustom'); // e.g. modul-kurikulum-kustom
+                const inputEl = document.getElementById(kustomInputId);
+                if (inputEl) {
+                    inputEl.style.display = (val === 'Kustom') ? 'block' : 'none';
+                    if (val === 'Kustom') setTimeout(() => inputEl.focus(), 100);
+                }
+            }
+        }
+    }
+});
+
+/* =========================================
+   LEGACY OVERRIDES (Redirect to Data.json Logic)
+   ========================================= */
+function updateModulMapelOptions() {
+    // Redirect legacy call to new dynamic logic
+    if (typeof updateMapelOptions === 'function') updateMapelOptions('modul');
+}
+
+function updateSoalMapelOptions() {
+    // Redirect legacy call to new dynamic logic
+    if (typeof updateMapelOptions === 'function') updateMapelOptions('soal');
+}
