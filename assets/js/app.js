@@ -4156,7 +4156,10 @@ document.addEventListener('DOMContentLoaded', function () {
         mapelSelectEl.disabled = !jenjangSelectEl || !jenjangSelectEl.value;
     }
     function updateAkademikValidation() {
-        const tahun = document.getElementById('akad-tahun').value.trim();
+        const elTahun = document.getElementById('akad-tahun');
+        if (!elTahun) return false;
+
+        const tahun = elTahun.value.trim();
         const jenjang = document.getElementById('akad-jenjang').value;
         const kelas = document.getElementById('akad-kelas').value;
         const fase = document.getElementById('akad-fase').value;
