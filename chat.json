@@ -1,0 +1,90 @@
+{
+  "botInfo": {
+    "name": "ArjuBot",
+    "description": "Asisten Virtual Resmi SDN DigiArju",
+    "version": "2.5.0",
+    "language": "id-ID",
+    "developer": "Tim IT SDN DigiArju",
+    "lastUpdated": "2026-03-26"
+  },
+  "fallback": "Mohon maaf, saya belum memiliki informasi mengenai hal tersebut. 🤖🙏\n\nUntuk mempercepat, silakan ketik kata kunci lain seperti:\n👉 *Pendaftaran* (Info PPDB)\n👉 *Biaya* (Info SPP & Uang Pangkal)\n👉 *Jadwal* (Info Jam Belajar)\n👉 *Ekstrakurikuler* (Info Ekskul)\n\nAtau Anda dapat langsung terhubung dengan Admin kami untuk bantuan lebih lanjut.",
+  "fallbackLinks": [
+    { "text": "📞 Hubungi Admin (WhatsApp)", "url": "https://wa.me/6281234567890" }
+  ],
+  "knowledge": [
+    {
+      "intent": "greeting",
+      "keywords": ["halo", "hai", "pagi", "siang", "sore", "malam", "assalamualaikum", "ping", "p", "hey", "hi", "mulai", "start", "bot", "bantuan", "info", "menu", "help"],
+      "response": "Halo! Assalamualaikum wr. wb. 🏫✨\n\nSelamat datang di layanan Asisten Virtual Resmi SDN DigiArju. Saya ArjuBot, siap membantu Bapak/Ibu mendapatkan informasi seputar sekolah kami secara cepat dan mudah.\n\nSilakan pilih menu di bawah ini atau langsung ketikkan pertanyaan Anda:",
+      "suggestions": ["Info Pendaftaran", "Rincian Biaya", "Profil & Fasilitas", "Kontak Admin"]
+    },
+    {
+      "intent": "registration",
+      "keywords": ["daftar", "pendaftaran", "spmb", "ppdb", "masuk", "syarat", "cara", "kapan buka", "formulir", "gelombang", "kuota", "registrasi", "pindahan", "mutasi", "link daftar", "jalur", "tes masuk"],
+      "response": "Penerimaan Peserta Didik Baru (PPDB) SDN DigiArju Tahun Ajaran 2026/2027 saat ini telah dibuka secara online! 🎓\n\n📋 *Persyaratan Dokumen Utama:*\n1. Usia minimal 6 tahun per 1 Juli.\n2. Scan Akta Kelahiran Asli.\n3. Scan Kartu Keluarga (KK) Asli.\n4. Pas foto berwarna ukuran 3x4.\n\nAlur pendaftaran sangat mudah, Bapak/Ibu cukup mengisi formulir melalui portal resmi kami. Klik tautan di bawah ini untuk memulai atau mengecek status pendaftaran:",
+      "links": [
+        { "text": "📝 Portal Resmi PPDB", "url": "https://sdndigiarju.sch.id/ppdb" },
+        { "text": "🔍 Cek Status Pendaftaran", "url": "https://sdndigiarju.sch.id/ppdb/status" }
+      ],
+      "suggestions": ["Berapa biayanya?", "Apakah ada tes masuk?", "Syarat pindahan/mutasi"]
+    },
+    {
+      "intent": "tuition_fees",
+      "keywords": ["biaya", "bayar", "uang", "spp", "gedung", "pangkal", "rincian", "tagihan", "dana", "pembayaran", "buku", "seragam", "cicil", "angsur", "daftar ulang", "infaq", "transfer"],
+      "response": "Kami berkomitmen memberikan pendidikan berkualitas dengan biaya yang transparan. Rincian biaya administrasi di SDN DigiArju terbagi menjadi:\n\n💳 *1. Uang Pangkal / Gedung* (Dibayarkan sekali saat masuk)\n👕 *2. Paket Seragam & Buku Pembelajaran*\n📚 *3. SPP Bulanan* (Sudah termasuk biaya praktikum, internet, & ekskul wajib)\n\n*Catatan:* Kami menyediakan opsi pembayaran bertahap (cicilan). Untuk melihat rincian nominal pastinya, silakan unduh e-Brosur Keuangan kami melalui tautan di bawah ini:",
+      "links": [
+        { "text": "📥 Unduh Rincian Biaya (PDF)", "url": "https://sdndigiarju.sch.id/download/brosur-biaya.pdf" }
+      ],
+      "suggestions": ["Cara pembayaran?", "Info Pendaftaran"]
+    },
+    {
+      "intent": "location",
+      "keywords": ["lokasi", "alamat", "dimana", "peta", "maps", "rute", "jalan", "cabang", "gedung", "gmaps", "waze"],
+      "response": "Gedung SDN DigiArju berada di lokasi yang strategis, asri, dan aman untuk anak-anak, tepatnya di:\n📍 *Jl. Pendidikan No.1, Komplek Edukasi, Kota Cerdas, Kode Pos 12345.*\n\nBapak/Ibu dapat menggunakan aplikasi navigasi seperti Google Maps atau Waze dengan menekan tautan di bawah ini.",
+      "links": [
+        { "text": "🗺️ Buka di Google Maps", "url": "https://maps.google.com/?q=SDN+DigiArju" },
+        { "text": "🚗 Buka di Waze", "url": "https://waze.com/ul?q=SDN+DigiArju" }
+      ],
+      "suggestions": ["Fasilitas sekolah", "Kontak Admin"]
+    },
+    {
+      "intent": "extracurricular",
+      "keywords": ["ekskul", "ekstrakurikuler", "pramuka", "lomba", "kegiatan", "bakat", "minat", "klub", "olahraga", "seni", "musik", "tari", "robotik"],
+      "response": "Kami sangat mendukung pengembangan minat dan bakat siswa! SDN DigiArju memiliki berbagai ekstrakurikuler unggulan yang dilatih oleh profesional, antara lain:\n\n⚽ *Olahraga*: Futsal, Basket, Renang, Taekwondo\n🎨 *Seni & Budaya*: Tari Tradisional, Paduan Suara, Melukis, Marching Band\n💻 *Keterampilan*: Robotik Dasar, Pramuka (Wajib), English Club, Dokter Kecil\n\nSiswa diperbolehkan memilih maksimal 2 ekskul pilihan.",
+      "suggestions": ["Jadwal sekolah", "Fasilitas sekolah"]
+    },
+    {
+      "intent": "facilities",
+      "keywords": ["fasilitas", "gedung", "lapangan", "perpustakaan", "lab", "komputer", "kelas", "ac", "kantin", "toilet", "cctv", "keamanan", "uks"],
+      "response": "Keamanan dan kenyamanan belajar siswa adalah prioritas utama kami. Fasilitas unggulan di SDN DigiArju meliputi:\n\n❄️ Ruang kelas ber-AC dengan Smart Board/Proyektor interaktif\n🖥️ Laboratorium Komputer Kids-Friendly\n📚 Perpustakaan Digital & Area Baca yang nyaman\n⚽ Lapangan Olahraga luas (Futsal, Basket, Voli)\n🍱 Kantin Sehat (Cashless) dan UKS dengan perawat siaga\n🛡️ Area sekolah dilengkapi CCTV 24 Jam dan penjagaan Security.",
+      "suggestions": ["Lokasi sekolah", "Info Pendaftaran"]
+    },
+    {
+      "intent": "curriculum_and_hours",
+      "keywords": ["kurikulum", "belajar", "pelajaran", "metode", "merdeka", "akreditasi", "jadwal", "jam", "masuk jam", "pulang", "waktu", "shift", "pancasila", "p5"],
+      "response": "SDN DigiArju telah terakreditasi *A* dan menerapkan *Kurikulum Merdeka* yang berfokus pada pengembangan literasi, numerasi, serta karakter P5 (Projek Penguatan Profil Pelajar Pancasila).\n\n⏰ *Waktu Belajar (Full Day School):*\n• Senin - Kamis: 07.15 - 14.30 WIB\n• Jumat: 07.15 - 11.30 WIB\n(Siswa difasilitasi waktu istirahat yang cukup, makan siang bersama, dan shalat berjamaah bagi yang muslim).",
+      "suggestions": ["Ekstrakurikuler", "Aturan seragam"]
+    },
+    {
+      "intent": "uniforms",
+      "keywords": ["seragam", "baju", "pakaian", "atribut", "beli seragam", "olahraga", "batik", "sepatu", "kerudung", "jilbab"],
+      "response": "Ketentuan seragam harian di SDN DigiArju adalah sebagai berikut:\n• *Senin-Selasa*: Kemeja Putih & Celana/Rok Merah (Berdasi & Topi saat upacara)\n• *Rabu*: Kemeja Batik Sekolah & Bawahan Putih\n• *Kamis*: Seragam Pramuka Lengkap\n• *Jumat*: Busana Muslim / Pakaian Khas Daerah\n\nUntuk sepatu diwajibkan berwarna dominan hitam. Seragam batik, baju olahraga, dan atribut sekolah lainnya dapat dipesan langsung di Koperasi Sekolah.",
+      "suggestions": ["Rincian Biaya", "Jam buka tata usaha?"]
+    },
+    {
+      "intent": "contact_admin",
+      "keywords": ["kontak", "whatsapp", "wa", "telepon", "hubungi", "admin", "cs", "tata usaha", "tu", "nomor", "bantuan", "help", "operator", "ig", "instagram", "sosmed"],
+      "response": "Butuh bantuan lebih detail atau ingin berkonsultasi langsung? Tim Tata Usaha (Admin) kami siap melayani Bapak/Ibu pada:\n🗓️ *Senin - Jumat | 08.00 - 15.00 WIB*\n\nSilakan hubungi kami melalui saluran resmi berikut:\n📞 Telepon: (021) 1234-5678\n💬 WhatsApp: 0812-3456-7890 (Layanan Cepat)\n✉️ Email: info@sdndigiarju.sch.id\n📱 Instagram: @SDNDigiArju",
+      "links": [
+        { "text": "💬 Chat WhatsApp Admin", "url": "https://wa.me/6281234567890" },
+        { "text": "📸 Kunjungi Instagram", "url": "https://instagram.com/SDNDigiArju" }
+      ],
+      "suggestions": ["Lokasi sekolah", "Info Pendaftaran"]
+    },
+    {
+      "intent": "gratitude",
+      "keywords": ["terima", "kasih", "makasih", "thanks", "tq", "ok", "sip", "baik", "mantap", "paham", "jelas", "selesai", "cukup", "bye"],
+      "response": "Sama-sama! 😊 Merupakan suatu kebanggaan bagi kami dapat membantu Bapak/Ibu. \n\nJangan ragu untuk kembali menyapa ArjuBot jika ada hal lain yang ingin ditanyakan di kemudian hari. Semoga hari Anda menyenangkan dan penuh berkah! ✨"
+    }
+  ]
+}
